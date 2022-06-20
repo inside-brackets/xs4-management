@@ -4,6 +4,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import store from "./store/index";
 
+import "bootstrap/dist/css/bootstrap.min.css";
+
 import "./assets/css/grid.css";
 import "./assets/css/theme.css";
 import "./assets/css/index.css";
