@@ -2,7 +2,7 @@ import React from "react";
 
 import { Route, Switch, Redirect } from "react-router-dom";
 
-import Dashboard from "../pages/Dashboard";
+import Dashboard from "../pages/Admin/Dashboard";
 
 const Routes = () => {
   return (

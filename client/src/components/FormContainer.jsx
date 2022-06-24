@@ -1,3 +1,4 @@
+import React from "react";
 import { Row, Col, Card } from "react-bootstrap";
 const FormContainer = ({ title, size, children }) => {
   if (!size) {

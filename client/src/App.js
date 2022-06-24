@@ -1,10 +1,9 @@
 import "./App.css";
 
 import { Route, Switch } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import React from "react";
 
 import Layout from "./components/layout/Layout";
-import PrivateRoute from "./components/PrivateRoute";
 import Login from "./pages/Login";
 
 function App() {
@@ -18,17 +17,6 @@ function App() {
         <Layout />
         {/* </PrivateRoute> */}
       </Switch>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
     </>
   );
 }

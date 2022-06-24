@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDb from './config/db.js';
 import userRouters from './routes/users.js';
+import cors from 'cors'
 dotenv.config();
 
 connectDb()
@@ -9,6 +10,11 @@ connectDb()
 const app = express();
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.use('/users', userRouters);
 

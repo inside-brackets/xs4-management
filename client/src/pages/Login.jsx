@@ -1,75 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Col, Row, Form, Image, Button, Spinner as Loader } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router-dom";
-import { Col, Row, Form, Image, Button, Spinner } from "react-bootstrap";
+import { useDispatch,useSelector } from "react-redux";
+
 import FormContainer from "../components/FormContainer";
 import logo from "../assets/images/logo_login.png";
-
 import Message from "../components/Message";
+import { Login } from "../store/Actions/userAction";
 
-const Login = () => {
-  let history = useHistory();
-  let location = useLocation();
+const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const redirect = query.get("redirect") === null ? "/" : query.get("redirect");
+  const history = useHistory();
+  const userLogin = useSelector((state) => state.userLogin);
+  const { loading, error, userInfo } = userLogin;
 
-  const [loginError, setLoginError] = useState({ status: false, msg: "" });
-  const [unAuthorized, setUnAuthorized] = useState({ status: false, msg: "" });
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  let { from } = location.state || { from: { pathname: "/" } };
+  useEffect(() => {
+    if (userInfo) {
+      console.log(redirect);
+      if (redirect === "admin") {
+        if (userInfo.isAdmin) {
+          history.push(redirect);
+        }
+      } else {
+        history.push(redirect);
+      }
+    }
+  }, [history, userInfo, redirect]);
 
-  var loggedInUser = localStorage.getItem("user");
-  if (loggedInUser) {
-    history.replace(from);
-  }
-  const handleLogin = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
-    setLoginError({ status: false, msg: "" });
-    setUnAuthorized({ status: false, msg: "" });
-    setLoading(true);
-
-    // login
+    // dispatch login
+    dispatch(Login(email, password));
   };
   return (
     <>
       <Row className="vh-100 vw-100" style={{ backgroundColor: "#ebf2fa" }}>
         <Col md={6}>
           <FormContainer size="4" title="Login">
-            <Form>
-              <Row style={{ margin: "10px" }}>
-                <Form.Label>Username:</Form.Label>
-                <Form.Control type="text" placeholder="username..." />
-              </Row>
-
-              <Row style={{ margin: "10px" }}>
-                <Form.Label>Password:</Form.Label>
+            {error ? <Message variant="danger">{error}</Message> : null}
+            {loading ? <Loader /> : null}
+            <Form onSubmit={submitHandler}>
+              <Form.Group>
+                <Form.Label>Email Address</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Password</Form.Label>
                 <Form.Control
                   type="password"
-                  placeholder="password"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleLogin(e);
-                    }
-                  }}
-                />
-              </Row>
-              {loginError.status && (
-                <Form.Text style={{ color: "red", margin: "10px" }}>
-                  {loginError.msg}
-                </Form.Text>
-              )}
-              <Row style={{ margin: "10px" }} className="mt-4">
-                <Button disabled={loading} onClick={handleLogin}>
-                  {loading && (
-                    <Spinner
-                      as="span"
-                      animation="grow"
-                      size="sm"
-                      role="status"
-                      aria-hidden="true"
-                    />
-                  )}{" "}
-                  Login{" "}
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+              <div className="d-grid">
+                <Button type="submit" className="btn btn-primary mt-3">
+                  Sign In
                 </Button>
-              </Row>
+              </div>
             </Form>
           </FormContainer>
         </Col>
@@ -81,15 +80,8 @@ const Login = () => {
           />
         </Col>
       </Row>
-      {unAuthorized.status && (
-        <div style={{ position: "absolute", top: "0px", width: "100%" }}>
-          <Message>
-            <center>{unAuthorized.msg}</center>
-          </Message>
-        </div>
-      )}
     </>
   );
 };
 
-export default Login;
+export default LoginPage;
