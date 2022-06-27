@@ -1,0 +1,51 @@
+import mongoose from "mongoose";
+
+const projectSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true }, // search
+    profile: { type: mongoose.Types.ObjectId, ref: "Profile", required: true }, // $in
+    assignee: { type: [mongoose.Types.ObjectId], ref: "User" }, // $in
+    clientName: { type: String }, // search
+    projectType: {
+      type: String,
+      enum: [
+        "BP",
+        "FM",
+        "PD",
+        "BP + FM",
+        "BP + PD",
+        "FM + PD",
+        "BP + FM + PD",
+        "legal contract",
+        "assignment",
+        "company profile",
+        "presentation",
+        "other graphics",
+        "SOP + Policies",
+        "bookkeeping",
+        "excel tamplets",
+        "market research",
+        "market plan",
+        "proposal",
+      ],
+      required: true,
+    }, // $in array
+    recruiterName: { type: String }, // search
+    hasRecruiter: { type: Boolean }, // exact
+    status: {
+      type: String,
+      enum: ["new", "open", "underreview", "cancelled"],
+      required: true,
+    }, // $in
+    totalAmount: { type: Number }, // range
+    awardedAt: { type: Date }, // range
+    closedAt: { type: Date }, // range
+    deadlineAt: { type: Date }, // range
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Project = mongoose.model("Project", projectSchema);
+export default Project;
