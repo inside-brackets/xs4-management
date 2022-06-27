@@ -6,9 +6,14 @@ import User from '../modals/user.js';
 // Desc: User to login user
 export const getToken = asyncHandler(async (req, res) => {
   try {
-    let { email, password } = req.body;
+    let { email, password,user_name } = req.body;
 
-    let user = await User.findOne({ email: email });
+    let user = await User.findOne({
+      $or: [
+          {user_name},
+          {email}
+      ]
+  });
     if (!user) {
       res.status(404);
       throw new Error('User not found');
@@ -21,7 +26,7 @@ export const getToken = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
       token: user.generateToken(),
     });
   } catch (error) {
@@ -34,27 +39,18 @@ export const getToken = asyncHandler(async (req, res) => {
 // Desc: To register user
 export const createUser = asyncHandler(async (req, res) => {
   try {
-    let { email, password, name, isAdmin } = req.body;
 
-      let user = await User.findOne({ email: email });
+      let user = await User.findOne({user_name: req.body.user_name});
       if (user) {
         res.status(400);
-        throw new Error('You can\'t create account with this email');
+        throw new Error('You can\'t create account with this user name');
       }
-    let createdUser = await User.create({
-      name,
-      email,
-      password,
-      isAdmin
-    });
+    let createdUser = await User.create(req.body);
     res.status(201);
 
     res.json({
       _id: createdUser._id,
-      name: createdUser.name,
-      email: createdUser.email,
-      isAdmin: createdUser.isAdmin,
-      token: createdUser.generateToken(),
+      user_name: createdUser.user_name
     });
   } catch (error) {
     console.log(error);

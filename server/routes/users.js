@@ -4,11 +4,11 @@ import {
   getToken,
   updateUserProfile,
 } from "../controllers/users.js";
-import { Protected } from "../middlewares/authHandler.js";
+import { Protected,isAdmin } from "../middlewares/authHandler.js";
 
 const router = express.Router();
 
 router.post("/token", getToken);
-router.post("/register", createUser);
+router.post("/register",Protected,isAdmin, createUser);
 router.put("/", Protected, updateUserProfile);
 export default router;

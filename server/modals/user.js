@@ -1,11 +1,18 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    user_name: {
       type: String,
       required: true,
+      unique: true,
+    },
+    first_name: {
+      type: String,
+    },
+    last_name: {
+      type: String,
     },
     email: {
       type: String,
@@ -16,9 +23,27 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
+    contact: {
+      type: Number,
+    },
+    address: {
+      type: String,
+    },
+    bank: {
+      name: {
+        type: String,
+      },
+      account_no: {
+        type: Number,
+      },
+      branch_code: {
+        type: Number,
+      },
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      required: true,
     },
   },
   {
@@ -32,17 +57,17 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 
 userSchema.methods.generateToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
+    expiresIn: "1d",
   });
 };
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
     next();
   }
   let salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 export default User;
