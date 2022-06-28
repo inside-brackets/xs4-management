@@ -77,3 +77,34 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
+
+// @des     Update user profile
+// @route   Put /users/:id
+// @access  Private
+export const getUsersList = asyncHandler(async (req, res) => {
+  const offset = parseInt(req.params.offset);
+  const limit = parseInt(req.params.limit);
+  const filter = {};
+  const data = await User.aggregate([
+    {
+      $facet: {
+        data: [
+          { $match: filter },
+          { $skip: offset },
+          { $limit: limit },
+        ],
+        totalCount: [{ $count: "totalCount" }],
+      },
+    },
+  ]);
+console.log(data)
+  let users = await User.find({})
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .skip(offset);
+  return res.json({
+    // data
+    data: data[0]['data'],
+    length:data[0]['totalCount'][0]['totalCount']
+  });
+});

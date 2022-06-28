@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import Loader from "react-loader-spinner";
+import { ThreeDots } from "react-loader-spinner";
 import Select from "react-select";
 import "./table.css";
 import { Row, Col, Form, Alert } from "react-bootstrap";
@@ -14,6 +14,7 @@ const Table = (props) => {
   const [currPage, setCurrPage] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -25,9 +26,6 @@ const Table = (props) => {
     pages = totalLength % Number(props.limit) === 0 ? page : page + 1;
     range = [...Array(pages).keys()];
   }
-  props.api.body.skip = currPage * props.limit;
-  props.api.body.limit = props.limit;
-
   useEffect(() => {
     getData();
     // eslint-disable-next-line
@@ -57,7 +55,7 @@ const Table = (props) => {
       if (props.api) {
         setLoading(true);
         axios
-          .post(`${props.api.url}/?search=${search}`, {
+          .get(`${props.api.url}/${props.limit}/${currPage * props.limit}`, {
             ...props.api.body,
             filter,
             start: startDate,
@@ -75,10 +73,34 @@ const Table = (props) => {
           })
           .catch((err) => {
             setLoading(false);
+            setError(err);
           });
       }
     }
   };
+  console.log(bodyData);
+  if (loading) {
+    return (
+      <div className="text-center">
+        <ThreeDots
+          // type="MutatingDots"
+          color="#349eff"
+          height={100}
+          width={100}
+        />
+      </div>
+    );
+  } else if (error) {
+    return (
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <Alert variant="danger" className="text-center text-capitalize m-3">
+            {error.message}
+          </Alert>
+        </Col>
+      </Row>
+    );
+  }
   return (
     <div>
       <Row className="align-items-center">
@@ -149,37 +171,27 @@ const Table = (props) => {
           props.overflowHidden ? "overflow__hidden" : ""
         }`}
       >
-        {loading ? (
-          <div className="text-center">
-            <Loader
-              type="MutatingDots"
-              color="#349eff"
-              height={100}
-              width={100}
-            />
-          </div>
-        ) : (
-          <>
-            <table>
-              {props.headData && props.renderHead ? (
-                <thead>
-                  <tr>
-                    {props.headData.map((item, index) =>
-                      props.renderHead(item, index)
-                    )}
-                  </tr>
-                </thead>
-              ) : null}
+        <>
+          <table>
+            {props.headData && props.renderHead && (
+              <thead>
+                <tr>
+                  {props.headData.map((item, index) =>
+                    props.renderHead(item, index)
+                  )}
+                </tr>
+              </thead>
+            )}
 
-              {bodyData && props.renderBody ? (
+            {bodyData && (
                 <tbody>
-                  {bodyData[`page${currPage}`]?.map((item, index) =>
+                  {bodyData[`page${currPage}`].map((item, index) =>
                     props.renderBody(item, index, currPage)
                   )}
                 </tbody>
-              ) : null}
-            </table>
-            {bodyData["page0"]?.length === 0 && (
+              )}
+          </table>
+          {/* {bodyData["page0"]?.length === 0 && (
                 <Row className="justify-content-center">
                   <Col md={6}>
                     <Alert variant="danger" className="text-center text-capitalize m-3">
@@ -187,33 +199,32 @@ const Table = (props) => {
                     </Alert>
                   </Col>
                 </Row>
-              )}
-            {pages > 1 ? (
-              <>
-                <div className="table__pagination">
-                  Showing {currPage * props.limit + 1} -{" "}
-                  {!bodyData[`page${currPage}`]
-                    ? null
-                    : currPage * props.limit +
-                      bodyData[`page${currPage}`].length}
-                  &nbsp; of {totalLength} records &nbsp;
-                  <button
-                    className="table__pagination-item"
-                    onClick={() => selectPage(0)}
-                  >
-                    {" "}
-                    {`<<`}{" "}
-                  </button>
-                  <button
-                    className="table__pagination-item"
-                    onClick={() =>
-                      selectPage(currPage === 0 ? currPage : currPage - 1)
-                    }
-                  >
-                    {" "}
-                    {`<`}{" "}
-                  </button>
-                  {/* {range.map((item, index) => (
+              )} */}
+          {pages > 1 ? (
+            <>
+              <div className="table__pagination">
+                Showing {currPage * props.limit + 1} -{" "}
+                {!bodyData[`page${currPage}`]
+                  ? null
+                  : currPage * props.limit + bodyData[`page${currPage}`].length}
+                &nbsp; of {totalLength} records &nbsp;
+                <button
+                  className="table__pagination-item"
+                  onClick={() => selectPage(0)}
+                >
+                  {" "}
+                  {`<<`}{" "}
+                </button>
+                <button
+                  className="table__pagination-item"
+                  onClick={() =>
+                    selectPage(currPage === 0 ? currPage : currPage - 1)
+                  }
+                >
+                  {" "}
+                  {`<`}{" "}
+                </button>
+                {/* {range.map((item, index) => (
                     <div
                       key={index}
                       className={`table__pagination-item ${
@@ -224,28 +235,27 @@ const Table = (props) => {
                       {item + 1}
                     </div>
                   ))} */}
-                  <button
-                    className="table__pagination-item"
-                    onClick={() =>
-                      selectPage(
-                        currPage === range.length - 1 ? currPage : currPage + 1
-                      )
-                    }
-                  >
-                    {`>`}
-                  </button>
-                  <button
-                    className="table__pagination-item"
-                    onClick={() => selectPage(range.length - 1)}
-                  >
-                    {" "}
-                    {`>>`}{" "}
-                  </button>
-                </div>
-              </>
-            ) : null}
-          </>
-        )}
+                <button
+                  className="table__pagination-item"
+                  onClick={() =>
+                    selectPage(
+                      currPage === range.length - 1 ? currPage : currPage + 1
+                    )
+                  }
+                >
+                  {`>`}
+                </button>
+                <button
+                  className="table__pagination-item"
+                  onClick={() => selectPage(range.length - 1)}
+                >
+                  {" "}
+                  {`>>`}{" "}
+                </button>
+              </div>
+            </>
+          ) : null}
+        </>
       </div>
     </div>
   );
