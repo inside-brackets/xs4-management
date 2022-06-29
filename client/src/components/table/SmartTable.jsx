@@ -55,12 +55,14 @@ const Table = (props) => {
       if (props.api) {
         setLoading(true);
         axios
-          .get(`${props.api.url}/${props.limit}/${currPage * props.limit}`, {
-            ...props.api.body,
-            filter,
-            start: startDate,
-            end: endDate,
-          })
+          .get(`${props.api.url}/${props.limit}/${currPage * props.limit}`, 
+          // {
+            // ...props.api.body,
+            // filter,
+            // start: startDate,
+            // end: endDate,
+          // }
+          )
           .then((res) => {
             const pageKey = `page${currPage}`;
             setBodyData((prev) => {
@@ -81,14 +83,16 @@ const Table = (props) => {
   console.log(bodyData);
   if (loading) {
     return (
-      <div className="text-center">
-        <ThreeDots
-          // type="MutatingDots"
-          color="#349eff"
-          height={100}
-          width={100}
-        />
-      </div>
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <ThreeDots
+            // type="MutatingDots"
+            color="#349eff"
+            height={100}
+            width={100}
+          />
+        </Col>
+      </Row>
     );
   } else if (error) {
     return (
@@ -96,6 +100,16 @@ const Table = (props) => {
         <Col md={6}>
           <Alert variant="danger" className="text-center text-capitalize m-3">
             {error.message}
+          </Alert>
+        </Col>
+      </Row>
+    );
+  } else if (bodyData["page0"]?.length === 0) {
+    return (
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <Alert variant="danger" className="text-center text-capitalize m-3">
+            No {window.location.pathname.replace("/", "")} to show
           </Alert>
         </Col>
       </Row>
@@ -184,22 +198,13 @@ const Table = (props) => {
             )}
 
             {bodyData && (
-                <tbody>
-                  {bodyData[`page${currPage}`].map((item, index) =>
-                    props.renderBody(item, index, currPage)
-                  )}
-                </tbody>
-              )}
+              <tbody>
+                {bodyData[`page${currPage}`]?.map((item, index) =>
+                  props.renderBody(item, index, currPage)
+                )}
+              </tbody>
+            )}
           </table>
-          {/* {bodyData["page0"]?.length === 0 && (
-                <Row className="justify-content-center">
-                  <Col md={6}>
-                    <Alert variant="danger" className="text-center text-capitalize m-3">
-                    No {window.location.pathname.replace('/',"")} to show
-                    </Alert>
-                  </Col>
-                </Row>
-              )} */}
           {pages > 1 ? (
             <>
               <div className="table__pagination">

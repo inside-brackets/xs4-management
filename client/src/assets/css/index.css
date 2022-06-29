@@ -77,3 +77,10 @@ a {
   text-decoration: none !important;
   color: inherit !important;
 }
+.card {
+  padding: 15px !important;
+  margin-bottom: 15px !important;
+  background-color: var(--main-bg) !important;
+  box-shadow: var(--box-shadow) !important;
+  border-radius: var(--border-radius) !important;
+}
