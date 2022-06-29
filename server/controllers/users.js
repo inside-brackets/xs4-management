@@ -2,14 +2,14 @@ import asyncHandler from "express-async-handler";
 import User from "../modals/user.js";
 
 // Access: Public
-// Method: post
+// Method: POST
 // Desc: User to login user
 export const getToken = asyncHandler(async (req, res) => {
   try {
-    let { email, password, user_name } = req.body;
+    let { email, password, userName } = req.body;
 
     let user = await User.findOne({
-      $or: [{ user_name }, { email }],
+      $or: [{ userName }, { email }],
     });
     if (!user) {
       res.status(404);
@@ -21,8 +21,7 @@ export const getToken = asyncHandler(async (req, res) => {
     }
     res.json({
       _id: user._id,
-      name: user.name,
-      email: user.email,
+      name: user.userName,
       role: user.role,
       token: user.generateToken(),
     });
@@ -33,10 +32,10 @@ export const getToken = asyncHandler(async (req, res) => {
 
 // Access: Admin
 // Method: POST
-// Desc: To register user
+// Route:  /users/
 export const createUser = asyncHandler(async (req, res) => {
   try {
-    let user = await User.findOne({ user_name: req.body.user_name });
+    let user = await User.findOne({ userName: req.body.userName });
     if (user) {
       res.status(400);
       throw new Error("You can't create account with this user name");
@@ -52,49 +51,58 @@ export const createUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @des     Update user profile
-// @route   Put /users/:id
-// @access  Private
-export const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
-  if (user) {
-    const { name, password } = req.body;
-    user.name = name || user.name;
-    if (password) {
-      user.password = password;
-    }
-    const updatedUser = await user.save();
+// Access: Private
+// Method: PUT
+// Route:  /users/:id
+export const updateUser = asyncHandler(async (req, res) => {
+  try {
+    let updatedUser = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      req.body,
+      { new: true, upsert: true }
+    );
 
-    res.json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      isAdmin: updatedUser.isAdmin,
-      token: updatedUser.generateToken(),
-    });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
+    if (updatedUser) {
+      res.json(updatedUser);
+    } else {
+      res.status(404);
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+});
+
+// Access: Private
+// Method: GET
+// route: /users/:id
+export const getUser = asyncHandler(async (req, res) => {
+  try {
+    let user = await User.findById(req.params.id);
+
+    res.status(200);
+
+    res.json(user);
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
   }
 });
 
 // Access: Admin
 // Method: GET
-// Route:  /users/:id?search=text&&role=['user']
-export const getUsersList = asyncHandler(async (req, res) => {
+// Route:  /users/:id?userName=text&&role=['user']
+export const listUsers = asyncHandler(async (req, res) => {
   try {
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
-    const { search, role } = req.query;
+    const { userName, role } = req.query;
 
     const filter = {};
 
-    if (search) {
-      filter["$or"] = [
-        { userName: { $regex: search, $options: "i" } },
-        { firstName: { $regex: search, $options: "i" } },
-        { lastName: { $regex: search, $options: "i" } },
-      ];
+    if (userName) {
+      filter["$or"] = [{ userName }];
     }
     if (role) {
       filter.role = { $in: role };

@@ -22,7 +22,11 @@ const profileSchema = new mongoose.Schema(
   }
 );
 
-// on delete delete related projects
+// on delete, delete related projects
+profileSchema.post("remove", function (doc) {
+  console.log("%s has been removed", doc._id);
+  // delete all related projects
+});
 
 const Profile = mongoose.model("Profile", profileSchema);
 export default Profile;

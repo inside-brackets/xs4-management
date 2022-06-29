@@ -2,15 +2,18 @@ import express from "express";
 import {
   createUser,
   getToken,
-  getUsersList,
-  updateUserProfile,
+  listUsers,
+  updateUser,
+  getUser,
 } from "../controllers/users.js";
-import { Protected,isAdmin } from "../middlewares/authHandler.js";
+import { Protected, isAdmin } from "../middlewares/authHandler.js";
 
 const router = express.Router();
 
 router.post("/token", getToken);
-router.post("/register",Protected,isAdmin, createUser);
-router.get("/:limit/:offset", getUsersList);
-router.put("/", Protected, updateUserProfile);
+router.post("/", Protected, isAdmin, createUser);
+router.put("/:id", Protected, updateUser);
+router.get("/:id", Protected, getUser);
+router.get("/:limit/:offset", Protected, isAdmin, listUsers);
+
 export default router;

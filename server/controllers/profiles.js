@@ -36,7 +36,7 @@ export const getProfile = asyncHandler(async (req, res) => {
 // Access: Private
 // Method: PUT
 // route: /profile/:id
-export const putProfile = asyncHandler(async (req, res) => {
+export const updateProfile = asyncHandler(async (req, res) => {
   try {
     let updatedProfile = await ProfileModal.findOneAndUpdate(
       { _id: req.params.id },
