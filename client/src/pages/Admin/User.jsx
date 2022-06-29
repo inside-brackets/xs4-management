@@ -4,14 +4,10 @@ import {Row} from 'react-bootstrap'
 import Table from '../../components/table/SmartTable'
 const customerTableHead = [
     "#",
-    "Load Number",
-    "Weight(lbs)",
-    "Miles",
-    "Pay",
-    "Broker",
-    "Pickup  ",
-    "Drop ",
-    "Status",
+    "First Name",
+    "Last Name",
+    "Bank",
+    "role",
     "",
   ];
   const renderHead = (item, index) => <th key={index}>{item}</th>;
@@ -20,11 +16,10 @@ const customerTableHead = [
     const renderBody = (item, index,currPage) => (
         <tr key={index}>
           <td>{(index + 1) + (currPage*10)}</td>
-          <td>{item.load_number ? item.load_number : "NA"}</td>
+          <td>{item.user_name ?? "NA"}</td>
           <td>{item.weight ? item.weight : "NA"}</td>
-          <td>{item.miles ? item.miles : "NA"}</td>
-          <td>{item.pay ? item.pay : "NA"}</td>
-          <td>{item.broker ? item.broker : "NA"}</td>
+          <td>{item.bank ? item.bank.name : "NA"}</td>
+          <td>{item.role ?? "NA"}</td>
         </tr>
       );
     
