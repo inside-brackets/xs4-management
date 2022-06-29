@@ -3,15 +3,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
   {
-    user_name: {
+    // search
+    userName: {
       type: String,
       required: true,
       unique: true,
     },
-    first_name: {
+    // search
+    firstName: {
       type: String,
     },
-    last_name: {
+    // search
+    lastName: {
       type: String,
     },
     email: {
@@ -40,6 +43,7 @@ const userSchema = new mongoose.Schema(
         type: Number,
       },
     },
+    // $in
     role: {
       type: String,
       enum: ["user", "admin"],

@@ -78,33 +78,41 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-// @des     Update user profile
-// @route   Put /users/:id
-// @access  Private
+// Access: Admin
+// Method: GET
+// Route:  /users/:id?search=text&&role=['user']
 export const getUsersList = asyncHandler(async (req, res) => {
-  const offset = parseInt(req.params.offset);
-  const limit = parseInt(req.params.limit);
-  const filter = {};
-  const data = await User.aggregate([
-    {
-      $facet: {
-        data: [
-          { $match: filter },
-          { $skip: offset },
-          { $limit: limit },
-        ],
-        totalCount: [{ $count: "totalCount" }],
-      },
-    },
-  ]);
-console.log(data)
-  let users = await User.find({})
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .skip(offset);
-  return res.json({
-    // data
-    data: data[0]['data'],
-    length:data[0]['totalCount'][0]['totalCount']
-  });
+  try {
+    const offset = parseInt(req.params.offset);
+    const limit = parseInt(req.params.limit);
+    const { search, role } = req.query;
+
+    const filter = {};
+
+    if (search) {
+      filter["$or"] = [
+        { userName: { $regex: search, $options: "i" } },
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (role) {
+      filter.role = { $in: role };
+    }
+
+    let users = await User.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(offset);
+
+    let allUsers = await User.find(filter);
+
+    return res.json({
+      users,
+      total: allUsers.length,
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
 });

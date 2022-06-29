@@ -75,7 +75,7 @@ export const listProfiles = asyncHandler(async (req, res) => {
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
     const { title, share__lt, share__ge, bidder } = req.query;
-    let filter = { share: { $lt: 100, $gte: 0 } };
+    let filter = { share: { $lte: 100, $gte: 0 } };
 
     if (bidder) {
       filter.bidder = bidder;
@@ -96,7 +96,9 @@ export const listProfiles = asyncHandler(async (req, res) => {
       .limit(limit)
       .skip(offset);
 
-    res.status(200).json(profiles);
+    const totalProfiles = await ProfileModal.find(filter);
+
+    res.status(200).json({ profiles, total: totalProfiles.length });
   } catch (error) {
     console.log(error);
     throw new Error(error.message);
