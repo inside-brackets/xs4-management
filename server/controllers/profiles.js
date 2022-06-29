@@ -3,7 +3,7 @@ import ProfileModal from "../modals/profile.js";
 // Access: Admin
 // Method: POST
 // Desc: create profile
-// route: /profile
+// route: /profiles
 export const createProfile = asyncHandler(async (req, res) => {
   try {
     let createdProfile = await ProfileModal.create(req.body);
@@ -19,7 +19,7 @@ export const createProfile = asyncHandler(async (req, res) => {
 
 // Access: Private
 // Method: GET
-// route: /profile/:id
+// route: /profiles/:id
 export const getProfile = asyncHandler(async (req, res) => {
   try {
     let profile = await ProfileModal.findById(req.params.id);
@@ -35,7 +35,7 @@ export const getProfile = asyncHandler(async (req, res) => {
 
 // Access: Private
 // Method: PUT
-// route: /profile/:id
+// route: /profiles/:id
 export const updateProfile = asyncHandler(async (req, res) => {
   try {
     let updatedProfile = await ProfileModal.findOneAndUpdate(
@@ -55,7 +55,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
 // Access: Admin
 // Method: DELETE
-// route: /profile/:id
+// route: /profiles/:id
 export const deleteProfile = asyncHandler(async (req, res) => {
   try {
     // delete profile
@@ -68,7 +68,7 @@ export const deleteProfile = asyncHandler(async (req, res) => {
 
 // Access: Admin
 // Method: GET
-// route: /profile/:limit/:offset?search=asdasd&&bidder=asdasd&&share__lt=30&&share__gte=20
+// route: /profiles/:limit/:offset?search=asdasd&&bidder=asdasd&&share__lt=30&&share__gte=20
 export const listProfiles = asyncHandler(async (req, res) => {
   try {
     console.log("listProfiles", req.params.offset);
