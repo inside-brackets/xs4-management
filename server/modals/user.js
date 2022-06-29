@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     contact: {
-      type: Number,
+      type: String,
     },
     address: {
       type: String,
@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["user", "admin"],
+      required: true,
+    },
+    salary: {
+      type: Number,
       required: true,
     },
   },

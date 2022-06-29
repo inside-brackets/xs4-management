@@ -40,7 +40,7 @@ export const Login = (email, password) => async (dispatch, getState) => {
 };
 
 export const Register =
-  (name, email, password) => async (dispatch, getState) => {
+  (user) => async (dispatch, getState) => {
     try {
       dispatch({ type: USER_REGISTER_REQUEST });
 
@@ -51,18 +51,18 @@ export const Register =
       };
 
       let { data } = await axios.post(
-        '/api/v1/users/register',
-        { name, email, password },
+        `${process.env.REACT_APP_BACKEND_URL}/users/`,
+        user,
         config
       );
 
       dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
       dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
 
-      localStorage.setItem(
-        'userInfo',
-        JSON.stringify(getState().userRegister.userInfo)
-      );
+      // localStorage.setItem(
+      //   'userInfo',
+      //   JSON.stringify(getState().userRegister.userInfo)
+      // );
     } catch (error) {
       dispatch({
         type: USER_REGISTER_FAIL,

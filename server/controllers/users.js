@@ -116,8 +116,8 @@ export const listUsers = asyncHandler(async (req, res) => {
     let allUsers = await User.find(filter);
 
     return res.json({
-      users,
-      total: allUsers.length,
+     data: users,
+      length: allUsers.length,
     });
   } catch (error) {
     console.log(error);

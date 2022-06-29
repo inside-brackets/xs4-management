@@ -11,9 +11,9 @@ import { Protected, isAdmin } from "../middlewares/authHandler.js";
 const router = express.Router();
 
 router.post("/token", getToken);
-router.post("/", Protected, isAdmin, createUser);
+router.post("/", createUser);
 router.put("/:id", Protected, updateUser);
 router.get("/:id", Protected, getUser);
-router.get("/:limit/:offset", Protected, isAdmin, listUsers);
+router.get("/:limit/:offset", listUsers);
 
 export default router;

@@ -1,0 +1,2 @@
+columns in user table
+user name, name, email,contact,salary,role,actions=> view
