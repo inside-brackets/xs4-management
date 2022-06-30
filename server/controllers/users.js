@@ -1,16 +1,18 @@
 import asyncHandler from "express-async-handler";
 import User from "../modals/user.js";
-
+import url from "url";
+import querystring from "querystring";
 // Access: Public
 // Method: POST
 // Desc: User to login user
 export const getToken = asyncHandler(async (req, res) => {
   try {
-    let { email, password, userName } = req.body;
+    let { password, userName } = req.body;
 
     let user = await User.findOne({
-      $or: [{ userName }, { email }],
+      userName,
     });
+
     if (!user) {
       res.status(404);
       throw new Error("User not found");
@@ -92,19 +94,19 @@ export const getUser = asyncHandler(async (req, res) => {
 
 // Access: Admin
 // Method: GET
-// Route:  /users/:id?userName=text&&role=['user']
+// Route:  /users/:id
 export const listUsers = asyncHandler(async (req, res) => {
   try {
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
-    const { userName, role } = req.query;
+    const { search, role } = req.body;
 
     const filter = {};
 
-    if (userName) {
-      filter["$or"] = [{ userName }];
+    if (search) {
+      filter["$or"] = [{ userName: search }];
     }
-    if (role) {
+    if (role?.length > 0) {
       filter.role = { $in: role };
     }
 
@@ -116,7 +118,7 @@ export const listUsers = asyncHandler(async (req, res) => {
     let allUsers = await User.find(filter);
 
     return res.json({
-     data: users,
+      data: users,
       length: allUsers.length,
     });
   } catch (error) {

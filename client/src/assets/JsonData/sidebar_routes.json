@@ -1,13 +1,21 @@
-{"admin": [
-  {
-    "display_name": "Dashboard",
-    "route": "/dashboard",
-    "icon": "bx bx-category-alt"
-  },
-  {
-    "display_name": "Users",
-    "route": "/users",
-    "icon": "bx bx-category-alt"
-  }
-
-]}
+{
+  "admin": [
+    {
+      "display_name": "Dashboard",
+      "route": "/dashboard",
+      "icon": "bx bx-category-alt"
+    },
+    {
+      "display_name": "Users",
+      "route": "/users",
+      "icon": "bx bx-category-alt"
+    }
+  ],
+  "user": [
+    {
+      "display_name": "Dashboard",
+      "route": "/dashboard",
+      "icon": "bx bx-category-alt"
+    }
+  ]
+}

@@ -14,6 +14,6 @@ router.post("/token", getToken);
 router.post("/", createUser);
 router.put("/:id", Protected, updateUser);
 router.get("/:id", Protected, getUser);
-router.get("/:limit/:offset", listUsers);
+router.post("/:limit/:offset", listUsers);
 
 export default router;

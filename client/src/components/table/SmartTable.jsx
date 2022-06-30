@@ -5,11 +5,25 @@ import Select from "react-select";
 import "./table.css";
 import { Row, Col, Form, Alert } from "react-bootstrap";
 
+const makeFilter = (filter) => {
+  console.log(filter);
+  let temp = {};
+  for (let [key, value] of Object.entries(filter)) {
+    if (value instanceof Array) {
+      value = value.map((item) => item.value);
+    }
+    temp[key] = value;
+  }
+  return temp;
+};
+
 const Table = (props) => {
   const [bodyData, setBodyData] = useState({});
-  console.log("odydata", bodyData);
   const [filter, setFilter] = useState(
-    Object.keys(props.filter).reduce((pre, curr) => ((pre[curr] = []), pre), {})
+    Object.keys(props.filter).reduce((pre, curr) => {
+      pre[curr] = [];
+      return pre;
+    }, {})
   );
   const [currPage, setCurrPage] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
@@ -54,14 +68,11 @@ const Table = (props) => {
     if (!bodyData[`page${currPage}`]) {
       if (props.api) {
         setLoading(true);
+
         axios
-          .get(`${props.api.url}/${props.limit}/${currPage * props.limit}`, 
-          // {
-            // ...props.api.body,
-            // filter,
-            // start: startDate,
-            // end: endDate,
-          // }
+          .post(
+            `${props.api.url}/${props.limit}/${currPage * props.limit}`,
+            makeFilter({ ...filter, search })
           )
           .then((res) => {
             const pageKey = `page${currPage}`;
@@ -80,11 +91,12 @@ const Table = (props) => {
       }
     }
   };
-  console.log(bodyData);
+
+  let bodyHtml = null;
   if (loading) {
-    return (
+    bodyHtml = (
       <Row className="justify-content-center">
-        <Col md={6}>
+        <Col>
           <ThreeDots
             // type="MutatingDots"
             color="#349eff"
@@ -95,9 +107,9 @@ const Table = (props) => {
       </Row>
     );
   } else if (error) {
-    return (
+    bodyHtml = (
       <Row className="justify-content-center">
-        <Col md={6}>
+        <Col>
           <Alert variant="danger" className="text-center text-capitalize m-3">
             {error.message}
           </Alert>
@@ -105,9 +117,12 @@ const Table = (props) => {
       </Row>
     );
   } else if (bodyData["page0"]?.length === 0) {
-    return (
-      <Row className="justify-content-center">
-        <Col md={6}>
+    bodyHtml = (
+      <Row
+        className="justify-content-center"
+        style={{ maxWidth: "95%", paddingLeft: "5%" }}
+      >
+        <Col>
           <Alert variant="danger" className="text-center text-capitalize m-3">
             No {window.location.pathname.replace("/", "")} to show
           </Alert>
@@ -158,6 +173,7 @@ const Table = (props) => {
               </>
             );
           }
+          console.log(bodyData["page0"]);
 
           return (
             <Col md={3} className="mb-2">
@@ -197,7 +213,7 @@ const Table = (props) => {
               </thead>
             )}
 
-            {bodyData && (
+            {bodyData["page0"]?.length > 0 && (
               <tbody>
                 {bodyData[`page${currPage}`]?.map((item, index) =>
                   props.renderBody(item, index, currPage)
@@ -205,6 +221,7 @@ const Table = (props) => {
               </tbody>
             )}
           </table>
+          {bodyHtml}
           {pages > 1 ? (
             <>
               <div className="table__pagination">

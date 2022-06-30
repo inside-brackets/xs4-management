@@ -3,12 +3,13 @@ import { Route, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const PrivateRoute = ({ children, ...rest }) => {
-  const user = useSelector((state) => state.user);
+  const userInfo = useSelector((state) => state.userLogin.userInfo);
+
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        user.isAuthenticated ? (
+        userInfo ? (
           children
         ) : (
           <Redirect

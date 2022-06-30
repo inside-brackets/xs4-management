@@ -8,7 +8,6 @@ import sidebar_routes from "../../assets/JsonData/sidebar_routes.json";
 const SidebarItem = (props) => {
   const active = props.active ? "active" : "";
 
-
   return (
     <div className="sidebar__item">
       <div className={`sidebar__item-inner ${active}`}>
@@ -20,7 +19,8 @@ const SidebarItem = (props) => {
 };
 
 const Sidebar = (props) => {
-  const {role} = useSelector((state)=> state.userLogin.userInfo)
+  const { role } = useSelector((state) => state.userLogin.userInfo);
+
   return (
     <div className="sidebar">
       <center>

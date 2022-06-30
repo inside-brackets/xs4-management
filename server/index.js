@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 import userRouters from "./routes/users.js";
-// import profileRouters from "./routes/profile.js";
-// import projectRouters from "./routes/project";
+import profileRouters from "./routes/profile.js";
+import projectRouters from "./routes/project.js";
 import cors from "cors";
 dotenv.config();
 
@@ -19,8 +19,8 @@ app.use(
 );
 
 app.use("/users", userRouters);
-// app.use("/profiles", profileRouters);
-// app.use("/projects", projectRouters);
+app.use("/profiles", profileRouters);
+app.use("/projects", projectRouters);
 
 app.get("/", (req, res) => {
   res.send("Api is running...");

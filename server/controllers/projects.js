@@ -1,4 +1,6 @@
-import ProjectModal from "../modals/project";
+import asyncHandler from "express-async-handler";
+
+import ProjectModal from "../modals/project.js";
 
 // Access: Private
 // Method: POST
@@ -67,7 +69,7 @@ export const deleteProject = asyncHandler(async (req, res) => {
 
 // Access: Private
 // Method: GET
-// route: /projects/:limit/:offset?search=asdasd&&profile=[objectID]&&assignee=[objectID]&&projectType=["PD"]&&hasRecruiter=true&&status=["new"]&&totalAmount__gte=100&&totalAmount__lt=200&&awardedAt__gte=date&&awardedAt__lt=date&&cloasedAt__gte=date&&cloasedAt__lt=date&&deadlineAt__gte=date&&deadlineAt__lt=date
+// route: /projects/:limit/:offset
 export const listProjects = asyncHandler(async (req, res) => {
   try {
     console.log("listProjects", req.params.offset);
@@ -88,7 +90,7 @@ export const listProjects = asyncHandler(async (req, res) => {
       closedAt__lt,
       deadlineAt__gte,
       deadlineAt__lt,
-    } = req.query;
+    } = req.body;
     let filter = {};
 
     if (search) {

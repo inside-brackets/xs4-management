@@ -1,3 +1,5 @@
+import asyncHandler from "express-async-handler";
+
 import ProfileModal from "../modals/profile.js";
 
 // Access: Admin
@@ -68,20 +70,20 @@ export const deleteProfile = asyncHandler(async (req, res) => {
 
 // Access: Admin
 // Method: GET
-// route: /profiles/:limit/:offset?search=asdasd&&bidder=asdasd&&share__lt=30&&share__gte=20
+// route: /profiles/:limit/:offset
 export const listProfiles = asyncHandler(async (req, res) => {
   try {
     console.log("listProfiles", req.params.offset);
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
-    const { title, share__lt, share__ge, bidder } = req.query;
+    const { search, share__lt, share__ge, bidder } = req.body;
     let filter = { share: { $lte: 100, $gte: 0 } };
 
     if (bidder) {
       filter.bidder = bidder;
     }
-    if (title) {
-      filter.title = { $regex: title, $options: "i" };
+    if (search) {
+      filter.title = { $regex: search, $options: "i" };
     }
     if (share__lt) {
       filter.share["$lt"] = share__lt;

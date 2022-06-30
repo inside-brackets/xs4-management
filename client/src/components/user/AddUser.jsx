@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form, Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import { Register } from "../../store/Actions/userAction";
 
-const AddUser = ({
-    setRefresh,
-    setShowModal
-}) => {
+const AddUser = ({ setRefresh, setShowModal }) => {
   const [validated, setValidated] = useState(false);
   const [state, setState] = useState({});
+  const [usernameIsValid, setUsernameIsValid] = useState(null);
 
   const userRegister = useSelector((state) => state.userRegister);
   const { loading, error } = userRegister;
@@ -22,27 +21,22 @@ const AddUser = ({
     });
   };
 
-  console.log(state);
+  useEffect(() => {
+    if (state.userName) {
+      const indentifier = setTimeout(async () => {
+        let userName = state.userName.replace(/\s+/g, " ").trim().toLowerCase();
+        const response = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/users/10/0`,
+          { search: userName }
+        );
+        setUsernameIsValid(response.data.length === 0);
+      }, 500);
+      return () => {
+        clearTimeout(indentifier);
+      };
+    }
+  }, [state.userName]);
 
-  // useEffect(() => {
-  //   if (userName) {
-  //     // const indentifier = setTimeout(async () => {
-  //     //   if (userName !== defaultValue?.user_name) {
-  //     //     const response = await axios.post(
-  //     //       `${process.env.REACT_APP_BACKEND_URL}/getusers`,
-  //     //       { user_name: userName.replace(/\s+/g, " ").trim().toLowerCase() }
-  //     //     );
-  //     //     console.log("checking username",response.data);
-  //     //     setUsernameIsValid(response.data.length === 0);
-  //     //   } else {
-  //     //     setUsernameIsValid(true);
-  //     //   }
-  //     // }, 500);
-  //     // return () => {
-  //     //   clearTimeout(indentifier);
-  //     // };
-  //   }
-  // }, [userName]);
   const dispatch = useDispatch();
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -50,35 +44,39 @@ const AddUser = ({
     setValidated(true);
     if (form.checkValidity() === true) {
       dispatch(Register(state));
-      if(!loading && !error){
-        setShowModal()
+      if (!loading && !error) {
+        setShowModal();
       }
     }
   };
 
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
-      {error ? <Alert variant="danger">{error}</Alert> : null}
+      {/* {error ? <Alert variant="danger">{error}</Alert> : null} */}
 
       <Row className="my-2">
         <Form.Group as={Col} md="6">
           <Form.Label>User Name</Form.Label>
           <Form.Control
+            className={`${
+              state.userName && !usernameIsValid ? "invalid is-invalid" : ""
+            } no__feedback shadow-none`}
             name="userName"
             onChange={handleChange}
             type="text"
             placeholder="Enter username"
+            required
           />
-          {/* {usernameIsValid && userName && (
+          {usernameIsValid && state.userName && (
             <Form.Text style={{ color: "green" }}>
               Username is available!
             </Form.Text>
           )}
-          {usernameIsValid === false && userName && (
+          {usernameIsValid === false && state.userName && (
             <Form.Text style={{ color: "red" }}>
               Whoops! username already exists.
             </Form.Text>
-          )} */}
+          )}
         </Form.Group>
         <Form.Group as={Col} md="6">
           <Form.Label>Password</Form.Label>
@@ -97,7 +95,7 @@ const AddUser = ({
       <Row className="my-3">
         <Row>
           {/* {!defaultValue && <hr />} */}
-          <h1>Company Info</h1>
+          {/* <h1>Company Info</h1> */}
           <Form.Group as={Col} md="6">
             <Form.Label>Role</Form.Label>
             <Form.Control
@@ -116,22 +114,6 @@ const AddUser = ({
             </Form.Control.Feedback>
           </Form.Group>
           <Form.Group as={Col} md="6">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              name="email"
-              placeholder="Email"
-              onChange={handleChange}
-              required
-            />
-
-            <Form.Control.Feedback type="invalid">
-              Please provide a valid Email.
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Row>
-        <Row>
-          <Form.Group as={Col} md="6">
             <Form.Label>Basic Salary</Form.Label>
             <Form.Control
               type="number"
@@ -147,8 +129,18 @@ const AddUser = ({
         </Row>
       </Row>
 
-      <Button disabled={loading} type="submit">
-        Submit form
+      <Button
+        disabled={
+          loading ||
+          !usernameIsValid ||
+          !state.role ||
+          !state.salary ||
+          !state.password ||
+          !state.userName
+        }
+        type="submit"
+      >
+        Submit
       </Button>
     </Form>
   );

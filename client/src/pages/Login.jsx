@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Form, Image, Button, Spinner as Loader } from "react-bootstrap";
+import {
+  Col,
+  Row,
+  Form,
+  // Image,
+  Button,
+  Spinner as Loader,
+} from "react-bootstrap";
 import { useHistory, useLocation } from "react-router-dom";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import FormContainer from "../components/FormContainer";
-import logo from "../assets/images/logo_login.png";
+// import logo from "../assets/images/logo_login.png";
 import Message from "../components/Message";
 import { Login } from "../store/Actions/userAction";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const location = useLocation();
   const query = new URLSearchParams(location.search);
@@ -36,7 +43,7 @@ const LoginPage = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     // dispatch login
-    dispatch(Login(email, password));
+    dispatch(Login(userName, password));
   };
   return (
     <>
@@ -49,10 +56,10 @@ const LoginPage = () => {
               <Form.Group>
                 <Form.Label>Email Address</Form.Label>
                 <Form.Control
-                  type="email"
-                  placeholder="Enter Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder="Enter Username"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
                 ></Form.Control>
               </Form.Group>
               <Form.Group>
@@ -72,13 +79,13 @@ const LoginPage = () => {
             </Form>
           </FormContainer>
         </Col>
-        <Col md={6}>
+        {/* <Col md={4}>
           <Image
             className="justify-content-start align-items-center vh-100 vw-100"
             src={logo}
             fluid
           />
-        </Col>
+        </Col> */}
       </Row>
     </>
   );
