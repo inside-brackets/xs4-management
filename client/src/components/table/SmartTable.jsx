@@ -6,7 +6,6 @@ import "./table.css";
 import { Row, Col, Form, Alert } from "react-bootstrap";
 
 const makeFilter = (filter) => {
-  console.log(filter);
   let temp = {};
   for (let [key, value] of Object.entries(filter)) {
     if (value instanceof Array) {
@@ -133,16 +132,18 @@ const Table = (props) => {
   return (
     <div>
       <Row className="align-items-center">
-        <Col md={3}>
-          <label className="pb-2">Search</label>
-          <input
-            type="text"
-            placeholder={props.placeholder}
-            className="form-control mb-2"
-            icon="bx bx-search"
-            onKeyDown={searchData}
-          />
-        </Col>
+        {props.placeholder && (
+          <Col md={3}>
+            <label className="pb-2">Search</label>
+            <input
+              type="text"
+              placeholder={props.placeholder}
+              className="form-control mb-2"
+              icon="bx bx-search"
+              onKeyDown={searchData}
+            />
+          </Col>
+        )}
         {Object.keys(props.filter).map((key, index) => {
           if (key === "date_range") {
             return (

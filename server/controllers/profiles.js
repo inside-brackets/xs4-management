@@ -103,7 +103,7 @@ export const listProfiles = asyncHandler(async (req, res) => {
 
     const totalProfiles = await ProfileModal.find(filter);
 
-    res.status(200).json({ profiles, total: totalProfiles.length });
+    res.status(200).json({data: profiles, length: totalProfiles.length });
   } catch (error) {
     console.log(error);
     throw new Error(error.message);

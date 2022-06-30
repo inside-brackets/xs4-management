@@ -68,6 +68,12 @@ userSchema.methods.generateToken = function () {
   });
 };
 
+userSchema.methods.hashPassword = async function (password) {
+  let salt = await bcrypt.genSalt(10);
+  password = await bcrypt.hash(password, salt);
+  return password
+};
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();

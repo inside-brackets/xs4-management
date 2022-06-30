@@ -12,6 +12,6 @@ const router = express.Router();
 router.post("/", Protected, isAdmin, createProfile);
 router.put("/:id", Protected, isAdmin, updateProfile);
 router.get("/:id", Protected, getProfile);
-router.post("/:limit/:offset", Protected, listProfiles);
+router.post("/:limit/:offset", listProfiles);
 
 export default router;

@@ -58,9 +58,13 @@ export const createUser = asyncHandler(async (req, res) => {
 // Route:  /users/:id
 export const updateUser = asyncHandler(async (req, res) => {
   try {
+    if(req.body.password){
+ const user =  await   User.findById(req.params.id)
+      req.body.password = user.hashPassword()
+    }
     let updatedUser = await User.findOneAndUpdate(
       { _id: req.params.id },
-      req.body,
+      { $set: req.body },
       { new: true, upsert: true }
     );
 
@@ -77,12 +81,35 @@ export const updateUser = asyncHandler(async (req, res) => {
 });
 
 // Access: Private
+// Method: PUT
+// route: /users/password/:id
+export const updateUserPassword = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    const { password } = req.body;
+    if (password) {
+      user.password = password;
+    }
+    const updatedUser = await user.save();
+
+    res.json({
+      updatedUser,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+// Access: Private
 // Method: GET
 // route: /users/:id
 export const getUser = asyncHandler(async (req, res) => {
   try {
     let user = await User.findById(req.params.id);
-
+    if (!user) {
+      throw new Error("User Not available against this id");
+    }
     res.status(200);
 
     res.json(user);
