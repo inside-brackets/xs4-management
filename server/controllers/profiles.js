@@ -24,7 +24,7 @@ export const createProfile = asyncHandler(async (req, res) => {
 // route: /profiles/:id
 export const getProfile = asyncHandler(async (req, res) => {
   try {
-    let profile = await ProfileModal.findById(req.params.id);
+    let profile = await ProfileModal.findById(req.params.id).populate("bidder");
 
     res.status(200);
 
@@ -76,24 +76,27 @@ export const listProfiles = asyncHandler(async (req, res) => {
     console.log("listProfiles", req.params.offset);
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
-    const { search, share__lt, share__ge, bidder } = req.body;
+    const { search, share__lte, share__gte, bidder, platform } = req.body;
     let filter = { share: { $lte: 100, $gte: 0 } };
 
-    if (bidder) {
-      filter.bidder = bidder;
+    if (platform?.length > 0) {
+      filter.platform = { $in: platform };
+    }
+    if (bidder?.length > 0) {
+      filter.bidder = { $in: bidder };
     }
     if (search) {
       filter.title = { $regex: search, $options: "i" };
     }
-    if (share__lt) {
-      filter.share["$lt"] = share__lt;
+    if (share__lte) {
+      filter.share["$lte"] = share__lte;
     }
-    if (share__ge) {
-      filter.share["$gte"] = share__ge;
+    if (share__gte) {
+      filter.share["$gte"] = share__gte;
     }
 
     const profiles = await ProfileModal.find(filter)
-      .populate("owner")
+      .populate("bidder")
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip(offset);

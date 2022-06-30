@@ -8,6 +8,11 @@ const profileSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    platform: {
+      type: String,
+      enum: ["freelancer", "upwork", "fiver"],
+      required: true,
+    },
     // $in
     bidder: {
       type: mongoose.Types.ObjectId,
