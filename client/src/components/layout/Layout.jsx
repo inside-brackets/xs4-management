@@ -13,8 +13,9 @@ const Layout = () => {
       render={(props) => (
         <div className={`layout`}>
           <Sidebar {...props} />
+          <TopNav />
+
           <div className="layout__content">
-            <TopNav />
             <div className="layout__content-main">
               <Routes />
             </div>

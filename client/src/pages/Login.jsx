@@ -11,7 +11,6 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import FormContainer from "../components/FormContainer";
-// import logo from "../assets/images/logo_login.png";
 import Message from "../components/Message";
 import { Login } from "../store/Actions/userAction";
 

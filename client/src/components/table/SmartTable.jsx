@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { ThreeDots } from "react-loader-spinner";
+import { Oval } from "react-loader-spinner";
 import Select from "react-select";
 import "./table.css";
 import { Row, Col, Form, Alert } from "react-bootstrap";
@@ -96,11 +96,13 @@ const Table = (props) => {
     bodyHtml = (
       <Row className="justify-content-center">
         <Col>
-          <ThreeDots
-            // type="MutatingDots"
-            color="#349eff"
-            height={100}
-            width={100}
+          <Oval
+            ariaLabel="loading-indicator"
+            height={50}
+            width={50}
+            strokeWidth={5}
+            color="black"
+            secondaryColor="grey"
           />
         </Col>
       </Row>

@@ -1,22 +1,13 @@
 .sidebar {
   min-width: var(--sidebar-width);
-  height: 100vh;
+  height: 80%;
   position: fixed;
   left: 0;
-  top: 0;
-  background-color: var(--main-bg);
-  box-shadow: var(--box-shadow);
-}
-
-.sidebar__logo {
-  height: 25vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebar__logo > img {
-  height: 200px;
+  bottom: 0;
+  background-color: whitesmoke;
+  box-shadow: rgba(127, 127, 127, 0.4) 8px -8px 20px;
+  z-index: 2;
+  border-top-right-radius: 50px;
 }
 
 .sidebar__item {
@@ -32,12 +23,13 @@
 }
 
 .sidebar__item-inner > i {
-  margin-right: 10px;
   font-size: 1.5rem;
+  position: relative;
 }
 
-.sidebar__item-inner > span {
+.sidebar__item-inner {
   text-transform: capitalize;
+  color: black;
 }
 
 .sidebar__item-inner:hover {
@@ -57,7 +49,7 @@
 .copyright {
   bottom: 0;
   position: absolute;
-  padding: 0 0 20px 28%;
+  padding: 0 0 10px 40px;
   font-size: large;
 }
 
