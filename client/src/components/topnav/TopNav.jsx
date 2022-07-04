@@ -1,68 +1,48 @@
 import React from "react";
 import "./topnav.css";
-import { Link } from "react-router-dom";
-import { Navbar, Container } from "react-bootstrap";
-
-import logo from "../../assets/images/logo_login.png";
-import Dropdown from "../dropdown/Dropdown";
-import user_image from "../../assets/images/anon_user.png";
-import user_menu from "../../assets/JsonData/user_menus.json";
-
-const curr_user = {
-  display_name: "user",
-  image: user_image,
-};
-
-const renderUserToggle = (user) => (
-  <div className="topnav__right-user">
-    <div className="topnav__right-user__image">
-      <img src={user.image} alt="" />
-    </div>
-    <div className="topnav__right-user__name">{user.display_name}</div>
-  </div>
-);
-
-const renderUserMenu = (item, index) => (
-  <Link to="/" key={index}>
-    <div className="notification-item">
-      <i className={item.icon}></i>
-      <span>{item.content}</span>
-    </div>
-  </Link>
-);
+import { useDispatch,useSelector } from "react-redux";
+import { Logout } from "../../store/Actions/userAction";
+import { Navbar,Container,NavDropdown,Nav } from "react-bootstrap";
+import { LinkContainer } from 'react-router-bootstrap';
 
 const Topnav = () => {
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
+  const dispatch = useDispatch();
+  const logoutHandler = () => {
+    dispatch(Logout());
+  };
   return (
-    <Navbar bg="dark" variant="light" sticky="top">
-      <Container style={{ width: "100vw" }}>
-        <Navbar.Brand href="/">
-          <img
-            alt=""
-            src={logo}
-            width="35"
-            height="35"
-            className="d-inline-block align-top"
-          />
-        </Navbar.Brand>
-        <Dropdown
-          customToggle={() => renderUserToggle(curr_user)}
-          contentData={user_menu}
-          renderItems={(item, index) => renderUserMenu(item, index)}
-        />
+    <header className="pt-3 header">
+    <Navbar collapseOnSelect expand='lg'>
+      <Container>
+        <LinkContainer to='/'>
+          <Navbar.Brand style={{
+            color:'black'
+          }}>  Xs4 Management</Navbar.Brand>
+        </LinkContainer>
+
+        <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+        <Navbar.Collapse id='responsive-navbar-nav'>
+          <Nav className='ms-auto'>
+            {userInfo && (
+              <>
+              <NavDropdown title={<span className="mx-2"><i className="bx bx-user px-4"></i>{ userInfo.name}</span>} id='basic-nav-dropdown'>
+                <LinkContainer to='/profile'>
+                  <NavDropdown.Item>Profile</NavDropdown.Item>
+                </LinkContainer>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={logoutHandler}>
+                  Logout
+                </NavDropdown.Item>
+              </NavDropdown>
+              </> )}
+          </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
-    // <div className="topnav">
-    //   <div className="topnav__right">
-    //     <div className="topnav__right-item">
-    //       {/* dropdown here */}
-    //       <Dropdown
-    //         customToggle={() => renderUserToggle(curr_user)}
-    //         contentData={user_menu}
-    //         renderItems={(item, index) => renderUserMenu(item, index)}
-    //       />
-    //     </div>
-    //   </div>
-    // </div>
+  </header>
   );
 };
 

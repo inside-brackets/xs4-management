@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-
+import { ToastContainer } from "react-toastify";
 import { Row, Col, Button } from "react-bootstrap";
 
 import MyModal from "../../components/modals/MyModal";
@@ -76,6 +76,7 @@ const User = () => {
         <div className="card__body">
           <Table
             key={rerenderTable}
+            title="Users"
             limit={10}
             headData={customerTableHead}
             renderHead={(item, index) => renderHead(item, index)}
@@ -110,6 +111,17 @@ const User = () => {
           }}
         />
       </MyModal>
+      <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
     </Row>
   );
 };

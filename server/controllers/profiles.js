@@ -15,7 +15,7 @@ export const createProfile = asyncHandler(async (req, res) => {
     res.json(createdProfile);
   } catch (error) {
     console.log(error);
-    res.send(error);
+    throw new Error(error.message);
   }
 });
 

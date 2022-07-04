@@ -9,8 +9,8 @@ import { Protected, isAdmin } from "../middlewares/authHandler.js";
 
 const router = express.Router();
 
-router.post("/", Protected, isAdmin, createProfile);
-router.put("/:id", Protected, isAdmin, updateProfile);
+router.post("/", createProfile);
+router.put("/:id", updateProfile);
 router.get("/:id", Protected, getProfile);
 router.post("/:limit/:offset", listProfiles);
 

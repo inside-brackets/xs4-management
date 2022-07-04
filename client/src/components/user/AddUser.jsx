@@ -52,8 +52,6 @@ const AddUser = ({ setShowModal }) => {
 
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
-      {/* {error ? <Alert variant="danger">{error}</Alert> : null} */}
-
       <Row className="my-2">
         <Form.Group as={Col} md="6">
           <Form.Label>User Name</Form.Label>
@@ -93,9 +91,19 @@ const AddUser = ({ setShowModal }) => {
         </Form.Group>
       </Row>
       <Row className="my-3">
-        <Row>
-          {/* {!defaultValue && <hr />} */}
-          {/* <h1>Company Info</h1> */}
+          <Form.Group as={Col} md="6">
+            <Form.Label>Basic Salary</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="Salary"
+              name="salary"
+              onChange={handleChange}
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              Please provide a valid Salary.
+            </Form.Control.Feedback>
+          </Form.Group>
           <Form.Group as={Col} md="6">
             <Form.Label>Role</Form.Label>
             <Form.Control
@@ -113,20 +121,6 @@ const AddUser = ({ setShowModal }) => {
               Please provide a valid Role.
             </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group as={Col} md="6">
-            <Form.Label>Basic Salary</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Salary"
-              name="salary"
-              onChange={handleChange}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              Please provide a valid Salary.
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Row>
       </Row>
 
       <Button

@@ -1,45 +1,21 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Card, Row, Button, Form, Col } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
+import { toast, ToastContainer } from "react-toastify";
+import Profiles from "../../components/Profiles";
 
 const customerTableHead = [
   "#",
-  "Username",
-  "Name",
-  "Salary",
-  "Role",
-  "Actions",
+  "Title",
+  "Paltform",
+  "Share",
+  ""
 ];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
-
-const renderBody = (item, index, currPage) => (
-  <tr key={index}>
-    <td>{index + 1 + currPage * 10}</td>
-    <td>{item.userName}</td>
-    <td>
-      {item.firstName && item.lastName
-        ? `${item.firstName} ${item.lastName}`
-        : "N/A"}
-    </td>
-    {/* <td>{formatter.format(item.salary)}</td> */}
-    <td>{item.role ?? "NA"}</td>
-    <td>
-      <div>
-        <a
-          // className="bx bx-window-open action-button"
-          // onClick={() => history.push(`/user/${item._id}`)}
-          href={`/users/${item._id}`}
-        >
-          View
-        </a>
-      </div>
-    </td>
-  </tr>
-);
 
 const UserDetail = () => {
   const [editFields, setEditFields] = useState(false);
@@ -47,8 +23,30 @@ const UserDetail = () => {
   const [state, setState] = useState({});
   const [loading, setLoading] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
+  const [defaultValue, setDefaultValue] = useState(null)
   const [showModal, setShowModal] = useState(false);
   const { id } = useParams();
+  const history = useHistory();
+  const renderBody = (item, index, currPage) => (
+    <tr key={index}>
+      <td>{index + 1 + currPage * 10}</td>
+      <td>{item.title}</td>
+      {/* <td>{formatter.format(item.salary)}</td> */}
+      <td>{item.platform ?? "NA"}</td>
+      <td>{item.share ?? "NA"}</td>
+      <td>
+        <div onClick={()=> {
+          setDefaultValue(item)
+          setShowModal(true)}}>
+           
+            View
+        
+        </div>
+      </td>
+    </tr>
+  );
+  
+
 
   useEffect(() => {
     const getUser = async () => {
@@ -69,8 +67,13 @@ const UserDetail = () => {
   };
   const handleSubmit = async () => {
     setLoading(true);
-    await axios.put(`${process.env.REACT_APP_BACKEND_URL}/users/${id}`, state);
+    const res = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/users/${id}`,
+      state
+    );
+    if (res.status === 200) toast.success("User Edit Sucessfully");
     setLoading(false);
+    setEditFields(false);
   };
   const handleReset = async () => {
     setLoading(false);
@@ -86,7 +89,7 @@ const UserDetail = () => {
   return (
     <Row className="mt-2">
       <Col md={1}>
-        <Button>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </Col>
       <Col md={11}>
         <Row>
@@ -224,8 +227,10 @@ const UserDetail = () => {
                 <Row className="my-5">
                   {!editFields ? (
                     <Button
-                      as={Col}
+                      className="p-2 m-3"
                       variant="outline-primary"
+                      as={Col}
+                      md={3}
                       onClick={() => setEditFields(true)}
                     >
                       Edit
@@ -233,7 +238,9 @@ const UserDetail = () => {
                   ) : (
                     <>
                       <Button
+                        className="p-2 m-3"
                         variant="success"
+                        md={3}
                         disabled={loading}
                         onClick={handleSubmit}
                         as={Col}
@@ -241,6 +248,8 @@ const UserDetail = () => {
                         Save
                       </Button>
                       <Button
+                        className="p-2 m-3"
+                        md={3}
                         variant="outline-danger"
                         as={Col}
                         onClick={() => setEditFields(false)}
@@ -254,7 +263,7 @@ const UserDetail = () => {
             </Card.Body>
           </Card>
         </Row>
-        <Row>
+        <Row className='mt-3'>
           <Col>
             <Button onClick={() => setShowModal(true)}>Add Profiles</Button>
           </Col>
@@ -265,6 +274,7 @@ const UserDetail = () => {
               <Table
                 key={rerenderTable}
                 limit={10}
+                title="Profiles"
                 headData={customerTableHead}
                 renderHead={(item, index) => renderHead(item, index)}
                 api={{
@@ -283,17 +293,23 @@ const UserDetail = () => {
       <MyModal
         size="lg"
         show={showModal}
-        heading="Add Profiles"
+        heading={`Create Profile For ${user?.userName}`}
         onClose={() => setShowModal(false)}
         style={{ width: "auto" }}
       >
-        {/* <AddUser
-          setShowModal={() => {
-            setAddUserModal(false);
-            setRerenderTable(Math.random());
-          }}
-        /> */}
+        <Profiles defaultValue={defaultValue} user={user} />
       </MyModal>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Row>
   );
 };

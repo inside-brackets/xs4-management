@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 import {
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
@@ -38,7 +39,7 @@ export const Login = (userName, password) => async (dispatch, getState) => {
   }
 };
 
-export const Register = (user) => async (dispatch, getState) => {
+export const Register = (user) => async (dispatch) => {
   try {
     dispatch({ type: USER_REGISTER_REQUEST });
 
@@ -56,11 +57,8 @@ export const Register = (user) => async (dispatch, getState) => {
 
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
+    toast.success("User Created Successfully")
 
-    // localStorage.setItem(
-    //   'userInfo',
-    //   JSON.stringify(getState().userRegister.userInfo)
-    // );
   } catch (error) {
     dispatch({
       type: USER_REGISTER_FAIL,

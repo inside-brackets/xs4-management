@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 import Dashboard from "../pages/Admin/Dashboard";
 import UserScreen from "../pages/Admin/User";
@@ -19,6 +20,17 @@ const Routes = () => {
       <Route path="*">
         <h1>Not found</h1>
       </Route>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Switch>
   ) : (
     role === "user" && (
@@ -29,6 +41,7 @@ const Routes = () => {
         <Route path="*">
           <h1>Not found</h1>
         </Route>
+
       </Switch>
     )
   );

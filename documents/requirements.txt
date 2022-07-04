@@ -1,9 +1,1 @@
-tables ki loading center krni
-table message fix
-edit, save, cancel buttons styling on detail page
-back button doesn't work
-logout
-show msg on save and show edit button
-navbar styling
-table styling on loading
-add user input styling
+when enter something on search height widht of tables chnages

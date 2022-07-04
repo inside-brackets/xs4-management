@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Oval } from "react-loader-spinner";
 import Select from "react-select";
 import "./table.css";
-import { Row, Col, Form, Alert } from "react-bootstrap";
+import { Row, Col, Form, Alert,Spinner } from "react-bootstrap";
 
 const makeFilter = (filter) => {
   let temp = {};
@@ -94,16 +94,13 @@ const Table = (props) => {
   let bodyHtml = null;
   if (loading) {
     bodyHtml = (
-      <Row className="justify-content-center">
-        <Col>
-          <Oval
-            ariaLabel="loading-indicator"
-            height={50}
-            width={50}
-            strokeWidth={5}
-            color="black"
-            secondaryColor="grey"
-          />
+      <Row>
+        <Col className="text-center">
+       <Spinner animation="border" variant="primary" style={{
+        height:'50px',
+        width:'50px'
+       }} />
+
         </Col>
       </Row>
     );
@@ -125,7 +122,7 @@ const Table = (props) => {
       >
         <Col>
           <Alert variant="danger" className="text-center text-capitalize m-3">
-            No {window.location.pathname.replace("/", "")} to show
+            No {props.title} to show
           </Alert>
         </Col>
       </Row>
