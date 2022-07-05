@@ -145,7 +145,7 @@ export const listProjects = asyncHandler(async (req, res) => {
 
     const totalProjects = await ProjectModal.find(filter);
 
-    res.status(200).json({ projects, total: totalProjects.length });
+    res.status(200).json({data: projects, length: totalProjects.length });
   } catch (error) {
     console.log(error);
     throw new Error(error.message);

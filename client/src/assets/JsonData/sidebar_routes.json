@@ -9,6 +9,11 @@
       "display_name": "Users",
       "route": "/users",
       "icon": "bx bx-category-alt"
+    },
+    {
+      "display_name": "Projects",
+      "route": "/projects",
+      "icon": "bx bx-category-alt"
     }
   ],
   "user": [

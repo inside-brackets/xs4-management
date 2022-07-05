@@ -6,6 +6,8 @@ import { ToastContainer } from "react-toastify";
 import Dashboard from "../pages/Admin/Dashboard";
 import UserScreen from "../pages/Admin/User";
 import UserDetailScreen from "../pages/Admin/UserDetail";
+import Projects from "../pages/Admin/Projects";
+import Project from "../components/project/AddProject";
 
 const Routes = () => {
   const { role } = useSelector((state) => state.userLogin.userInfo);
@@ -17,6 +19,8 @@ const Routes = () => {
       <Route path="/dashboard" exact component={Dashboard} />
       <Route path="/users" exact component={UserScreen} />
       <Route path="/users/:id" exact component={UserDetailScreen} />
+      <Route path="/projects" exact component={Projects} />
+      <Route path="/projects/project" exact component={Project} />
       <Route path="*">
         <h1>Not found</h1>
       </Route>

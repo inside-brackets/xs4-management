@@ -1,13 +1,13 @@
 .sidebar {
   min-width: var(--sidebar-width);
-  height: 80%;
+  height: 92%;
   position: fixed;
   left: 0;
   bottom: 0;
   background-color: whitesmoke;
   box-shadow: rgba(127, 127, 127, 0.4) 8px -8px 20px;
-  z-index: 2;
-  border-top-right-radius: 50px;
+  /* z-index: 2; */
+  /* border-top-right-radius: 50px; */
 }
 
 .sidebar__item {
