@@ -105,7 +105,7 @@ const AddProject = ({ setShowModal }) => {
           </Form.Group>
           <Form.Group as={Col} md="6">
             <Form.Label>Assignee</Form.Label>
-            <ReactSelect components={animatedComponents} isMulti />
+            <ReactSelect name="assignee" components={animatedComponents} isMulti />
           </Form.Group>
           <Form.Group as={Col} md="6">
             <Form.Label>Client Name</Form.Label>
@@ -123,7 +123,7 @@ const AddProject = ({ setShowModal }) => {
             <Form.Label>Project Type</Form.Label>
             <Form.Control
               as="select"
-              name="profile"
+              name="projectType"
               onChange={handleChange}
               required
             >
@@ -193,7 +193,7 @@ const AddProject = ({ setShowModal }) => {
               type="number"
               placeholder="Total Amount"
               name="totalAmount"
-              onChange={handleChange}
+            //   onChange={handleChange}
               required
             />
             <Form.Control.Feedback type="invalid">
@@ -205,7 +205,7 @@ const AddProject = ({ setShowModal }) => {
             <Form.Control
               type="number"
               placeholder="Total Amount"
-              name="totalAmount"
+              name="amountRecieved"
               onChange={handleChange}
               required
             />
@@ -218,7 +218,7 @@ const AddProject = ({ setShowModal }) => {
             <Form.Control
               type="date"
               placeholder="Total Amount"
-              name="totalAmount"
+              name="awardedAt"
               onChange={handleChange}
               required
             />
@@ -231,7 +231,7 @@ const AddProject = ({ setShowModal }) => {
             <Form.Control
               type="date"
               placeholder="Total Amount"
-              name="totalAmount"
+              name="closedAt"
               onChange={handleChange}
               required
             />
@@ -244,7 +244,7 @@ const AddProject = ({ setShowModal }) => {
             <Form.Control
               type="date"
               placeholder="Total Amount"
-              name="totalAmount"
+              name="deadlineAt"
               onChange={handleChange}
               required
             />
@@ -267,7 +267,7 @@ const AddProject = ({ setShowModal }) => {
                 <Form.Control
                   type="text"
                   placeholder="Client Name"
-                  name="clientName"
+                  name="recruiterName"
                   onChange={handleChange}
                   required
                 />
