@@ -9,9 +9,9 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "./assets/boxicons-2.0.7/css/boxicons.min.css";
 import "./assets/css/grid.css";
 import "./assets/css/theme.css";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import "./assets/css/index.css";
-import 'boxicons';
+// import 'boxicons';
 
 import App from "./App";
 
@@ -24,4 +24,5 @@ root.render(
         <App />
       </BrowserRouter>
     </React.StrictMode>
-  </Provider>);
+  </Provider>
+);

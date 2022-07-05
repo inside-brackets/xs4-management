@@ -1,1 +1,51 @@
-when enter something on search height widht of tables chnages
+-> when enter something on search height widht of tables chnages (faraz)
+-> table action icons (Faraz)
+-> table update on profile post (Ahmed)
+-> profile add/edit (Ahmad)
+    - modal check for unique profile title on typing
+    - disable submit button when form is incomplete
+    - loading submit button
+    - close modal on successful add/edit
+    - show error message on failed add/edit
+
+
+- ADMIN
+    - projects (faraz)
+        - view
+            all
+        - create
+            on different page not modal
+            - fields
+                *title (text input)
+                *profile (single select dropdown)
+                assignee (multislect select dropdown)
+                clientName (text input)
+                *projectType (single select dropdown)
+                *hasRecruiter (check box)
+                *recruiterName (text input, if hasRecruiter is checked)
+                *status (single select dropdown, default "new", if has assignee default is "open" and new cannot be selected)
+                *totalAmount (number)
+                amountDeductable(readOnly, totalAmount - (empShare + recruiter_cut))
+                netRecieveable(readOnly, totalAmount-amountDeductable)
+                amountRecieved(number,default value netRecieveable, show if status is "closed")
+                readOnly(readOnly, value= profile.Share)
+                awardedAt (date)
+                closedAt (date)
+                deadlineAt (date)
+
+        - detail
+            edit all fields
+    - reports
+        - view
+            all
+    - users
+        - view
+            all
+
+- USER
+    - projects
+        - view
+            assigned_to_me + created_by_me
+    - reports
+        - view
+            of projects i can view

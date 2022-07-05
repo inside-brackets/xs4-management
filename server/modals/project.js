@@ -34,10 +34,11 @@ const projectSchema = new mongoose.Schema(
     hasRecruiter: { type: Boolean }, // exact
     status: {
       type: String,
-      enum: ["new", "open", "underreview", "cancelled"],
+      enum: ["new", "open", "underreview", "cancelled", "closed"],
       required: true,
     }, // $in
     totalAmount: { type: Number }, // range
+    amountRecieved: { type: Number }, // range
     awardedAt: { type: Date }, // range
     closedAt: { type: Date }, // range
     deadlineAt: { type: Date }, // range
