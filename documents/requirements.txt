@@ -1,12 +1,8 @@
--> when enter something on search height widht of tables chnages (faraz)
--> table action icons (Faraz)
--> table update on profile post (Ahmed)
--> profile add/edit (Ahmad)
-    - modal check for unique profile title on typing
-    - disable submit button when form is incomplete
-    - loading submit button
-    - close modal on successful add/edit
-    - show error message on failed add/edit
+=> * with requried inputs projects
+=> breaks in page
+=> employee share 0 in satus change
+=> send assigne and empshare
+edit
 
 
 - ADMIN
@@ -24,8 +20,8 @@
                 *hasRecruiter (check box)
                  recruiterName (text input, if hasRecruiter is checked)
                 *status (single select dropdown, default "new", if has assignee default is "open" and new cannot be selected)
-                *totalAmount (number)
-                amountDeductable(readOnly, totalAmount - (empShare + recruiter_cut))
+                *totalAmount (number)                                                           
+                amountDeductable(readOnly,(empShare + recruiter_cut=> 0.10)*totalAmount)
                 netRecieveable(readOnly, totalAmount-amountDeductable)
                 amountRecieved(number,default value netRecieveable, show if status is "closed")
                 empShare(readOnly, value= profile.Share)

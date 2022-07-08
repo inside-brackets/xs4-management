@@ -43,7 +43,7 @@ const Projects = () => {
       <td>{formatter.format(item.totalAmount)}</td>
       <td>{item.status}</td>
       <td>
-        <ActionButton type="edit" />
+        <ActionButton onClick={() => history.push(`/projects/project/${item._id}`)} type="edit" />
       </td>
     </tr>
   );

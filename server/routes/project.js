@@ -9,9 +9,9 @@ import { Protected, isAdmin } from "../middlewares/authHandler.js";
 
 const router = express.Router();
 
-router.post("/", Protected, isAdmin, createProject);
-router.put("/:id", Protected, isAdmin, updateProject);
-router.get("/:id", Protected, getProject);
+router.post("/", createProject);
+router.put("/:id", updateProject);
+router.get("/:id", getProject);
 router.post("/:limit/:offset", listProjects);
 
 export default router;

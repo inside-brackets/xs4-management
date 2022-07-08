@@ -20,7 +20,7 @@ const Routes = () => {
       <Route path="/users" exact component={UserScreen} />
       <Route path="/users/:id" exact component={UserDetailScreen} />
       <Route path="/projects" exact component={Projects} />
-      <Route path="/projects/project" exact component={Project} />
+      <Route path="/projects/project/:id" exact component={Project} />
       <Route path="*">
         <h1>Not found</h1>
       </Route>

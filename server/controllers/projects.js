@@ -24,7 +24,7 @@ export const createProject = asyncHandler(async (req, res) => {
 // route: /projects/:id
 export const getProject = asyncHandler(async (req, res) => {
   try {
-    let project = await ProjectModal.findById(req.params.id);
+    let project = await ProjectModal.findById(req.params.id).populate('assignee profile');
 
     res.status(200);
 
@@ -42,7 +42,7 @@ export const updateProject = asyncHandler(async (req, res) => {
   try {
     let updatedProjects = await ProjectModal.findOneAndUpdate(
       { _id: req.params.id },
-      req.body,
+      { $set: req.body },
       { new: true, upsert: true }
     );
 
