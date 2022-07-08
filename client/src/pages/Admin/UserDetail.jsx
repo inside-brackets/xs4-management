@@ -7,14 +7,9 @@ import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
 import { toast, ToastContainer } from "react-toastify";
 import Profiles from "../../components/Profiles";
+import ActionButton from "../../components/UI/ActionButton";
 
-const customerTableHead = [
-  "#",
-  "Title",
-  "Paltform",
-  "Share",
-  ""
-];
+const customerTableHead = ["#", "Title", "Paltform", "Share", "actions"];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 
 const UserDetail = () => {
@@ -23,8 +18,9 @@ const UserDetail = () => {
   const [state, setState] = useState({});
   const [loading, setLoading] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
-  const [defaultValue, setDefaultValue] = useState(null)
+  const [defaultValue, setDefaultValue] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
   const { id } = useParams();
   const history = useHistory();
   const renderBody = (item, index, currPage) => (
@@ -35,18 +31,16 @@ const UserDetail = () => {
       <td>{item.platform ?? "NA"}</td>
       <td>{item.share ?? "NA"}</td>
       <td>
-        <div onClick={()=> {
-          setDefaultValue(item)
-          setShowModal(true)}}>
-           
-            View
-        
-        </div>
+        <ActionButton
+          type="edit"
+          onClick={() => {
+            setDefaultValue(item);
+            setShowModal(true);
+          }}
+        />
       </td>
     </tr>
   );
-  
-
 
   useEffect(() => {
     const getUser = async () => {
@@ -107,19 +101,10 @@ const UserDetail = () => {
                       name="userName"
                       defaultValue={user?.userName ?? ""}
                       onChange={handleChange}
-                      readOnly={!editFields}
+                      readOnly
                     />
                   </Form.Group>
-                  <Form.Group as={Col} md="4" sm="12">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="email"
-                      defaultValue={user?.email ?? ""}
-                      onChange={handleChange}
-                      readOnly={!editFields}
-                    />
-                  </Form.Group>
+
                   <Form.Group as={Col} md="4" sm="12">
                     <Form.Label>First Name</Form.Label>
                     <Form.Control
@@ -127,7 +112,7 @@ const UserDetail = () => {
                       name="firstName"
                       onChange={handleChange}
                       type="text"
-                      readOnly={!editFields}
+                      readOnly
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="4" sm="12">
@@ -137,7 +122,19 @@ const UserDetail = () => {
                       defaultValue={user?.lastName ?? ""}
                       onChange={handleChange}
                       type="text"
-                      readOnly={!editFields}
+                      readOnly
+                    />
+                  </Form.Group>
+                </Row>
+                <Row className="mt-2">
+                  <Form.Group as={Col} md="4" sm="12">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="email"
+                      defaultValue={user?.email ?? ""}
+                      onChange={handleChange}
+                      readOnly
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="4" sm="12">
@@ -147,7 +144,7 @@ const UserDetail = () => {
                       defaultValue={user?.contact ?? ""}
                       onChange={handleChange}
                       type="text"
-                      readOnly={!editFields}
+                      readOnly
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="4" sm="12">
@@ -157,9 +154,46 @@ const UserDetail = () => {
                       defaultValue={user?.address ?? ""}
                       onChange={handleChange}
                       type="text"
-                      readOnly={!editFields}
+                      readOnly
                     />
                   </Form.Group>
+                </Row>
+
+                <Row className="my-2">
+                  <h2>Bank Information</h2>
+                  <Form.Group as={Col} md="4" sm="12">
+                    <Form.Label>Bank Name</Form.Label>
+                    <Form.Control
+                      name="bank.name"
+                      onChange={handleChange}
+                      defaultValue={user?.bank?.name ?? ""}
+                      type="text"
+                      readOnly
+                    />
+                  </Form.Group>
+                  <Form.Group as={Col} md="4" sm="12">
+                    <Form.Label>Acc No</Form.Label>
+                    <Form.Control
+                      name="bank.account_no"
+                      onChange={handleChange}
+                      defaultValue={user?.bank?.account_no ?? ""}
+                      type="number"
+                      readOnly
+                    />
+                  </Form.Group>
+                  <Form.Group as={Col} md="4" sm="12">
+                    <Form.Label>Branch Code</Form.Label>
+                    <Form.Control
+                      name="bank.branch_code"
+                      onChange={handleChange}
+                      defaultValue={user?.bank?.branch_code ?? ""}
+                      type="number"
+                      readOnly
+                    />
+                  </Form.Group>
+                </Row>
+                <hr />
+                <Row className="mt-2">
                   <Form.Group as={Col} md="4" sm="12">
                     <Form.Label>Role</Form.Label>
                     <Form.Control
@@ -190,39 +224,6 @@ const UserDetail = () => {
                       Reset Password
                     </Button>
                   </Col>
-                </Row>
-                <Row className="my-2">
-                  <h2>Bank Information</h2>
-                  <Form.Group as={Col} md="4" sm="12">
-                    <Form.Label>Bank Name</Form.Label>
-                    <Form.Control
-                      name="bank.name"
-                      onChange={handleChange}
-                      defaultValue={user?.bank?.name ?? ""}
-                      type="text"
-                      readOnly={!editFields}
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4" sm="12">
-                    <Form.Label>Acc No</Form.Label>
-                    <Form.Control
-                      name="bank.account_no"
-                      onChange={handleChange}
-                      defaultValue={user?.bank?.account_no ?? ""}
-                      type="number"
-                      readOnly={!editFields}
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4" sm="12">
-                    <Form.Label>Branch Code</Form.Label>
-                    <Form.Control
-                      name="bank.branch_code"
-                      onChange={handleChange}
-                      defaultValue={user?.bank?.branch_code ?? ""}
-                      type="number"
-                      readOnly={!editFields}
-                    />
-                  </Form.Group>
                 </Row>
                 <Row className="my-5">
                   {!editFields ? (
@@ -263,9 +264,16 @@ const UserDetail = () => {
             </Card.Body>
           </Card>
         </Row>
-        <Row className='mt-3'>
+        <Row className="mt-3">
           <Col>
-            <Button onClick={() => setShowModal(true)}>Add Profiles</Button>
+            <Button
+              onClick={() => {
+                setDefaultValue(null);
+                setShowModal(true);
+              }}
+            >
+              Add Profiles
+            </Button>
           </Col>
         </Row>
         <Row>
@@ -279,7 +287,7 @@ const UserDetail = () => {
                 renderHead={(item, index) => renderHead(item, index)}
                 api={{
                   url: `${process.env.REACT_APP_BACKEND_URL}/profiles`,
-                  body: {},
+                  body: { bidder: id },
                 }}
                 filter={{}}
                 renderBody={(item, index, currPage) =>
@@ -297,7 +305,14 @@ const UserDetail = () => {
         onClose={() => setShowModal(false)}
         style={{ width: "auto" }}
       >
-        <Profiles defaultValue={defaultValue} user={user} />
+        <Profiles
+          defaultValue={defaultValue}
+          user={user}
+          onSuccess={() => {
+            setRerenderTable(Math.random());
+            setShowModal(false);
+          }}
+        />
       </MyModal>
       <ToastContainer
         position="top-right"

@@ -6,6 +6,7 @@ import { Row, Col, Button } from "react-bootstrap";
 import MyModal from "../../components/modals/MyModal";
 import Table from "../../components/table/SmartTable";
 import AddUser from "../../components/user/AddUser";
+import ActionButton from "../../components/UI/ActionButton";
 
 const customerTableHead = [
   "#",
@@ -46,13 +47,10 @@ const User = () => {
       <td>{item.role ?? "NA"}</td>
       <td>
         <div>
-          <a
-            // className="bx bx-window-open action-button"
-            // onClick={() => history.push(`/user/${item._id}`)}
-            href={`/users/${item._id}`}
-          >
-            View
-          </a>
+          <ActionButton
+            type="open"
+            onClick={() => history.push(`/users/${item._id}`)}
+          />
         </div>
       </td>
     </tr>
@@ -112,16 +110,16 @@ const User = () => {
         />
       </MyModal>
       <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Row>
   );
 };

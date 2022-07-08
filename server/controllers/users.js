@@ -116,7 +116,6 @@ export const getUser = asyncHandler(async (req, res) => {
 
     res.json(user);
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });

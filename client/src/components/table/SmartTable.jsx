@@ -72,7 +72,7 @@ const Table = (props) => {
         axios
           .post(
             `${props.api.url}/${props.limit}/${currPage * props.limit}`,
-            makeFilter({ ...filter, search })
+            makeFilter({ ...filter, search, ...props.api.body })
           )
           .then((res) => {
             const pageKey = `page${currPage}`;

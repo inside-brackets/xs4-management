@@ -91,36 +91,36 @@ const AddUser = ({ setShowModal }) => {
         </Form.Group>
       </Row>
       <Row className="my-3">
-          <Form.Group as={Col} md="6">
-            <Form.Label>Basic Salary</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Salary"
-              name="salary"
-              onChange={handleChange}
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              Please provide a valid Salary.
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group as={Col} md="6">
-            <Form.Label>Role</Form.Label>
-            <Form.Control
-              as="select"
-              name="role"
-              onChange={handleChange}
-              required
-            >
-              <option value={null}></option>
-              <option value="admin">Admin</option>
-              <option value="user">User</option>
-            </Form.Control>
+        <Form.Group as={Col} md="4">
+          <Form.Label>Basic Salary</Form.Label>
+          <Form.Control
+            type="number"
+            placeholder="Salary"
+            name="salary"
+            onChange={handleChange}
+            required
+          />
+          <Form.Control.Feedback type="invalid">
+            Please provide a valid Salary.
+          </Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group as={Col} md="4">
+          <Form.Label>Role</Form.Label>
+          <Form.Control
+            as="select"
+            name="role"
+            onChange={handleChange}
+            required
+          >
+            <option value={null}></option>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+          </Form.Control>
 
-            <Form.Control.Feedback type="invalid">
-              Please provide a valid Role.
-            </Form.Control.Feedback>
-          </Form.Group>
+          <Form.Control.Feedback type="invalid">
+            Please provide a valid Role.
+          </Form.Control.Feedback>
+        </Form.Group>
       </Row>
 
       <Button

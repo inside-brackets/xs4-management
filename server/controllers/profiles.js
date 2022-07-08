@@ -8,6 +8,11 @@ import ProfileModal from "../modals/profile.js";
 // route: /profiles
 export const createProfile = asyncHandler(async (req, res) => {
   try {
+    let profile = await ProfileModal.findOne({ title: req.body.title });
+    if (profile) {
+      res.status(500).send({ msg: "Title must be unique" });
+      return;
+    }
     let createdProfile = await ProfileModal.create(req.body);
 
     res.status(201);
@@ -76,7 +81,8 @@ export const listProfiles = asyncHandler(async (req, res) => {
     console.log("listProfiles", req.params.offset);
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
-    const { search, share__lte, share__gte, bidder, platform } = req.body;
+    const { search, searchExact, share__lte, share__gte, bidder, platform } =
+      req.body;
     let filter = { share: { $lte: 100, $gte: 0 } };
 
     if (platform?.length > 0) {
@@ -87,6 +93,9 @@ export const listProfiles = asyncHandler(async (req, res) => {
     }
     if (search) {
       filter.title = { $regex: search, $options: "i" };
+    }
+    if (searchExact) {
+      filter.title = searchExact;
     }
     if (share__lte) {
       filter.share["$lte"] = share__lte;
@@ -103,7 +112,7 @@ export const listProfiles = asyncHandler(async (req, res) => {
 
     const totalProfiles = await ProfileModal.find(filter);
 
-    res.status(200).json({data: profiles, length: totalProfiles.length });
+    res.status(200).json({ data: profiles, length: totalProfiles.length });
   } catch (error) {
     console.log(error);
     throw new Error(error.message);

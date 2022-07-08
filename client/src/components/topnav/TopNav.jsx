@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Logout } from "../../store/Actions/userAction";
 import { Navbar, Container, NavDropdown, Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
+import logo from "../../assets/images/logo.png";
 
 const Topnav = () => {
   const userLogin = useSelector((state) => state.userLogin);
@@ -22,8 +23,8 @@ const Topnav = () => {
               color: "black",
             }}
           >
-            {" "}
-            Xs4 Management
+            <img src={logo} height="30" className="m-1" />
+            Xs4 Financial
           </Navbar.Brand>
         </LinkContainer>
 
