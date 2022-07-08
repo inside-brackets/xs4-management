@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Oval } from "react-loader-spinner";
 import Select from "react-select";
 import "./table.css";
-import { Row, Col, Form, Alert,Spinner } from "react-bootstrap";
+import { Row, Col, Form, Alert, Spinner } from "react-bootstrap";
 
 const makeFilter = (filter) => {
   let temp = {};
@@ -37,6 +37,7 @@ const Table = (props) => {
   if (props.limit !== undefined) {
     let page = Math.floor(totalLength / Number(props.limit));
     pages = totalLength % Number(props.limit) === 0 ? page : page + 1;
+    console.log(pages, page, totalLength);
     range = [...Array(pages).keys()];
   }
   useEffect(() => {
@@ -96,11 +97,14 @@ const Table = (props) => {
     bodyHtml = (
       <Row>
         <Col className="text-center">
-       <Spinner animation="border" variant="primary" style={{
-        height:'50px',
-        width:'50px'
-       }} />
-
+          <Spinner
+            animation="border"
+            variant="primary"
+            style={{
+              height: "50px",
+              width: "50px",
+            }}
+          />
         </Col>
       </Row>
     );

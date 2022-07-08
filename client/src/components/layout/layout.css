@@ -3,9 +3,10 @@
 }
 
 .layout__content {
-  padding-left: calc(var(--sidebar-width) + 20px);
+  margin-left: calc(var(--sidebar-width) + 20px);
   background-color: var(--second-bg);
   min-height: 90vh;
+  max-width: calc(100vw - calc(var(--sidebar-width) + 30px));
 }
 
 .layout__content-main {

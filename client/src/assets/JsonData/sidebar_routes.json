@@ -3,17 +3,17 @@
     {
       "display_name": "Dashboard",
       "route": "/dashboard",
-      "icon": "bx bx-category-alt"
+      "icon": "bx bxs-dashboard"
     },
     {
       "display_name": "Users",
       "route": "/users",
-      "icon": "bx bx-category-alt"
+      "icon": "bx bxs-user-rectangle"
     },
     {
       "display_name": "Projects",
       "route": "/projects",
-      "icon": "bx bx-category-alt"
+      "icon": "bx bx-file"
     }
   ],
   "user": [

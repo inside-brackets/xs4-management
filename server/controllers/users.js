@@ -15,11 +15,13 @@ export const getToken = asyncHandler(async (req, res) => {
 
     if (!user) {
       res.status(404);
-      throw new Error("User not found");
+      res.send("No user found with this username");
+      return;
     }
     if (!(await user.matchPassword(password))) {
       res.status(401);
-      throw new Error("Email or password is incorrect");
+      res.send("Incorrect password.");
+      return;
     }
     res.json({
       _id: user._id,
@@ -58,9 +60,9 @@ export const createUser = asyncHandler(async (req, res) => {
 // Route:  /users/:id
 export const updateUser = asyncHandler(async (req, res) => {
   try {
-    if(req.body.password){
- const user =  await   User.findById(req.params.id)
-      req.body.password = user.hashPassword()
+    if (req.body.password) {
+      const user = await User.findById(req.params.id);
+      req.body.password = user.hashPassword();
     }
     let updatedUser = await User.findOneAndUpdate(
       { _id: req.params.id },

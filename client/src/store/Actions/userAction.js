@@ -29,11 +29,12 @@ export const Login = (userName, password) => async (dispatch, getState) => {
       JSON.stringify(getState().userLogin.userInfo)
     );
   } catch (error) {
+    console.log(error);
     dispatch({
       type: USER_LOGIN_FAIL,
       payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
+        error.response && error.response.data
+          ? error.response.data
           : error.message,
     });
   }
@@ -57,8 +58,7 @@ export const Register = (user) => async (dispatch) => {
 
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
-    toast.success("User Created Successfully")
-
+    toast.success("User Created Successfully");
   } catch (error) {
     dispatch({
       type: USER_REGISTER_FAIL,
