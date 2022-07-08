@@ -83,6 +83,17 @@ const Profiles = ({ user,defaultValue }) => {
               type="number"
             />
           </Form.Group>
+          <Form.Group as={Col} md="6">
+            <Form.Label>Platform Fee</Form.Label>
+            <Form.Control
+              placeholder="Plaform Fee"
+              required
+              name="platformFee"
+              defaultValue={defaultValue ? defaultValue.platformFee: null}
+              onChange={handleChange}
+              type="number"
+            />
+          </Form.Group>
           <Row className="mt-3">
             <Col md="6">
               <Button type="submit">Submit</Button>
