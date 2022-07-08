@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Card, Row, Button, Form, Col } from "react-bootstrap";
+import { Card, Row, Button, Form, Col, Spinner } from "react-bootstrap";
 import { useParams, useHistory } from "react-router-dom";
 
 import Table from "../../components/table/SmartTable";
@@ -70,13 +70,15 @@ const UserDetail = () => {
     setEditFields(false);
   };
   const handleReset = async () => {
-    setLoading(false);
+    setLoading(true);
+    const newPass = "12345";
     await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/users/password/${id}`,
       {
-        password: "12345",
+        password: newPass,
       }
     );
+    toast.success(`Password set to: ${newPass}`);
     setLoading(false);
   };
 
@@ -221,6 +223,15 @@ const UserDetail = () => {
                       onClick={handleReset}
                     >
                       <i className="bx bx-reset"></i>
+                      {loading && (
+                        <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      )}
                       Reset Password
                     </Button>
                   </Col>
@@ -246,6 +257,15 @@ const UserDetail = () => {
                         onClick={handleSubmit}
                         as={Col}
                       >
+                        {loading && (
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        )}
                         Save
                       </Button>
                       <Button

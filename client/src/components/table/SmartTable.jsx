@@ -37,7 +37,6 @@ const Table = (props) => {
   if (props.limit !== undefined) {
     let page = Math.floor(totalLength / Number(props.limit));
     pages = totalLength % Number(props.limit) === 0 ? page : page + 1;
-    console.log(pages, page, totalLength);
     range = [...Array(pages).keys()];
   }
   useEffect(() => {
@@ -177,7 +176,6 @@ const Table = (props) => {
               </>
             );
           }
-          console.log(bodyData["page0"]);
 
           return (
             <Col md={3} className="mb-2">

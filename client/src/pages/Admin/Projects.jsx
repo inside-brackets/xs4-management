@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { Row, Col, Button } from "react-bootstrap";
+import ActionButton from "../../components/UI/ActionButton";
 
 import Table from "../../components/table/SmartTable";
+import axios from "axios";
 
 const customerTableHead = [
   "#",
-  "Username",
-  "Name",
-  "Salary",
-  "Role",
+  "Title",
+  "Profile",
+  "Platform",
+  "Total Amount",
+  "Status",
   "Actions",
 ];
 
@@ -26,36 +29,47 @@ var formatter = new Intl.NumberFormat("en-US", {
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 
 const Projects = () => {
-  const [addUserModal, setAddUserModal] = useState(false);
-  const [rerenderTable, setRerenderTable] = useState(null);
+  const [users, setUsers] = useState(null);
+  const [profiles, setProfiles] = useState(null);
 
   const history = useHistory();
 
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * 10}</td>
-      <td>{item.userName}</td>
+      <td>{item.title}</td>
+      <td>{item.profile.title}</td>
+      <td>{item.profile.platform}</td>
+      <td>{formatter.format(item.totalAmount)}</td>
+      <td>{item.status}</td>
       <td>
-        {item.firstName && item.lastName
-          ? `${item.firstName} ${item.lastName}`
-          : "N/A"}
-      </td>
-      <td>{formatter.format(item.salary)}</td>
-      <td>{item.role ?? "NA"}</td>
-      <td>
-        <div>
-          <a
-            // className="bx bx-window-open action-button"
-            // onClick={() => history.push(`/user/${item._id}`)}
-            href={`/users/${item._id}`}
-          >
-            View
-          </a>
-        </div>
+        <ActionButton type="edit" />
       </td>
     </tr>
   );
 
+  useEffect(() => {
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/users/1000/0`, {})
+      .then((res) => {
+        const userOptions = res.data.data.map((user) => ({
+          label: user.userName,
+          value: user._id,
+        }));
+
+        setUsers(userOptions);
+      });
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`, {})
+      .then((res) => {
+        const profileOptions = res.data.data.map((profile) => ({
+          label: profile.title,
+          value: profile._id,
+        }));
+
+        setProfiles(profileOptions);
+      });
+  }, []);
   return (
     <Row>
       <Row className="m-3">
@@ -63,7 +77,7 @@ const Projects = () => {
         <Col md={5}></Col>
         <Col md={4}>
           <Button
-            onClick={()=>history.push('/projects/project')}
+            onClick={() => history.push("/projects/project")}
             style={{ float: "right" }}
           >
             Add Project
@@ -73,7 +87,6 @@ const Projects = () => {
       <div className="card">
         <div className="card__body">
           <Table
-            key={rerenderTable}
             title="Projects"
             limit={10}
             headData={customerTableHead}
@@ -82,12 +95,23 @@ const Projects = () => {
               url: `${process.env.REACT_APP_BACKEND_URL}/projects`,
               body: {},
             }}
-            placeholder={"User Name"}
+            placeholder={"title"}
             filter={{
-              role: [
-                { label: "Admin", value: "admin" },
-                { label: "User", value: "user" },
+              status: [
+                { label: "New", value: "new" },
+                { label: "Open", value: "open" },
+                { label: "Under Review", value: "underreview" },
+                { label: "Closed", value: "closed" },
+                { label: "Cancelled", value: "cancelled" },
               ],
+              platform: [
+                { label: "Freelancer", value: "freelancer" },
+                { label: "Upwork", value: "upwork" },
+                { label: "Fiver", value: "fiver" },
+              ],
+              bidder: users,
+              assignee: users,
+              profile: profiles,
             }}
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
@@ -96,16 +120,16 @@ const Projects = () => {
         </div>
       </div>
       <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Row>
   );
 };

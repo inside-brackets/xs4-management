@@ -40,14 +40,11 @@ const AddProject = ({ setShowModal }) => {
     }
   };
 
-  console.log(state, selectedProfile);
-
   useEffect(() => {
     if (profiles.length === 0) {
       axios
         .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`)
         .then((res) => {
-          console.log(res.data);
           setProfiles(res.data.data);
         });
     }
@@ -55,7 +52,6 @@ const AddProject = ({ setShowModal }) => {
       axios
         .post(`${process.env.REACT_APP_BACKEND_URL}/users/100/0`)
         .then((res) => {
-          console.log(res.data);
           setUsers(
             res.data.data.map((user) => {
               return {

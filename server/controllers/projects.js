@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 
 import ProjectModal from "../modals/project.js";
+import ProfileModal from "../modals/profile.js";
 
 // Access: Private
 // Method: POST
@@ -90,29 +91,50 @@ export const listProjects = asyncHandler(async (req, res) => {
       closedAt__lt,
       deadlineAt__gte,
       deadlineAt__lt,
+      platform,
+      bidder,
     } = req.body;
     let filter = {};
+    let profiles = [];
 
     if (search) {
-      filter["$or"] = [
-        { title: { $regex: search, $options: "i" } },
-        { clientName: { $regex: search, $options: "i" } },
-        { recruiterName: { $regex: search, $options: "i" } },
-      ];
+      filter["$or"] = [{ title: { $regex: search, $options: "i" } }];
     }
-    if (profile) {
-      filter.profile = { $in: profile };
-    }
-    if (assignee) {
+
+    if (assignee && assignee.length !== 0) {
       filter.assignee = { $in: assignee };
     }
-    if (projectType) {
+    if (projectType && projectType.length !== 0) {
       filter.projectType = { $in: projectType };
+    }
+
+    if (platform && platform.length !== 0) {
+      profiles = await ProfileModal.find({
+        platform: { $in: platform },
+      });
+      filter.profile = { $in: profiles };
+    }
+    if (bidder && bidder.length !== 0) {
+      if (profiles.length !== 0) {
+        profiles = await ProfileModal.find({
+          _id: { $in: profiles },
+          bidder: { $in: bidder },
+        });
+      } else {
+        profiles = await ProfileModal.find({
+          bidder: { $in: bidder },
+        });
+      }
+
+      filter.profile = { $in: profiles };
+    }
+    if (profile && profile.length !== 0) {
+      filter.profile = { $in: [...profile, ...profiles] };
     }
     if (hasRecruiter) {
       filter.hasRecruiter = hasRecruiter;
     }
-    if (status) {
+    if (status && status.length !== 0) {
       filter.status = { $in: status };
     }
     if (totalAmount__gte && totalAmount__lt) {
@@ -136,6 +158,7 @@ export const listProjects = asyncHandler(async (req, res) => {
         $lt: new Date(deadlineAt__lt),
       };
     }
+    console.log(filter);
 
     const projects = await ProjectModal.find(filter)
       .populate("assignee profile")

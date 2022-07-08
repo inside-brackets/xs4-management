@@ -28,7 +28,6 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (userInfo) {
-      console.log(redirect);
       if (redirect === "admin") {
         if (userInfo.isAdmin) {
           history.push(redirect);
