@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { Row, Col, Button } from "react-bootstrap";
-import ActionButton from "../../components/UI/ActionButton";
-
-import Table from "../../components/table/SmartTable";
+import { Row, Col, Button, Badge } from "react-bootstrap";
 import axios from "axios";
+
+import ActionButton from "../../components/UI/ActionButton";
+import Table from "../../components/table/SmartTable";
+
+import status_map from "../../assets/JsonData/project_status_map.json";
 
 const customerTableHead = [
   "#",
@@ -41,9 +43,16 @@ const Projects = () => {
       <td>{item.profile.title}</td>
       <td>{item.profile.platform}</td>
       <td>{formatter.format(item.totalAmount)}</td>
-      <td>{item.status}</td>
       <td>
-        <ActionButton onClick={() => history.push(`/projects/project/${item._id}`)} type="edit" />
+        <h5>
+          <Badge bg={status_map[item.status]}>{item.status}</Badge>
+        </h5>
+      </td>
+      <td>
+        <ActionButton
+          onClick={() => history.push(`/projects/project/${item._id}`)}
+          type="edit"
+        />
       </td>
     </tr>
   );

@@ -1,48 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form, Card } from "react-bootstrap";
-import { useSelector } from "react-redux";
 import axios from "axios";
 import ReactSelect from "react-select";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
+import { useHistory } from "react-router-dom";
 
-const AddProject = ({ setShowModal }) => {
+const AddProject = () => {
   const [validated, setValidated] = useState(false);
   const [state, setState] = useState({
     hasRecruiter: false,
     totalAmount: 0,
     netRecieveable: 0,
+    status: "new",
   });
   const [profiles, setProfiles] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [users, setUsers] = useState([]);
   const [assignee, setAssignee] = useState([]);
-  const userRegister = useSelector((state) => state.userRegister);
-  const [defaultValue, setDefaultValue] = useState(null);
+  const [empShare, setEmpShare] = useState(0);
+
+  const history = useHistory();
+
   const [loading, setLoading] = useState(false);
-  const { error } = userRegister;
+
   const { id } = useParams();
+
   const handleChange = (evt) => {
     console.log(evt);
     const value = evt.target.value;
     const name = evt.target.name;
     console.log("name value", name, value);
+
     if (name === "profile") {
       setSelectedProfile(profiles.find((pro) => pro._id === value));
     }
     if (name === "hasRecruiter") {
-      setState({
-        ...state,
-        hasRecruiter: !state.hasRecruiter,
+      setState((prev) => {
+        return {
+          ...prev,
+          hasRecruiter: !state.hasRecruiter,
+        };
       });
     } else {
-      setState({
-        ...state,
+      setState((prev) => ({
+        ...prev,
         [name]: value,
-      });
+      }));
     }
   };
+  console.log(state);
 
   useEffect(() => {
     if (id) {
@@ -50,56 +58,59 @@ const AddProject = ({ setShowModal }) => {
       axios
         .get(`${process.env.REACT_APP_BACKEND_URL}/projects/${id}`)
         .then((res) => {
-          setDefaultValue(res.data);
-          setState(pre=> ({...pre,totalAmount: res.data.totalAmount,hasRecruiter:res.data.hasRecruiter }));
+          const tempProfile = res.data;
+          setSelectedProfile(res.data.profile);
+          tempProfile.profile = tempProfile.profile._id;
+          setState((prev) => ({ ...prev, ...res.data }));
           setLoading(false);
         });
     }
-    if (profiles.length === 0) {
-      axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`)
-        .then((res) => {
-          setProfiles(res.data.data);
-        });
-    }
-    if (users.length === 0) {
-      axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/users/100/0`)
-        .then((res) => {
-          setUsers(
-            res.data.data.map((user) => {
-              return {
-                value: user._id,
-                label: user.userName,
-              };
-            })
-          );
-        });
-    }
-  }, [profiles.length, users.length,id]);
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`)
+      .then((res) => {
+        setProfiles(res.data.data);
+      });
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/users/100/0`)
+      .then((res) => {
+        setUsers(
+          res.data.data.map((user) => {
+            return {
+              value: user._id,
+              label: user.userName,
+            };
+          })
+        );
+      });
+  }, [id]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     setValidated(true);
-    if (form.checkValidity() === true) {
-      if (defaultValue) {
-        const res = await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/projects/${defaultValue._id}`,
-          state
-        );
-        if(res.status === 200) toast.success("Project Updated Successfully")
-      } else {
-        if (!state.status) {
-          state.status = assignee.length > 0 ? "open" : "new";
-        }
-        state.netRecieveable = state.totalAmount - amountDeducted();
-        state.assignee = assignee.map((item) => item.value);
-       const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/projects/`,
-          state
-        );
 
+    if (form.checkValidity() === false) {
+      return;
+    }
+
+    state.assignee = assignee.map((item) => item.value);
+    console.log(state);
+
+    if (id) {
+      const res = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/projects/${id}`,
+        state
+      );
+      if (res.status === 200) toast.success("Project Updated Successfully");
+    } else {
+      state.netRecieveable = state.totalAmount - amountDeducted();
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/projects/`,
+        state
+      );
+      if (res.status === 201) {
+        toast.success("Project Created Successfully");
+        history.push("/projects");
       }
     }
   };
@@ -151,13 +162,23 @@ const AddProject = ({ setShowModal }) => {
     } else {
       amtDec = platformFee * state.totalAmount;
     }
-    return amtDec;
+    return Math.round(amtDec * 100) / 100;
   };
 
-  const employeeShare = () => {
+  useEffect(() => {
     let share = selectedProfile ? selectedProfile.share / 100 : 0;
-    if (state.status === "closed") return share * state.totalAmount;
+
+    if (state.status === "closed") setEmpShare(share * state.totalAmount);
+    else setEmpShare(0);
+  }, [state.status]);
+
+  const changeAssignee = (value) => {
+    if (value.length !== 0 && state.status === "new") {
+      setState((prev) => ({ ...prev, status: "open" }));
+    }
+    setAssignee(value);
   };
+
   return (
     <Card>
       {" "}
@@ -186,7 +207,7 @@ const AddProject = ({ setShowModal }) => {
                   name="title"
                   onChange={handleChange}
                   type="text"
-                  defaultValue={defaultValue && defaultValue.title}
+                  value={state.title}
                   placeholder="Enter title"
                   required
                 />
@@ -206,17 +227,12 @@ const AddProject = ({ setShowModal }) => {
                   as="select"
                   name="profile"
                   onChange={handleChange}
+                  value={state.profile ?? ""}
                   required
                 >
-                  {defaultValue ? (
-                    <option value={defaultValue.profile._id}>
-                      {defaultValue.profile.title}
-                    </option>
-                  ) : (
-                    <option key={"initial"} value="">
-                      Select-Profile
-                    </option>
-                  )}
+                  <option key="initial" value="">
+                    Select-Profile
+                  </option>
                   {profiles.map((profile, index) => {
                     return (
                       <option key={index} value={profile._id}>
@@ -234,15 +250,16 @@ const AddProject = ({ setShowModal }) => {
                 <Form.Label>Assignee</Form.Label>
                 <ReactSelect
                   defaultValue={
-                    defaultValue &&
-                    defaultValue.assignee.map((item) => {
-                      return { value: item._id, label: item.userName };
-                    })
+                    state.assignee
+                      ? state.assignee.map((item) => {
+                          return { value: item._id, label: item.userName };
+                        })
+                      : []
                   }
                   isMulti
                   name="assignee"
                   options={users}
-                  onChange={setAssignee}
+                  onChange={changeAssignee}
                   className="basic-multi-select"
                   classNamePrefix="select"
                 />
@@ -254,7 +271,7 @@ const AddProject = ({ setShowModal }) => {
                 <Form.Label>Client Name</Form.Label>
                 <Form.Control
                   type="text"
-                  defaultValue={defaultValue && defaultValue.clientName}
+                  value={state.clientName}
                   placeholder="Client Name"
                   name="clientName"
                   onChange={handleChange}
@@ -278,17 +295,12 @@ const AddProject = ({ setShowModal }) => {
                   as="select"
                   name="projectType"
                   onChange={handleChange}
+                  value={state.projectType ?? ""}
                   required
                 >
-                  {defaultValue ? (
-                    <option value={defaultValue.projectType}>
-                      {defaultValue.projectType}
-                    </option>
-                  ) : (
-                    <option key="initial" value="">
-                      Select Project Type
-                    </option>
-                  )}
+                  <option key="initial" value="">
+                    Select Project Type
+                  </option>
                   {projectTypeOptions.map((item, index) => (
                     <option key={index} value={item}>
                       {item}
@@ -303,7 +315,7 @@ const AddProject = ({ setShowModal }) => {
 
               <Form.Group as={Col} md="4">
                 <Form.Label>
-                  Status{" "}
+                  Status
                   <span
                     style={{
                       color: "red",
@@ -316,16 +328,10 @@ const AddProject = ({ setShowModal }) => {
                   as="select"
                   name="status"
                   onChange={handleChange}
-                  defaultValue={
-                    defaultValue
-                      ? defaultValue.status
-                      : assignee.length > 0
-                      ? "open"
-                      : "new"
-                  }
+                  value={state.status}
                   required
                 >
-                  {assignee.length < 1 && <option value="new">New</option>}
+                  {assignee?.length === 0 && <option value="new">New</option>}
                   <option value="open">Open</option>
                   <option value="underreview">Underreview</option>
                   <option value="cancelled">Cancelled</option>
@@ -342,9 +348,8 @@ const AddProject = ({ setShowModal }) => {
               <Form.Group className="mt-4" as={Col} md="2">
                 <Form.Check
                   type="checkbox"
-                  // id={`default-${type}`}
                   name="hasRecruiter"
-                  defaultChecked={defaultValue && defaultValue.hasRecruiter}
+                  checked={state.hasRecruiter}
                   label={`Has Recruiter`}
                   onChange={handleChange}
                 />
@@ -357,7 +362,7 @@ const AddProject = ({ setShowModal }) => {
                     placeholder="Recruiter Name"
                     name="recruiterName"
                     onChange={handleChange}
-                    defaultValue={defaultValue && defaultValue.recruiterName}
+                    value={state.recruiterName}
                     required
                   />
                   <Form.Control.Feedback type="invalid">
@@ -383,7 +388,7 @@ const AddProject = ({ setShowModal }) => {
                   type="number"
                   placeholder="Total Amount"
                   name="totalAmount"
-                  defaultValue={defaultValue && defaultValue.totalAmount}
+                  value={state.totalAmount}
                   onChange={handleChange}
                   required
                 />
@@ -392,7 +397,7 @@ const AddProject = ({ setShowModal }) => {
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
-                <Form.Label>Amount Deductable</Form.Label>
+                <Form.Label>Amount Deducted</Form.Label>
                 <Form.Control
                   type="number"
                   placeholder="Total Amount"
@@ -438,9 +443,8 @@ const AddProject = ({ setShowModal }) => {
                 <Form.Control
                   type="number"
                   placeholder="Employee Share"
-                  // onChange={handleChange}
                   readOnly
-                  value={employeeShare()}
+                  value={empShare}
                 />
                 <Form.Control.Feedback type="invalid">
                   Please provide a valid password.
@@ -455,10 +459,7 @@ const AddProject = ({ setShowModal }) => {
                 <Form.Control
                   type="date"
                   placeholder="Awarded At"
-                  defaultValue={
-                    defaultValue &&
-                    moment(defaultValue.awardedAt).format("YYYY-MM-DD")
-                  }
+                  value={moment(state.awardedAt).format("YYYY-MM-DD")}
                   name="awardedAt"
                   onChange={handleChange}
                   required
@@ -471,10 +472,9 @@ const AddProject = ({ setShowModal }) => {
                 <Form.Label>Closed At</Form.Label>
                 <Form.Control
                   type="date"
-                  defaultValue={
-                    defaultValue &&
-                    defaultValue.closedAt &&
-                    moment(defaultValue.closedAt).format("YYYY-MM-DD")
+                  value={
+                    state.closedAt &&
+                    moment(state.closedAt).format("YYYY-MM-DD")
                   }
                   placeholder="Closed At"
                   name="closedAt"
@@ -489,10 +489,9 @@ const AddProject = ({ setShowModal }) => {
                 <Form.Control
                   type="date"
                   placeholder="Deadline At"
-                  defaultValue={
-                    defaultValue &&
-                    defaultValue.deadlineAt &&
-                    moment(defaultValue.deadlineAt).format("YYYY-MM-DD")
+                  value={
+                    state.deadlineAt &&
+                    moment(state.deadlineAt).format("YYYY-MM-DD")
                   }
                   name="deadlineAt"
                   onChange={handleChange}
@@ -504,8 +503,8 @@ const AddProject = ({ setShowModal }) => {
             </Row>
           </Row>
         )}
-        <Button className="p-2 m-3" variant="success" md={3} type="submit">
-          Submit
+        <Button className="m-3" variant="success" md={4} type="submit">
+          {id ? "Update" : "Create"}
         </Button>
       </Form>
       <ToastContainer />

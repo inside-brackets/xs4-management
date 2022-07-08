@@ -15,7 +15,14 @@ const Topnav = () => {
     dispatch(Logout());
   };
   return (
-    <Navbar collapseOnSelect expand="lg" variant="dark" bg="dark" sticky="top">
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      variant="dark"
+      bg="dark"
+      sticky="top"
+      style={{ color: "white" }}
+    >
       <Container style={{ maxWidth: "100%" }}>
         <LinkContainer to="/">
           <Navbar.Brand

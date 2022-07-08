@@ -39,6 +39,7 @@ const projectSchema = new mongoose.Schema(
     }, // $in
     totalAmount: { type: Number }, // range
     amountRecieved: { type: Number }, // range
+    empShare: { type: Number }, // range
     awardedAt: { type: Date }, // range
     closedAt: { type: Date }, // range
     deadlineAt: { type: Date }, // range
