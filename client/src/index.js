@@ -11,7 +11,7 @@ import "./assets/css/grid.css";
 import "./assets/css/theme.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./assets/css/index.css";
-// import 'boxicons';
+import "./index.css";
 
 import App from "./App";
 

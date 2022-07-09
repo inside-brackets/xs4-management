@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Button, Form, Card } from "react-bootstrap";
+import { Row, Col, Button, Form, Card, Spinner } from "react-bootstrap";
 import axios from "axios";
 import ReactSelect from "react-select";
 import { useParams } from "react-router-dom";
@@ -7,34 +7,65 @@ import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import { useHistory } from "react-router-dom";
 
+const projectTypeOptions = [
+  "BP",
+  "FM",
+  "PD",
+  "BP + FM",
+  "BP + PD",
+  "FM + PD",
+  "BP + FM + PD",
+  "legal contract",
+  "assignment",
+  "company profile",
+  "presentation",
+  "other graphics",
+  "SOP + Policies",
+  "bookkeeping",
+  "excel tamplets",
+  "market research",
+  "market plan",
+  "proposal",
+];
+
 const AddProject = () => {
   const [validated, setValidated] = useState(false);
   const [state, setState] = useState({
     hasRecruiter: false,
     totalAmount: 0,
-    netRecieveable: 0,
     status: "new",
   });
-  const [profiles, setProfiles] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
-  const [users, setUsers] = useState([]);
   const [assignee, setAssignee] = useState([]);
-  const [empShare, setEmpShare] = useState(0);
 
-  const history = useHistory();
+  // invoice calculation states
+  const [netRecieveable, setNetRecieveable] = useState(0);
+  const [amountDeducted, setAmountDeducted] = useState(0);
 
+  // dropdown options
+  const [profiles, setProfiles] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  // behavior states
+  const [revertState, setRevertState] = useState(null);
+  const [editAble, setEditAble] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
+  const history = useHistory();
 
   const { id } = useParams();
 
   const handleChange = (evt) => {
-    console.log(evt);
     const value = evt.target.value;
     const name = evt.target.name;
-    console.log("name value", name, value);
 
     if (name === "profile") {
       setSelectedProfile(profiles.find((pro) => pro._id === value));
+    }
+    if (name === "status" && value === "closed") {
+      // remove assigne & set closed at
+      setAssignee([]);
+      setState((prev) => ({ ...prev, closedAt: new Date() }));
     }
     if (name === "hasRecruiter") {
       setState((prev) => {
@@ -50,18 +81,27 @@ const AddProject = () => {
       }));
     }
   };
-  console.log(state);
 
+  const changeAssignee = (value) => {
+    if (value.length !== 0 && state.status === "new") {
+      setState((prev) => ({ ...prev, status: "open" }));
+    }
+    setAssignee(value);
+  };
+
+  // set values
   useEffect(() => {
     if (id) {
       setLoading(true);
       axios
         .get(`${process.env.REACT_APP_BACKEND_URL}/projects/${id}`)
         .then((res) => {
-          const tempProfile = res.data;
-          setSelectedProfile(res.data.profile);
-          tempProfile.profile = tempProfile.profile._id;
-          setState((prev) => ({ ...prev, ...res.data }));
+          const tempProject = res.data;
+          setSelectedProfile(tempProject.profile);
+          setIsClosed(tempProject.status === "closed");
+
+          tempProject.profile = tempProject.profile._id;
+          setState((prev) => ({ ...prev, ...tempProject }));
           setLoading(false);
         });
     }
@@ -102,6 +142,7 @@ const AddProject = () => {
         state
       );
       if (res.status === 200) toast.success("Project Updated Successfully");
+      setEditAble(false);
     } else {
       state.netRecieveable = state.totalAmount - amountDeducted();
       const res = await axios.post(
@@ -114,45 +155,13 @@ const AddProject = () => {
       }
     }
   };
-
-  const projectTypeOptions = [
-    "BP",
-    "FM",
-    "PD",
-    "BP + FM",
-    "BP + PD",
-    "FM + PD",
-    "BP + FM + PD",
-    "legal contract",
-    "assignment",
-    "company profile",
-    "presentation",
-    "other graphics",
-    "SOP + Policies",
-    "bookkeeping",
-    "excel tamplets",
-    "market research",
-    "market plan",
-    "proposal",
-  ];
-  const amountRecieved = () => {
-    let amountRec = 0;
-    if (state.status === "open") {
-      amountRec = 0;
-    } else if (state.status === "closed") {
-      if (state.hasRecruiter) {
-        amountRec = state.totalAmount * 0.85;
-      } else {
-        amountRec = state.totalAmount - amountDeducted();
-      }
-    }
-    return amountRec;
-  };
-
-  const amountDeducted = () => {
-    let amtDec;
-    let platformFee = selectedProfile ? selectedProfile.platformFee / 100 : 0.1;
-    let recruiterFee = 0.05;
+  // calculate amount deducted
+  // calculate amount recieved and employee share
+  useEffect(() => {
+    let amtDec = 0;
+    let netRec = 0;
+    var platformFee = selectedProfile ? selectedProfile.platformFee / 100 : 0.1;
+    var recruiterFee = 0.05;
     if (state.hasRecruiter) {
       if (state.status === "closed") {
         amtDec = (platformFee + recruiterFee) * state.totalAmount;
@@ -162,39 +171,54 @@ const AddProject = () => {
     } else {
       amtDec = platformFee * state.totalAmount;
     }
-    return Math.round(amtDec * 100) / 100;
-  };
 
-  useEffect(() => {
-    let share = selectedProfile ? selectedProfile.share / 100 : 0;
+    netRec = state.totalAmount - amtDec;
+    setAmountDeducted(Math.round(amtDec * 100) / 100);
+    setNetRecieveable(netRec);
 
-    if (state.status === "closed") setEmpShare(share * state.totalAmount);
-    else setEmpShare(0);
-  }, [state.status]);
-
-  const changeAssignee = (value) => {
-    if (value.length !== 0 && state.status === "new") {
-      setState((prev) => ({ ...prev, status: "open" }));
+    if (state.status === "closed") {
+      setState((prev) => {
+        let share = selectedProfile
+          ? (selectedProfile.share / 100) * prev.totalAmount
+          : 0;
+        return {
+          ...prev,
+          empShare: share,
+          amountRecieved: netRec,
+        };
+      });
+    } else {
+      setState((prev) => {
+        let temp = prev;
+        delete temp.empShare;
+        delete temp.netRecieveable;
+        return {
+          ...temp,
+        };
+      });
     }
-    setAssignee(value);
-  };
-
+  }, [state.status, state.totalAmount, selectedProfile, state.hasRecruiter]);
+  console.log(state);
   return (
     <Card>
-      {" "}
-      <Card.Title className="text-center">
+      <Card.Header className="text-center">
         <h1>Project Detail</h1>
-      </Card.Title>
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        {loading ? (
-          <div>Loading....</div>
-        ) : (
+      </Card.Header>
+      {loading ? (
+        <Spinner
+          as="span"
+          animation="spinner-border"
+          size="sm"
+          role="status"
+          aria-hidden="true"
+        />
+      ) : (
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <Row className="my-2 mx-3">
             <Row className="my-2">
-              {" "}
               <Form.Group as={Col} md="4">
                 <Form.Label>
-                  Title{" "}
+                  Title
                   <span
                     style={{
                       color: "red",
@@ -204,17 +228,18 @@ const AddProject = () => {
                   </span>
                 </Form.Label>
                 <Form.Control
+                  readOnly={!editAble}
                   name="title"
                   onChange={handleChange}
                   type="text"
-                  value={state.title}
+                  value={state.title ?? ""}
                   placeholder="Enter title"
                   required
                 />
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>
-                  Profile{" "}
+                  Profile
                   <span
                     style={{
                       color: "red",
@@ -224,9 +249,12 @@ const AddProject = () => {
                   </span>
                 </Form.Label>
                 <Form.Control
+                  readOnly={!editAble || isClosed}
                   as="select"
                   name="profile"
-                  onChange={handleChange}
+                  onChange={(value) => {
+                    if (editAble && !isClosed) handleChange(value);
+                  }}
                   value={state.profile ?? ""}
                   required
                 >
@@ -262,6 +290,7 @@ const AddProject = () => {
                   onChange={changeAssignee}
                   className="basic-multi-select"
                   classNamePrefix="select"
+                  isDisabled={!editAble || isClosed}
                 />
               </Form.Group>
             </Row>
@@ -270,8 +299,9 @@ const AddProject = () => {
               <Form.Group as={Col} md="4">
                 <Form.Label>Client Name</Form.Label>
                 <Form.Control
+                  readOnly={!editAble}
                   type="text"
-                  value={state.clientName}
+                  value={state.clientName ?? ""}
                   placeholder="Client Name"
                   name="clientName"
                   onChange={handleChange}
@@ -292,9 +322,12 @@ const AddProject = () => {
                   </span>
                 </Form.Label>
                 <Form.Control
+                  readOnly={!editAble || isClosed}
                   as="select"
                   name="projectType"
-                  onChange={handleChange}
+                  onChange={(value) => {
+                    if (editAble && !isClosed) handleChange(value);
+                  }}
                   value={state.projectType ?? ""}
                   required
                 >
@@ -307,10 +340,6 @@ const AddProject = () => {
                     </option>
                   ))}
                 </Form.Control>
-
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid Role.
-                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} md="4">
@@ -325,9 +354,14 @@ const AddProject = () => {
                   </span>
                 </Form.Label>
                 <Form.Control
+                  readOnly={!editAble || isClosed}
                   as="select"
                   name="status"
-                  onChange={handleChange}
+                  onChange={(value) => {
+                    if (editAble) {
+                      handleChange(value);
+                    }
+                  }}
                   value={state.status}
                   required
                 >
@@ -349,25 +383,24 @@ const AddProject = () => {
                 <Form.Check
                   type="checkbox"
                   name="hasRecruiter"
-                  checked={state.hasRecruiter}
+                  checked={state.hasRecruiter ?? false}
                   label={`Has Recruiter`}
-                  onChange={handleChange}
+                  onChange={(value) => {
+                    if (editAble && !isClosed) handleChange(value);
+                  }}
                 />
               </Form.Group>
               {state.hasRecruiter && (
                 <Form.Group as={Col} md="4">
                   <Form.Label>Recruiter Name</Form.Label>
                   <Form.Control
+                    readOnly={!editAble}
                     type="text"
                     placeholder="Recruiter Name"
                     name="recruiterName"
                     onChange={handleChange}
-                    value={state.recruiterName}
-                    required
+                    value={state.recruiterName ?? ""}
                   />
-                  <Form.Control.Feedback type="invalid">
-                    Please provide a valid password.
-                  </Form.Control.Feedback>
                 </Form.Group>
               )}
             </Row>
@@ -385,43 +418,34 @@ const AddProject = () => {
                   </span>
                 </Form.Label>
                 <Form.Control
+                  readOnly={!editAble || isClosed}
                   type="number"
                   placeholder="Total Amount"
                   name="totalAmount"
-                  value={state.totalAmount}
+                  value={state.totalAmount ?? 0}
                   onChange={handleChange}
                   required
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>Amount Deducted</Form.Label>
                 <Form.Control
                   type="number"
-                  placeholder="Total Amount"
+                  placeholder="-"
                   name="amountDeducted"
-                  onChange={handleChange}
-                  value={amountDeducted()}
+                  value={amountDeducted}
                   readOnly
                   required
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>Net Recieveable</Form.Label>
                 <Form.Control
                   type="number"
-                  placeholder="Net Recieveable"
+                  placeholder="-"
                   readOnly
-                  value={state.totalAmount - amountDeducted()}
+                  value={netRecieveable}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row>
@@ -429,22 +453,18 @@ const AddProject = () => {
                 <Form.Label>Amount Recieved</Form.Label>
                 <Form.Control
                   type="number"
-                  placeholder="Amount Recieved"
-                  onChange={handleChange}
-                  value={amountRecieved()}
-                  required
+                  placeholder="-"
+                  value={state.amountRecieved ?? null}
+                  readOnly
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>Employee Share</Form.Label>
                 <Form.Control
                   type="number"
-                  placeholder="Employee Share"
+                  placeholder="-"
                   readOnly
-                  value={empShare}
+                  value={state.empShare ?? null}
                 />
                 <Form.Control.Feedback type="invalid">
                   Please provide a valid password.
@@ -463,26 +483,23 @@ const AddProject = () => {
                   name="awardedAt"
                   onChange={handleChange}
                   required
+                  readOnly={!editAble}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>Closed At</Form.Label>
                 <Form.Control
                   type="date"
                   value={
-                    state.closedAt &&
-                    moment(state.closedAt).format("YYYY-MM-DD")
+                    state.closedAt
+                      ? moment(state.closedAt).format("YYYY-MM-DD")
+                      : ""
                   }
                   placeholder="Closed At"
                   name="closedAt"
                   onChange={handleChange}
+                  readOnly={!editAble}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>Deadline At</Form.Label>
@@ -490,24 +507,86 @@ const AddProject = () => {
                   type="date"
                   placeholder="Deadline At"
                   value={
-                    state.deadlineAt &&
-                    moment(state.deadlineAt).format("YYYY-MM-DD")
+                    state.deadlineAt
+                      ? moment(state.deadlineAt).format("YYYY-MM-DD")
+                      : ""
                   }
                   name="deadlineAt"
                   onChange={handleChange}
+                  readOnly={!editAble}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
             </Row>
           </Row>
-        )}
-        <Button className="m-3" variant="success" md={4} type="submit">
-          {id ? "Update" : "Create"}
-        </Button>
-      </Form>
-      <ToastContainer />
+
+          {!id ? (
+            <Button
+              disabled={loading}
+              className="p-2 m-3"
+              variant="success"
+              md={3}
+              type="submit"
+            >
+              {loading && (
+                <Spinner
+                  as="span"
+                  animation="grow"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />
+              )}
+              Create
+            </Button>
+          ) : !editAble ? (
+            <Button
+              className="p-2 m-3"
+              variant="outline-primary"
+              md={3}
+              onClick={() => {
+                setRevertState(state);
+                setEditAble(true);
+              }}
+            >
+              Edit
+            </Button>
+          ) : (
+            <>
+              <Button
+                className="p-2 m-3"
+                variant="success"
+                md={3}
+                disabled={loading}
+                type="submit"
+              >
+                {loading && (
+                  <Spinner
+                    as="span"
+                    animation="grow"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                )}
+                Save
+              </Button>
+              <Button
+                className="p-2 m-3"
+                md={3}
+                variant="outline-danger"
+                onClick={() => {
+                  setState(revertState);
+                  setValidated(false);
+                  setEditAble(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </>
+          )}
+          <ToastContainer />
+        </Form>
+      )}
     </Card>
   );
 };

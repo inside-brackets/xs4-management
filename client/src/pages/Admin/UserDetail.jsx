@@ -8,6 +8,7 @@ import MyModal from "../../components/modals/MyModal";
 import { toast, ToastContainer } from "react-toastify";
 import Profiles from "../../components/Profiles";
 import ActionButton from "../../components/UI/ActionButton";
+import BackButton from "../../components/UI/BackButton";
 
 const customerTableHead = ["#", "Title", "Paltform", "Share", "actions"];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
@@ -85,7 +86,7 @@ const UserDetail = () => {
   return (
     <Row className="mt-2">
       <Col md={1}>
-        <Button onClick={() => history.goBack()}>Back</Button>
+        <BackButton onClick={() => history.goBack()} />
       </Col>
       <Col md={11}>
         <Row>
@@ -236,55 +237,52 @@ const UserDetail = () => {
                     </Button>
                   </Col>
                 </Row>
-                <Row className="my-5">
-                  {!editFields ? (
+                <hr />
+                {!editFields ? (
+                  <Button
+                    className="p-2"
+                    variant="outline-primary"
+                    md={3}
+                    onClick={() => setEditFields(true)}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <>
                     <Button
-                      className="p-2 m-3"
-                      variant="outline-primary"
-                      as={Col}
+                      className="p-2"
+                      variant="success"
                       md={3}
-                      onClick={() => setEditFields(true)}
+                      disabled={loading}
+                      onClick={handleSubmit}
                     >
-                      Edit
+                      {loading && (
+                        <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      )}
+                      Save
                     </Button>
-                  ) : (
-                    <>
-                      <Button
-                        className="p-2 m-3"
-                        variant="success"
-                        md={3}
-                        disabled={loading}
-                        onClick={handleSubmit}
-                        as={Col}
-                      >
-                        {loading && (
-                          <Spinner
-                            as="span"
-                            animation="grow"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                          />
-                        )}
-                        Save
-                      </Button>
-                      <Button
-                        className="p-2 m-3"
-                        md={3}
-                        variant="outline-danger"
-                        as={Col}
-                        onClick={() => setEditFields(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </>
-                  )}
-                </Row>
+                    <Button
+                      className="p-2"
+                      md={3}
+                      style={{ marginLeft: "10px" }}
+                      variant="outline-danger"
+                      onClick={() => setEditFields(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                )}
               </Form>
             </Card.Body>
           </Card>
         </Row>
-        <Row className="mt-3">
+        <Row className="mt-3 mb-2">
           <Col>
             <Button
               onClick={() => {

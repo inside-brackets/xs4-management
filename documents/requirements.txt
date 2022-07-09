@@ -1,8 +1,5 @@
-=> * with requried inputs projects
-=> breaks in page
-=> employee share 0 in satus change
-=> send assigne and empshare
-edit
+=> discard changes on cancel edit.
+=> add adjustments in projects detail page for admin
 
 
 - ADMIN
