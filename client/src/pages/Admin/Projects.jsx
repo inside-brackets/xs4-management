@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { Row, Col, Button, Badge } from "react-bootstrap";
+
+import { useSelector } from "react-redux";
+
 import axios from "axios";
 
 import ActionButton from "../../components/UI/ActionButton";
@@ -34,6 +36,8 @@ const Projects = () => {
   const [users, setUsers] = useState(null);
   const [profiles, setProfiles] = useState(null);
 
+  const { role } = useSelector((state) => state.userLogin.userInfo);
+
   const history = useHistory();
 
   const renderBody = (item, index, currPage) => (
@@ -57,6 +61,37 @@ const Projects = () => {
     </tr>
   );
 
+  var filter = {};
+
+  if (role === "admin") {
+    filter = {
+      status: [
+        { label: "New", value: "new" },
+        { label: "Open", value: "open" },
+        { label: "Under Review", value: "underreview" },
+        { label: "Closed", value: "closed" },
+        { label: "Cancelled", value: "cancelled" },
+      ],
+      platform: [
+        { label: "Freelancer", value: "freelancer" },
+        { label: "Upwork", value: "upwork" },
+        { label: "Fiver", value: "fiver" },
+      ],
+      bidder: users,
+      assignee: users,
+      profile: profiles,
+    };
+  } else {
+    filter = {
+      status: [
+        { label: "New", value: "new" },
+        { label: "Open", value: "open" },
+        { label: "Under Review", value: "underreview" },
+        { label: "Closed", value: "closed" },
+        { label: "Cancelled", value: "cancelled" },
+      ],
+    };
+  }
   useEffect(() => {
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/users/1000/0`, {})
@@ -105,40 +140,13 @@ const Projects = () => {
               body: {},
             }}
             placeholder={"title"}
-            filter={{
-              status: [
-                { label: "New", value: "new" },
-                { label: "Open", value: "open" },
-                { label: "Under Review", value: "underreview" },
-                { label: "Closed", value: "closed" },
-                { label: "Cancelled", value: "cancelled" },
-              ],
-              platform: [
-                { label: "Freelancer", value: "freelancer" },
-                { label: "Upwork", value: "upwork" },
-                { label: "Fiver", value: "fiver" },
-              ],
-              bidder: users,
-              assignee: users,
-              profile: profiles,
-            }}
+            filter={filter}
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
             }
           />
         </div>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
     </Row>
   );
 };

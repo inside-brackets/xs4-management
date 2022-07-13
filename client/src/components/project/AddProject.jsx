@@ -62,10 +62,21 @@ const AddProject = () => {
     if (name === "profile") {
       setSelectedProfile(profiles.find((pro) => pro._id === value));
     }
-    if (name === "status" && value === "closed") {
+    if (name === "status") {
       // remove assigne & set closed at
-      setAssignee([]);
-      setState((prev) => ({ ...prev, closedAt: new Date() }));
+      if (value === "closed") {
+        setAssignee([]);
+        setState((prev) => ({ ...prev, closedAt: new Date() }));
+      } else {
+        setState((prev) => {
+          const temp = prev;
+          delete temp.closedAt;
+          delete temp.empShare;
+          delete temp.netRecieveable;
+          delete temp.amountRecieved;
+          return temp;
+        });
+      }
     }
     if (name === "hasRecruiter") {
       setState((prev) => {
@@ -104,6 +115,8 @@ const AddProject = () => {
           setState((prev) => ({ ...prev, ...tempProject }));
           setLoading(false);
         });
+    } else {
+      setEditAble(true);
     }
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`)
@@ -134,7 +147,6 @@ const AddProject = () => {
     }
 
     state.assignee = assignee.map((item) => item.value);
-    console.log(state);
 
     if (id) {
       const res = await axios.put(
@@ -144,7 +156,6 @@ const AddProject = () => {
       if (res.status === 200) toast.success("Project Updated Successfully");
       setEditAble(false);
     } else {
-      state.netRecieveable = state.totalAmount - amountDeducted();
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/projects/`,
         state
@@ -187,18 +198,9 @@ const AddProject = () => {
           amountRecieved: netRec,
         };
       });
-    } else {
-      setState((prev) => {
-        let temp = prev;
-        delete temp.empShare;
-        delete temp.netRecieveable;
-        return {
-          ...temp,
-        };
-      });
     }
   }, [state.status, state.totalAmount, selectedProfile, state.hasRecruiter]);
-  console.log(state);
+
   return (
     <Card>
       <Card.Header className="text-center">
@@ -306,13 +308,10 @@ const AddProject = () => {
                   name="clientName"
                   onChange={handleChange}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>
-                  Project Type{" "}
+                  Project Type
                   <span
                     style={{
                       color: "red",
@@ -466,9 +465,6 @@ const AddProject = () => {
                   readOnly
                   value={state.empShare ?? null}
                 />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid password.
-                </Form.Control.Feedback>
               </Form.Group>
             </Row>
             <br />
@@ -584,7 +580,7 @@ const AddProject = () => {
               </Button>
             </>
           )}
-          <ToastContainer />
+          {/* <ToastContainer /> */}
         </Form>
       )}
     </Card>
