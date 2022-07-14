@@ -7,8 +7,10 @@ import Layout from "./components/layout/Layout";
 import Login from "./pages/Login";
 import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
+import HttpIntercept from "./interceptors/interceptors";
 
 function App() {
+  HttpIntercept()
   return (
     <>
       <Switch>

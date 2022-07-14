@@ -12,6 +12,6 @@ const router = express.Router();
 router.post("/", createProject);
 router.put("/:id", updateProject);
 router.get("/:id", getProject);
-router.post("/:limit/:offset", listProjects);
+router.post("/:limit/:offset",Protected, listProjects);
 
 export default router;
