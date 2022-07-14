@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const projectTypeOptions = [
   "BP",
@@ -37,7 +38,10 @@ const AddProject = () => {
   });
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [assignee, setAssignee] = useState([]);
-
+  const {
+    userInfo
+      } = useSelector((state) => state.userLogin);
+    
   // invoice calculation states
   const [netRecieveable, setNetRecieveable] = useState(0);
   const [amountDeducted, setAmountDeducted] = useState(0);
@@ -119,7 +123,9 @@ const AddProject = () => {
       setEditAble(true);
     }
     axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`)
+      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`,{
+        bidder:userInfo.role !== "admin" && userInfo._id
+      })
       .then((res) => {
         setProfiles(res.data.data);
       });
@@ -544,7 +550,10 @@ const AddProject = () => {
               md={3}
               onClick={() => {
                 setRevertState(state);
-                setEditAble(true);
+                if(userInfo.role === "admin"){
+                  setEditAble(true);
+              
+                }
               }}
             >
               Edit

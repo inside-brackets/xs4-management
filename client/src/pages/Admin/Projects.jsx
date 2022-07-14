@@ -36,10 +36,10 @@ const renderHead = (item, index) => <th key={index}>{item}</th>;
 const Projects = () => {
   const [users, setUsers] = useState(null);
   const [profiles, setProfiles] = useState(null);
-
-  const { role, _id: userId } = useSelector(
-    (state) => state.userLogin.userInfo
-  );
+  const [bidder, setBidder] = useState(null);
+  const {
+userInfo
+  } = useSelector((state) => state.userLogin);
 
   const history = useHistory();
 
@@ -77,6 +77,18 @@ const Projects = () => {
         setUsers(userOptions);
       });
     axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/users/1000/0`, {
+        isManager: true,
+      })
+      .then((res) => {
+        const userOptions = res.data.data.map((user) => ({
+          label: user.userName,
+          value: user._id,
+        }));
+
+        setBidder(userOptions);
+      });
+    axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`, {})
       .then((res) => {
         const profileOptions = res.data.data.map((profile) => ({
@@ -91,7 +103,7 @@ const Projects = () => {
   var filter = {};
   var body = {};
 
-  if (role === "admin") {
+  if (userInfo.role === "admin") {
     filter = {
       status: [
         { label: "New", value: "new" },
@@ -105,7 +117,7 @@ const Projects = () => {
         { label: "Upwork", value: "upwork" },
         { label: "Fiver", value: "fiver" },
       ],
-      bidder: users,
+      bidder: bidder,
       assignee: users,
       profile: profiles,
     };
@@ -127,12 +139,15 @@ const Projects = () => {
         <Col md={3}></Col>
         <Col md={5}></Col>
         <Col md={4}>
-          <Button
-            onClick={() => history.push("/projects/project")}
-            style={{ float: "right" }}
-          >
-            Add Project
-          </Button>
+          {userInfo.isManager ||
+            userInfo.role === "admin" ? (
+              <Button
+                onClick={() => history.push("/projects/project")}
+                style={{ float: "right" }}
+              >
+                Add Project
+              </Button>
+            ) : <></>}{" "}
         </Col>
       </Row>
       <div className="card">

@@ -1,13 +1,7 @@
 => add relevent security to server end points.(backend)
-=> send auth token with every request(front end)
-=> add extra role for bidder
 
 user view
-    => bidder dropdown in projects table gets all users, get only user which have a bidding profile.
-    => show add button only if "user" has a bidding profile
-    => show only user profiles in profiles dropdown in project detail page 
     => users can only add assignee
-    => users can not edit projects only view.
 
 
 - ADMIN

@@ -57,7 +57,6 @@ export const Register = (user) => async (dispatch) => {
     );
 
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
-    dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
     toast.success("User Created Successfully");
   } catch (error) {
     dispatch({

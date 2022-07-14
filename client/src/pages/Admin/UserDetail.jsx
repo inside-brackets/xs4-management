@@ -5,7 +5,7 @@ import { useParams, useHistory } from "react-router-dom";
 
 import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Profiles from "../../components/Profiles";
 import ActionButton from "../../components/UI/ActionButton";
 import BackButton from "../../components/UI/BackButton";
@@ -16,7 +16,7 @@ const renderHead = (item, index) => <th key={index}>{item}</th>;
 const UserDetail = () => {
   const [editFields, setEditFields] = useState(false);
   const [user, setUser] = useState(null);
-  const [state, setState] = useState({});
+  const [state, setState] = useState({isManager:false});
   const [loading, setLoading] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
   const [defaultValue, setDefaultValue] = useState(null);
@@ -49,16 +49,31 @@ const UserDetail = () => {
         `${process.env.REACT_APP_BACKEND_URL}/users/${id}`
       );
       setUser(res.data);
-    };
+      setState((prev) => {
+        return {
+          ...prev,
+          isManager: res.data.isManager,
+        };
+      });};
     getUser();
   }, [id]);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
+    const name  = evt.target.name
+    if (name === "isManager") {
+      setState((prev) => {
+        return {
+          ...prev,
+          isManager: !state.isManager,
+        };
+      });
+    } else {
     setState({
       ...state,
-      [evt.target.name]: value,
+      [name]: value,
     });
+  }
   };
   const handleSubmit = async () => {
     setLoading(true);
@@ -207,6 +222,17 @@ const UserDetail = () => {
                       readOnly={!editFields}
                     />
                   </Form.Group>
+                  {user?.role === "user" && (
+                    <Form.Group className="mt-4" as={Col} md="2">
+                      <Form.Check
+                        type="checkbox"
+                        name="isManager"
+                        checked={state.isManager ?? false}
+                        label={`Is Manager`}
+                        onChange={handleChange}
+                      />
+                    </Form.Group>
+                  )}
                   <Form.Group as={Col} md="4" sm="12">
                     <Form.Label>Salary</Form.Label>
                     <Form.Control

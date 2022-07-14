@@ -7,7 +7,7 @@ import { Register } from "../../store/Actions/userAction";
 
 const AddUser = ({ setShowModal }) => {
   const [validated, setValidated] = useState(false);
-  const [state, setState] = useState({});
+  const [state, setState] = useState({ isManager: false });
   const [usernameIsValid, setUsernameIsValid] = useState(null);
 
   const userRegister = useSelector((state) => state.userRegister);
@@ -15,10 +15,20 @@ const AddUser = ({ setShowModal }) => {
 
   const handleChange = (evt) => {
     const value = evt.target.value;
-    setState({
-      ...state,
-      [evt.target.name]: value,
-    });
+    const name = evt.target.name;
+    if (name === "isManager") {
+      setState((prev) => {
+        return {
+          ...prev,
+          isManager: !state.isManager,
+        };
+      });
+    } else {
+      setState({
+        ...state,
+        [name]: value,
+      });
+    }
   };
 
   useEffect(() => {
@@ -112,15 +122,27 @@ const AddUser = ({ setShowModal }) => {
             onChange={handleChange}
             required
           >
-            <option value={null}></option>
+            <option value={null}>Select-Role</option>
             <option value="admin">Admin</option>
-            <option value="user">User</option>
+            <option value="">User</option>
+            
           </Form.Control>
 
           <Form.Control.Feedback type="invalid">
             Please provide a valid Role.
           </Form.Control.Feedback>
         </Form.Group>
+        {state.role === "user" && (
+          <Form.Group className="mt-4" as={Col} md="2">
+            <Form.Check
+              type="checkbox"
+              name="isManager"
+              checked={state.isManager ?? false}
+              label={`Is Manager`}
+              onChange={handleChange}
+            />
+          </Form.Group>
+        )}
       </Row>
 
       <Button

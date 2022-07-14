@@ -78,13 +78,12 @@ export const deleteProfile = asyncHandler(async (req, res) => {
 // route: /profiles/:limit/:offset
 export const listProfiles = asyncHandler(async (req, res) => {
   try {
-    console.log("listProfiles", req.params.offset);
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
     const { search, searchExact, share__lte, share__gte, bidder, platform } =
       req.body;
     let filter = { share: { $lte: 100, $gte: 0 } };
-
+console.log(bidder)
     if (platform?.length > 0) {
       filter.platform = { $in: platform };
     }
