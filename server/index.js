@@ -22,7 +22,7 @@ app.use(
 app.use("/users", userRouters);
 app.use("/profiles", profileRouters);
 app.use("/projects", projectRouters);
-app.use("/reports", projectRouters);
+app.use("/reports", reportRouters);
 
 app.get("/", (req, res) => {
   res.send("Api is running...");
