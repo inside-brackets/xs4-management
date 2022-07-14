@@ -3,10 +3,10 @@ import User from "../modals/user.js";
 import jwt from "jsonwebtoken";
 
 export const Protected = asyncHandler(async (req, res, next) => {
-  if (process.env.NODE_ENV === "dev") {
-    next();
-    return;
-  }
+  // if (process.env.NODE_ENV === "dev") {
+  //   next();
+  //   return;
+  // }
   let token;
 
   if (

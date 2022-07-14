@@ -24,7 +24,9 @@ export const createProject = asyncHandler(async (req, res) => {
 // route: /projects/:id
 export const getProject = asyncHandler(async (req, res) => {
   try {
-    let project = await ProjectModal.findById(req.params.id).populate('assignee profile');
+    let project = await ProjectModal.findById(req.params.id).populate(
+      "assignee profile"
+    );
 
     res.status(200);
 
@@ -93,12 +95,22 @@ export const listProjects = asyncHandler(async (req, res) => {
       deadlineAt__lt,
       platform,
       bidder,
+      custom,
     } = req.body;
-    let filter = {};
+    let filter = custom ?? {};
+    filter["$and"] = filter["$and"] ?? [];
     let profiles = [];
 
     if (search) {
-      filter["$or"] = [{ title: { $regex: search, $options: "i" } }];
+      filter["$and"] = [
+        ...filter["$and"],
+        {
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { clientName: { $regex: search, $options: "i" } },
+          ],
+        },
+      ];
     }
 
     if (assignee && assignee.length !== 0) {
@@ -158,7 +170,21 @@ export const listProjects = asyncHandler(async (req, res) => {
         $lt: new Date(deadlineAt__lt),
       };
     }
-    console.log(filter);
+
+    const user = req.user;
+    if (user.role === "user") {
+      profiles = await ProfileModal.find({
+        bidder: user._id,
+      });
+
+      filter["$and"] = [
+        ...filter["$and"],
+        { $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }] },
+      ];
+    }
+    console.log(filter, req.user);
+
+    if (filter["$and"].length === 0) delete filter["$and"];
 
     const projects = await ProjectModal.find(filter)
       .populate("assignee profile")
@@ -168,9 +194,12 @@ export const listProjects = asyncHandler(async (req, res) => {
 
     const totalProjects = await ProjectModal.find(filter);
 
-    res.status(200).json({ data: projects, length: totalProjects.length });
+    res.status(200).json({
+      data: projects,
+      length: totalProjects.length,
+      batchSize: projects.length,
+    });
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });

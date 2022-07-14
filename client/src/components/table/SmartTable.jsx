@@ -9,7 +9,7 @@ const makeFilter = (filter) => {
   let temp = {};
   for (let [key, value] of Object.entries(filter)) {
     if (value instanceof Array) {
-      value = value.map((item) => item.value);
+      value = value.map((item) => item.value ?? item);
     }
     temp[key] = value;
   }

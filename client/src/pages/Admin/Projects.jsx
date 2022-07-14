@@ -14,6 +14,7 @@ import status_map from "../../assets/JsonData/project_status_map.json";
 const customerTableHead = [
   "#",
   "Title",
+  "Client",
   "Profile",
   "Platform",
   "Total Amount",
@@ -36,7 +37,9 @@ const Projects = () => {
   const [users, setUsers] = useState(null);
   const [profiles, setProfiles] = useState(null);
 
-  const { role } = useSelector((state) => state.userLogin.userInfo);
+  const { role, _id: userId } = useSelector(
+    (state) => state.userLogin.userInfo
+  );
 
   const history = useHistory();
 
@@ -44,6 +47,7 @@ const Projects = () => {
     <tr key={index}>
       <td>{index + 1 + currPage * 10}</td>
       <td>{item.title}</td>
+      <td>{item.clientName ?? "N/A"}</td>
       <td>{item.profile.title}</td>
       <td>{item.profile.platform}</td>
       <td>{formatter.format(item.totalAmount)}</td>
@@ -61,7 +65,31 @@ const Projects = () => {
     </tr>
   );
 
+  useEffect(() => {
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/users/1000/0`, {})
+      .then((res) => {
+        const userOptions = res.data.data.map((user) => ({
+          label: user.userName,
+          value: user._id,
+        }));
+
+        setUsers(userOptions);
+      });
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`, {})
+      .then((res) => {
+        const profileOptions = res.data.data.map((profile) => ({
+          label: profile.title,
+          value: profile._id,
+        }));
+
+        setProfiles(profileOptions);
+      });
+  }, []);
+
   var filter = {};
+  var body = {};
 
   if (role === "admin") {
     filter = {
@@ -92,28 +120,7 @@ const Projects = () => {
       ],
     };
   }
-  useEffect(() => {
-    axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/users/1000/0`, {})
-      .then((res) => {
-        const userOptions = res.data.data.map((user) => ({
-          label: user.userName,
-          value: user._id,
-        }));
 
-        setUsers(userOptions);
-      });
-    axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`, {})
-      .then((res) => {
-        const profileOptions = res.data.data.map((profile) => ({
-          label: profile.title,
-          value: profile._id,
-        }));
-
-        setProfiles(profileOptions);
-      });
-  }, []);
   return (
     <Row>
       <Row className="m-3">
@@ -137,7 +144,7 @@ const Projects = () => {
             renderHead={(item, index) => renderHead(item, index)}
             api={{
               url: `${process.env.REACT_APP_BACKEND_URL}/projects`,
-              body: {},
+              body,
             }}
             placeholder={"title"}
             filter={filter}

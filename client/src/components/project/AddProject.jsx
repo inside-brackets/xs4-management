@@ -153,8 +153,10 @@ const AddProject = () => {
         `${process.env.REACT_APP_BACKEND_URL}/projects/${id}`,
         state
       );
-      if (res.status === 200) toast.success("Project Updated Successfully");
-      setEditAble(false);
+      if (res.status === 200) {
+        toast.success("Project Updated Successfully");
+        setEditAble(false);
+      }
     } else {
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/projects/`,
@@ -166,6 +168,7 @@ const AddProject = () => {
       }
     }
   };
+
   // calculate amount deducted
   // calculate amount recieved and employee share
   useEffect(() => {
