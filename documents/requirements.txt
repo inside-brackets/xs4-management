@@ -3,12 +3,6 @@
 => in user detail page is manager check box is editable when form is not editable
 => bidder dropdown in projects only show managers but not admins who manage profiles
 user view
-    => users can only add assignee
-
-users cannot see amount calculations (managers can)
-new field client country in projects
-new field in projects "currency"
-on closing ask for exchange rate
 
 change user from profile
 remove platform fees

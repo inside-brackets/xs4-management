@@ -6,6 +6,8 @@ const projectSchema = new mongoose.Schema(
     profile: { type: mongoose.Types.ObjectId, ref: "Profile", required: true }, // $in
     assignee: { type: [mongoose.Types.ObjectId], ref: "User" }, // $in
     clientName: { type: String }, // search
+    clientCountry: { type: String },
+    currency: { type: String },
     projectType: {
       type: String,
       enum: [
@@ -39,6 +41,8 @@ const projectSchema = new mongoose.Schema(
     }, // $in
     totalAmount: { type: Number }, // range
     amountRecieved: { type: Number }, // range
+    exchangeRate: { type: Number }, // range
+    
     empShare: { type: Number }, // range
     awardedAt: { type: Date }, // range
     closedAt: { type: Date }, // range
