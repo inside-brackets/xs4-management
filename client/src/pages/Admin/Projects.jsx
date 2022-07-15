@@ -11,12 +11,16 @@ import Table from "../../components/table/SmartTable";
 
 import status_map from "../../assets/JsonData/project_status_map.json";
 
+import moment from "moment";
+
 const customerTableHead = [
   "#",
   "Title",
   "Client",
   "Profile",
   "Platform",
+  "Awarded",
+  "Deadline",
   "Total Amount",
   "Status",
   "Actions",
@@ -48,6 +52,12 @@ const Projects = () => {
       <td>{item.clientName ?? "N/A"}</td>
       <td>{item.profile.title}</td>
       <td>{item.profile.platform}</td>
+      <td>
+        {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
+      </td>
+      <td>
+        {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
+      </td>
       <td>{formatter.format(item.totalAmount)}</td>
       <td>
         <h5>

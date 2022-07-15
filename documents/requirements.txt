@@ -5,6 +5,19 @@
 user view
     => users can only add assignee
 
+users cannot see amount calculations (managers can)
+new field client country in projects
+new field in projects "currency"
+on closing ask for exchange rate
+
+upwork share calculation
+20% <= 500$
+10% > 500$
+
+for example:
+total amount = 1000$
+amount deducted = 150$
+
 
 - ADMIN
     - projects (faraz)
