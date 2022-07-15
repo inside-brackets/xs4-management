@@ -37,9 +37,7 @@ const Projects = () => {
   const [users, setUsers] = useState(null);
   const [profiles, setProfiles] = useState(null);
   const [bidder, setBidder] = useState(null);
-  const {
-userInfo
-  } = useSelector((state) => state.userLogin);
+  const { userInfo } = useSelector((state) => state.userLogin);
 
   const history = useHistory();
 
@@ -139,15 +137,16 @@ userInfo
         <Col md={3}></Col>
         <Col md={5}></Col>
         <Col md={4}>
-          {userInfo.isManager ||
-            userInfo.role === "admin" ? (
-              <Button
-                onClick={() => history.push("/projects/project")}
-                style={{ float: "right" }}
-              >
-                Add Project
-              </Button>
-            ) : <></>}{" "}
+          {userInfo.isManager || userInfo.role === "admin" ? (
+            <Button
+              onClick={() => history.push("/projects/project")}
+              style={{ float: "right" }}
+            >
+              Add Project
+            </Button>
+          ) : (
+            <></>
+          )}{" "}
         </Col>
       </Row>
       <div className="card">
@@ -161,7 +160,7 @@ userInfo
               url: `${process.env.REACT_APP_BACKEND_URL}/projects`,
               body,
             }}
-            placeholder={"title"}
+            placeholder={"title | client name"}
             filter={filter}
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)

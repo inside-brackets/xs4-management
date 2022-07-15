@@ -1,14 +1,21 @@
 import asyncHandler from "express-async-handler";
 
 import ProjectModal from "../modals/project.js";
+import ProfileModal from "../modals/profile.js";
 
 // Access: Private
 // Method: POST
 // route: /reports/profiles_summary/:year
 export const getProfilesSummary = asyncHandler(async (req, res) => {
   const year = parseInt(req.params.year);
+  const user = req.user;
+  if (isNaN(year)) throw new Error("Not a valid year");
+
   try {
-    let AwardedProfiles = await ProjectModal.aggregate([
+    var filter = {};
+    if (user.role === "user") filter = { bidder: user._id };
+
+    let awardedProjects = await ProjectModal.aggregate([
       {
         $lookup: {
           from: "profiles",
@@ -98,11 +105,12 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
-          awardedCount: "$count",
-          AwardedProjects: "$projects",
+          total: "$count",
+          projects: "$projects",
         },
       },
     ]);
+
     let closed = await ProjectModal.aggregate([
       {
         $lookup: {
@@ -168,8 +176,8 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
-          cloasedCount: "$count",
-          cloasedProjects: "$projects",
+          total: "$count",
+          projects: "$projects",
         },
       },
     ]);
@@ -204,7 +212,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
-          count: "$count",
+          total: "$count",
         },
       },
     ]);
@@ -239,24 +247,59 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
-          count: "$count",
+          total: "$count",
         },
       },
     ]);
-    // [
-    //   {
-    //     profile: "title",
-    //     adardedTotal: 10,
-    //     awardedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],
-    //     cashRecievedTotal: 100,
-    //     cashRecievedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],
-    //     pendingTotal:2,
-    //     cancelledTotal: 2
-    //   },
-    // ];
-    // combind above 4 results into one
 
-    res.status(200).json(cancelled);
+    // combind above 4 results into one
+    const profiles = await ProfileModal.find(filter).select("title -_id");
+    const profilesSummary = profiles.map((p) => {
+      let temp = {
+        profile: p.title,
+        awardedTotal: 0,
+        awardedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        cashRecievedTotal: 0,
+        cashRecievedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        pendingTotal: 0,
+        cancelledTotal: 0,
+      };
+      const tempAwarded = awardedProjects.find(
+        (project) => project.profile === p.title
+      );
+      if (tempAwarded) {
+        temp.awardedTotal = tempAwarded.total;
+        tempAwarded.projects.map(
+          (s) => (temp.awardedSummary[s.month - 1] = s.count)
+        );
+      }
+      const tempClosed = closed.find((project) => project.profile === p.title);
+      if (tempClosed) {
+        temp.cashRecievedTotal = tempClosed.total;
+        tempClosed.projects.map(
+          (s) => (temp.cashRecievedSummary[s.month - 1] = s.count)
+        );
+      }
+      const tempPending = pending.find(
+        (project) => project.profile === p.title
+      );
+      if (tempPending) {
+        temp.pendingTotal = tempPending.total;
+      }
+      const tempCancelled = cancelled.find(
+        (project) => project.profile === p.title
+      );
+      if (tempCancelled) {
+        temp.cancelledTotal = tempCancelled.total;
+      }
+
+      if (tempAwarded || tempClosed || tempCancelled || tempPending)
+        return temp;
+    });
+
+    const cleanedProfileSumaries = profilesSummary.filter((n) => n);
+
+    res.status(200).json(cleanedProfileSumaries);
   } catch (error) {
     console.log(error);
     throw new Error(error.message);

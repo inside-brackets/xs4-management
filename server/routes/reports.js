@@ -4,6 +4,6 @@ import { Protected, isAdmin } from "../middlewares/authHandler.js";
 
 const router = express.Router();
 
-router.post("/profiles_summary/:year", getProfilesSummary);
+router.post("/profiles_summary/:year", Protected, getProfilesSummary);
 
 export default router;

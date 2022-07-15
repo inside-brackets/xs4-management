@@ -182,13 +182,13 @@ export const listProjects = asyncHandler(async (req, res) => {
         { $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }] },
       ];
     }
-    console.log(filter, req.user);
 
     if (filter["$and"].length === 0) delete filter["$and"];
+    console.log(filter);
 
     const projects = await ProjectModal.find(filter)
       .populate("assignee profile")
-      .sort({ awardedAt: -1 })
+      .sort({ updatedAt: -1 })
       .limit(limit)
       .skip(offset);
 

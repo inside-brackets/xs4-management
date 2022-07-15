@@ -9,7 +9,7 @@ const AddUser = ({ setShowModal }) => {
   const [validated, setValidated] = useState(false);
   const [state, setState] = useState({ isManager: false });
   const [usernameIsValid, setUsernameIsValid] = useState(null);
-
+  console.log(state);
   const userRegister = useSelector((state) => state.userRegister);
   const { loading, error } = userRegister;
 
@@ -124,8 +124,7 @@ const AddUser = ({ setShowModal }) => {
           >
             <option value={null}>Select-Role</option>
             <option value="admin">Admin</option>
-            <option value="">User</option>
-            
+            <option value="user">User</option>
           </Form.Control>
 
           <Form.Control.Feedback type="invalid">

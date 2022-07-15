@@ -1,5 +1,6 @@
 => add relevent security to server end points.(backend)
-
+=> rerender users table on new user created
+=> in user detail page is manager check box is editable when form is not editable
 user view
     => users can only add assignee
 
