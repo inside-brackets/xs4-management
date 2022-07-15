@@ -10,6 +10,12 @@ new field client country in projects
 new field in projects "currency"
 on closing ask for exchange rate
 
+change user from profile
+remove platform fees
+hardcode platform fees
+freelancer 10
+fiver 20
+
 upwork share calculation
 20% <= 500$
 10% > 500$
