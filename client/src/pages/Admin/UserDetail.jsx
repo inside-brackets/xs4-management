@@ -229,6 +229,7 @@ const UserDetail = () => {
                         name="isManager"
                         checked={state.isManager ?? false}
                         label={`Is Manager`}
+                        disabled={!editFields}
                         onChange={handleChange}
                       />
                     </Form.Group>

@@ -90,6 +90,7 @@ export const updateUserPassword = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
     const { password } = req.body;
+    console.log(password)
     if (password) {
       user.password = password;
     }

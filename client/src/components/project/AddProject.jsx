@@ -315,9 +315,9 @@ const AddProject = () => {
 
     if (form.checkValidity() === false) {
       return;
-    } 
-    if(state.exchangeRate === 0){
-      return toast.error("Please Enter Valid Exchange rate")
+    }
+    if (state.exchangeRate === 0) {
+      return toast.error("Please Enter Valid Exchange rate");
     }
 
     state.assignee = assignee.map((item) => item.value);
@@ -348,18 +348,31 @@ const AddProject = () => {
   useEffect(() => {
     let amtDec = 0;
     let netRec = 0;
-    var platformFee = selectedProfile ? selectedProfile.platformFee / 100 : 0.1;
-    var recruiterFee = 0.05;
-    if (state.hasRecruiter) {
-      if (state.status === "closed") {
-        amtDec = (platformFee + recruiterFee) * state.totalAmount;
+    let platformFee;
+    if (selectedProfile?.platform === "freelancer") {
+      platformFee = 0.1;
+    } else if (selectedProfile?.platform === "fiver") {
+      platformFee = 0.2;
+    } else if (selectedProfile?.platform === "upwork") {
+      if (state.totalAmount <= 500) {
+        platformFee = 0.2;
       } else {
-        amtDec = 0;
+        let moreThanFive = state.totalAmount - 500;
+        amtDec = moreThanFive * 0.1 + 100;
       }
-    } else {
-      amtDec = platformFee * state.totalAmount;
     }
-
+    if (amtDec === 0) {
+      var recruiterFee = 0.05;
+      if (state.hasRecruiter) {
+        if (state.status === "closed") {
+          amtDec = (platformFee + recruiterFee) * state.totalAmount;
+        } else {
+          amtDec = 0;
+        }
+      } else {
+        amtDec = platformFee * state.totalAmount;
+      }
+    }
     netRec = state.totalAmount - amtDec;
     setAmountDeducted(Math.round(amtDec * 100) / 100);
     setNetRecieveable(netRec);
@@ -678,7 +691,7 @@ const AddProject = () => {
                         min={0}
                         readOnly={!editAble}
                         value={state.exchangeRate ?? null}
-                        name='exchangeRate'
+                        name="exchangeRate"
                         required={state.status === "closed"}
                         onChange={handleChange}
                       />
@@ -691,7 +704,11 @@ const AddProject = () => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      value={state.amountRecieved ? state.amountRecieved * state.exchangeRate : null}
+                      value={
+                        state.amountRecieved
+                          ? state.amountRecieved * state.exchangeRate
+                          : null
+                      }
                       readOnly
                     />
                   </Form.Group>
@@ -701,7 +718,11 @@ const AddProject = () => {
                       type="number"
                       placeholder="-"
                       readOnly
-                      value={state.empShare  ? state.empShare * state.exchangeRate : null}
+                      value={
+                        state.empShare
+                          ? state.empShare * state.exchangeRate
+                          : null
+                      }
                     />
                   </Form.Group>
                 </Row>

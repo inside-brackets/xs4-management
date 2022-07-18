@@ -10,8 +10,7 @@ const AddUser = ({ setShowModal }) => {
   const [state, setState] = useState({ isManager: false });
   const [usernameIsValid, setUsernameIsValid] = useState(null);
   console.log(state);
-  const userRegister = useSelector((state) => state.userRegister);
-  const { loading, error } = userRegister;
+  const { loading, error } = useSelector((state) => state.userRegister);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -53,10 +52,13 @@ const AddUser = ({ setShowModal }) => {
     const form = event.currentTarget;
     setValidated(true);
     if (form.checkValidity() === true) {
-      dispatch(Register(state));
-      if (!loading && !error) {
-        setShowModal();
+      if (state.role === "admin") {
+        state.isManager = true;
       }
+      dispatch(Register(state));
+      setTimeout(() => {
+        setShowModal();
+      }, 2000);
     }
   };
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import { Row, Col, Button } from "react-bootstrap";
 
 import MyModal from "../../components/modals/MyModal";
@@ -104,8 +103,8 @@ const User = () => {
       >
         <AddUser
           setShowModal={() => {
-            setAddUserModal(false);
             setRerenderTable(Math.random());
+            setAddUserModal(false);
           }}
         />
       </MyModal>
