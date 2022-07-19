@@ -6,6 +6,7 @@ import MyModal from "../../components/modals/MyModal";
 import Table from "../../components/table/SmartTable";
 import AddUser from "../../components/user/AddUser";
 import ActionButton from "../../components/UI/ActionButton";
+import { formatter } from "../../util/currencyFormatter";
 
 const customerTableHead = [
   "#",
@@ -15,15 +16,6 @@ const customerTableHead = [
   "Role",
   "Actions",
 ];
-
-var formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "PKR",
-
-  // These options are needed to round to whole numbers if that's what you want.
-  //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-  maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-});
 
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 
@@ -42,7 +34,7 @@ const User = () => {
           ? `${item.firstName} ${item.lastName}`
           : "N/A"}
       </td>
-      <td>{formatter.format(item.salary)}</td>
+      <td>{formatter("PKR").format(item.salary)}</td>
       <td>{item.role ?? "NA"}</td>
       <td>
         <div>
@@ -108,17 +100,6 @@ const User = () => {
           }}
         />
       </MyModal>
-      {/* <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      /> */}
     </Row>
   );
 };
