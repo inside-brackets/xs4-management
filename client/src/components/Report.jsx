@@ -72,6 +72,7 @@ const Report = ({ report }) => {
               className="text-center"
             >
               <p>{report.cashRecievedTotal}</p>
+              {/* <p>{formatter("PKR").format(10000000)}</p> */}
             </Col>
           </Row>
           <hr className="m-0" />
