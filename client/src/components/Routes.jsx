@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import Dashboard from "../pages/Admin/Dashboard";
+import UserDashboard from "../pages/User/Dashboard";
 import UserScreen from "../pages/Admin/User";
 import UserDetailScreen from "../pages/Admin/UserDetail";
 import Projects from "../pages/Admin/Projects";
@@ -11,8 +12,8 @@ import Reports from "../pages/Admin/Reports";
 import Profile from "../pages/Profile";
 
 const Routes = () => {
-  const { role } = useSelector((state) => state.userLogin.userInfo);
-  return role === "admin" ? (
+  const userInfo = useSelector((state) => state.userLogin.userInfo);
+  return userInfo.role === "admin" ? (
     <Switch>
       <Route path="/" exact>
         <Redirect to="/dashboard" />
@@ -31,17 +32,20 @@ const Routes = () => {
       </Route>
     </Switch>
   ) : (
-    role === "user" && (
+    userInfo.role === "user" && (
       <Switch>
         <Route path="/" exact>
           <Redirect to="/dashboard" />
         </Route>
+        <Route path="/dashboard" exact component={UserDashboard} />
         <Route path="/projects" exact component={Projects} />
         <Route path="/projects/project" exact component={Project} />
         <Route path="/projects/project/:id" exact component={Project} />
         <Route path="/profile" component={Profile} />
+        {userInfo.isManager && (
+          <Route path="/reports" exact component={Reports} />
+        )}
         <Route path="*">
-          
           <h1>Not found</h1>
         </Route>
       </Switch>

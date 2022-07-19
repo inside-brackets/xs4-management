@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
+import { Col, Form, Row, Spinner } from "react-bootstrap";
 import Report from "../../components/Report";
 
 const Reports = () => {
@@ -19,31 +19,38 @@ const Reports = () => {
     getReports();
   }, []);
 
-  return (
-    <>
-      {" "}
-      {!reports ? (
-        <div>loading</div>
-      ) : (
-        <Row>
-          <Form.Group as={Col} md="6">
-            <Form.Label>Search</Form.Label>
-            <input
-              className="form-control"
-              type="number"
-              placeholder="2022"
-              min="1900"
-              max={new Date().getFullYear()}
-              step="1"
-              // defaultValue={dbUser?.email}
-            />
-          </Form.Group>
-          {reports.map((report) => (
-            <Report report={report} />
-          ))}
-        </Row>
-      )}
-    </>
+  return !reports ? (
+    <Row className="d-flex align-items-center">
+      <Col className="text-center">
+        <Spinner
+          animation="border"
+          variant="primary"
+          style={{
+            height: "50px",
+            width: "50px",
+          }}
+        />
+      </Col>
+    </Row>
+  ) : (
+    <Row>
+      <Form.Group as={Col} md="6">
+        <Form.Label>Search</Form.Label>
+        <input
+          className="form-control"
+          type="number"
+          placeholder="2022"
+          min="1900"
+          max={new Date().getFullYear()}
+          step="1"
+          // defaultValue={dbUser?.email}
+        />
+      </Form.Group>
+
+      {reports.map((report) => (
+        <Report report={report} />
+      ))}
+    </Row>
   );
 };
 

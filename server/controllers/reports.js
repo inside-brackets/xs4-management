@@ -26,8 +26,8 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
       },
       {
         $addFields: {
-          year: { $year: "$createdAt" },
-          month: { $month: "$createdAt" },
+          year: { $year: "$awardedAt" },
+          month: { $month: "$awardedAt" },
           profile: { $arrayElemAt: ["$profile", 0] },
         },
       },
@@ -122,8 +122,8 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
       },
       {
         $addFields: {
-          year: { $year: "$createdAt" },
-          month: { $month: "$createdAt" },
+          year: { $year: "$closedAt" },
+          month: { $month: "$closedAt" },
           profile: { $arrayElemAt: ["$profile", 0] },
         },
       },
@@ -134,11 +134,9 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
             month: "$month",
             profile: "$profile.title",
           },
-          count: {
-            $sum: 1,
-          },
-          totalAmount: {
-            $sum: "$totalAmount",
+
+          amountRecieved: {
+            $sum: "$amountRecieved",
           },
         },
       },
@@ -147,8 +145,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           _id: 0,
           month: "$_id.month",
           profile: "$_id.profile",
-          count: "$count",
-          totalAmount: "$totalAmount",
+          amountRecieved: "$amountRecieved",
         },
       },
       {
@@ -156,18 +153,15 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           _id: {
             profile: "$profile",
           },
-          count: {
-            $sum: "$count",
-          },
-          totalAmount: {
-            $sum: "$totalAmount",
+
+          amountRecieved: {
+            $sum: "$amountRecieved",
           },
           projects: {
             $push: {
               month: "$month",
-              count: "$count",
               projects: "$projects",
-              totalAmount: "$totalAmount",
+              amountRecieved: "$amountRecieved",
             },
           },
         },
@@ -176,7 +170,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
-          total: "$count",
+          total: "$amountRecieved",
           projects: "$projects",
         },
       },
@@ -277,7 +271,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
       if (tempClosed) {
         temp.cashRecievedTotal = tempClosed.total;
         tempClosed.projects.map(
-          (s) => (temp.cashRecievedSummary[s.month - 1] = s.count)
+          (s) => (temp.cashRecievedSummary[s.month - 1] = s.amountRecieved)
         );
       }
       const tempPending = pending.find(

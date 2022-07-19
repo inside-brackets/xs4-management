@@ -10,7 +10,7 @@ const Report = ({ report }) => {
     "Apr",
     "May",
     "Jun",
-    "July",
+    "Jul",
     "Aug",
     "Sep",
     "Oct",
@@ -26,7 +26,7 @@ const Report = ({ report }) => {
   });
   return (
     <Card>
-      <Row className="m-2">
+      <Row className="m-0">
         <Col md={4}>
           <Row
             style={{
@@ -36,16 +36,16 @@ const Report = ({ report }) => {
             className="pb-2"
           >
             <Col className="pt-3 " m={9}>
-              <h5> {report.profile} </h5>
+              <p> {report.profile} </p>
             </Col>
             <Col md={3} className="text-center">
-              <h5 className="mt-3"> Total </h5>
+              <p className="mt-3"> Total </p>
             </Col>
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col className="pt-3 " md={9}>
-              <h5> Project Awarded During Month </h5>
+            <Col md={9}>
+              <p> Project Awarded During Month </p>
             </Col>
             <Col
               style={{
@@ -55,13 +55,13 @@ const Report = ({ report }) => {
               md={3}
               className="text-center"
             >
-              <h5> {report.awardedTotal} </h5>
+              <p> {report.awardedTotal} </p>
             </Col>
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col className="pt-3 " m={9}>
-              <h5> Cash Recieved During Month </h5>
+            <Col m={9}>
+              <p> Cash Recieved During Month </p>
             </Col>
             <Col
               style={{
@@ -71,13 +71,13 @@ const Report = ({ report }) => {
               md={3}
               className="text-center"
             >
-              <h5> {report.cashRecievedTotal} </h5>
+              <p>{report.cashRecievedTotal}</p>
             </Col>
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col className="pt-3" m={9}>
-              <h5> Current Pending Projects </h5>
+            <Col m={9}>
+              <p> Current Pending Projects </p>
             </Col>
             <Col
               style={{
@@ -87,14 +87,13 @@ const Report = ({ report }) => {
               md={3}
               className="text-center"
             >
-              <h5> {report.pendingTotal} </h5>
+              <p> {report.pendingTotal} </p>
             </Col>
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col className="pt-3 " m={9}>
-              {" "}
-              <h5> Total Cancelled Projects </h5>
+            <Col m={9}>
+              <p> Total Cancelled Projects </p>
             </Col>
             <Col
               style={{
@@ -104,10 +103,9 @@ const Report = ({ report }) => {
               md={3}
               className="text-center"
             >
-              <h5> {report.cancelledTotal} </h5>
+              <p> {report.cancelledTotal} </p>
             </Col>
           </Row>
-          <hr className="m-0" />
         </Col>
         <Col md={8}>
           <Row>

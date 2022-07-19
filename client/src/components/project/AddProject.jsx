@@ -4,7 +4,7 @@ import axios from "axios";
 import ReactSelect from "react-select";
 import { useParams } from "react-router-dom";
 import moment from "moment";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -195,6 +195,7 @@ var currency_list = [
   { name: "Yemeni Rial", code: "YER" },
   { name: "Zambian Kwacha", code: "ZMK" },
 ];
+
 const AddProject = () => {
   const [validated, setValidated] = useState(false);
   const [state, setState] = useState({
@@ -218,8 +219,9 @@ const AddProject = () => {
   // behavior states
   const [revertState, setRevertState] = useState(null);
   const [editAble, setEditAble] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isClosed, setIsClosed] = useState(false);
+  const [isMyProjectOrAdmin, setIsMyProjectOrAdmin] = useState(false);
   const history = useHistory();
 
   const { id } = useParams();
@@ -271,41 +273,57 @@ const AddProject = () => {
 
   // set values
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/projects/${id}`)
-        .then((res) => {
-          const tempProject = res.data;
-          setSelectedProfile(tempProject.profile);
-          setIsClosed(tempProject.status === "closed");
+    const populateForm = async () => {
+      const profileRes = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`,
+        {
+          bidder: userInfo.role !== "admin" && userInfo._id,
+        }
+      );
+      var tempProfiles = profileRes.data.data;
 
-          tempProject.profile = tempProject.profile._id;
-          setState((prev) => ({ ...prev, ...tempProject }));
-          setLoading(false);
-        });
-    } else {
-      setEditAble(true);
-    }
-    axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`, {
-        bidder: userInfo.role !== "admin" && userInfo._id,
-      })
-      .then((res) => {
-        setProfiles(res.data.data);
-      });
-    axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/users/100/0`)
-      .then((res) => {
-        setUsers(
-          res.data.data.map((user) => {
-            return {
-              value: user._id,
-              label: user.userName,
-            };
-          })
+      const userRes = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/users/1000/0`
+      );
+      setUsers(
+        userRes.data.data.map((user) => {
+          return {
+            value: user._id,
+            label: user.userName,
+          };
+        })
+      );
+
+      if (id) {
+        const projectRes = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/projects/${id}`
         );
-      });
+
+        const tempProject = projectRes.data;
+        console.log("selected", tempProject.profile);
+
+        setSelectedProfile(tempProject.profile);
+        setIsClosed(tempProject.status === "closed");
+
+        // if it is not user's project don't show profile options
+        const isMyProjectOrAdmin = tempProfiles.some(
+          (p) => p._id === tempProject.profile._id
+        );
+        if (!isMyProjectOrAdmin && userInfo.role !== "admin") {
+          tempProfiles = [tempProject.profile];
+        } else {
+          setIsMyProjectOrAdmin(true);
+        }
+        tempProject.profile = tempProject.profile._id;
+        setState((prev) => ({ ...prev, ...tempProject }));
+      } else {
+        setEditAble(true);
+      }
+      console.log(tempProfiles);
+      setProfiles(tempProfiles);
+    };
+
+    populateForm().then(() => setLoading(false));
   }, [id]);
 
   const handleSubmit = async (event) => {
@@ -390,20 +408,24 @@ const AddProject = () => {
       });
     }
   }, [state.status, state.totalAmount, selectedProfile, state.hasRecruiter]);
-
   return (
     <Card>
       <Card.Header className="text-center">
         <h1>Project Detail</h1>
       </Card.Header>
       {loading ? (
-        <Spinner
-          as="span"
-          animation="spinner-border"
-          size="sm"
-          role="status"
-          aria-hidden="true"
-        />
+        <Row>
+          <Col className="text-center">
+            <Spinner
+              animation="border"
+              variant="primary"
+              style={{
+                height: "50px",
+                width: "50px",
+              }}
+            />
+          </Col>
+        </Row>
       ) : (
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
           <Row className="my-2 mx-3">
@@ -461,10 +483,6 @@ const AddProject = () => {
                     );
                   })}
                 </Form.Control>
-
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid Role.
-                </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>Assignee</Form.Label>
@@ -571,10 +589,6 @@ const AddProject = () => {
                   <option value="cancelled">Cancelled</option>
                   <option value="closed">Closed</option>
                 </Form.Control>
-
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid Role.
-                </Form.Control.Feedback>
               </Form.Group>
             </Row>
 
@@ -605,11 +619,11 @@ const AddProject = () => {
               )}
             </Row>
             <hr className="my-5" />
-            {(userInfo.isManager || userInfo.role === "admin") && (
+            {isMyProjectOrAdmin && (
               <>
                 {" "}
                 <Row className="my-2">
-                  <Form.Group as={Col} md="4">
+                  <Form.Group as={Col} md="2">
                     <Form.Label>
                       Total Amount{" "}
                       <span
@@ -630,7 +644,7 @@ const AddProject = () => {
                       required
                     />
                   </Form.Group>
-                  <Form.Group as={Col} md="4">
+                  <Form.Group as={Col} md="3">
                     <Form.Label>
                       Currency
                       <span
@@ -661,29 +675,8 @@ const AddProject = () => {
                       ))}
                     </Form.Control>
                   </Form.Group>
-
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Amount Deducted</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder="-"
-                      name="amountDeducted"
-                      value={amountDeducted}
-                      readOnly
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Net Recieveable</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder="-"
-                      readOnly
-                      value={netRecieveable}
-                    />
-                  </Form.Group>
                   {state.status === "closed" && (
-                    <Form.Group as={Col} md="4">
+                    <Form.Group as={Col} md="3">
                       <Form.Label>Exchange Rate</Form.Label>
                       <Form.Control
                         type="number"
@@ -699,7 +692,28 @@ const AddProject = () => {
                   )}
                 </Row>
                 <Row>
-                  <Form.Group as={Col} md="4">
+                  <Form.Group as={Col} md="3">
+                    <Form.Label>Amount Deducted</Form.Label>
+                    <Form.Control
+                      type="number"
+                      placeholder="-"
+                      name="amountDeducted"
+                      value={amountDeducted}
+                      readOnly
+                      required
+                    />
+                  </Form.Group>
+                  <Form.Group as={Col} md="3">
+                    <Form.Label>Net Recieveable</Form.Label>
+                    <Form.Control
+                      type="number"
+                      placeholder="-"
+                      readOnly
+                      value={netRecieveable}
+                    />
+                  </Form.Group>
+
+                  <Form.Group as={Col} md="3">
                     <Form.Label>Amount Recieved</Form.Label>
                     <Form.Control
                       type="number"
@@ -712,7 +726,7 @@ const AddProject = () => {
                       readOnly
                     />
                   </Form.Group>
-                  <Form.Group as={Col} md="4">
+                  <Form.Group as={Col} md="3">
                     <Form.Label>Employee Share</Form.Label>
                     <Form.Control
                       type="number"
@@ -795,6 +809,9 @@ const AddProject = () => {
               )}
               Create
             </Button>
+          ) : (userInfo.role === "user" && !userInfo.isManager) ||
+            !isMyProjectOrAdmin ? (
+            <></>
           ) : !editAble ? (
             <Button
               className="p-2 m-3"
@@ -802,9 +819,7 @@ const AddProject = () => {
               md={3}
               onClick={() => {
                 setRevertState(state);
-                if (userInfo.role === "admin") {
-                  setEditAble(true);
-                }
+                setEditAble(true);
               }}
             >
               Edit
@@ -843,7 +858,6 @@ const AddProject = () => {
               </Button>
             </>
           )}
-          {/* <ToastContainer /> */}
         </Form>
       )}
     </Card>
