@@ -22,20 +22,13 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
   }, [defaultValue]);
 
   const handleChange = (evt) => {
-    console.log(evt);
-    if (evt.Label === "bidder") {
-      setState({
-        ...state,
-        [evt.Label]: evt.value,
-      });
-    } else {
       const value = evt.target.value;
       const name = evt.target.name;
       setState({
         ...state,
         [name]: value,
       });
-    }
+    
   };
 
   const handleSubmit = async (event) => {
