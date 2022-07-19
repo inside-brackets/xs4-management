@@ -44,7 +44,7 @@ const Topnav = () => {
                   title={
                     <span className="mx-2">
                       <i className="bx bx-user px-4"></i>
-                      {userInfo.name}
+                      {userInfo.name} ( {userInfo.role} )
                     </span>
                   }
                   id="basic-nav-dropdown"

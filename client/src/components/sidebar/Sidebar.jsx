@@ -19,18 +19,23 @@ const SidebarItem = (props) => {
 };
 
 const Sidebar = (props) => {
-  const { role } = useSelector((state) => state.userLogin.userInfo);
-
+  const userInfo = useSelector((state) => state.userLogin.userInfo);
+  console.log(userInfo);
   return (
     <div className="sidebar">
       <center>
         <div className="sidebar__department">MANAGEMENT PORTAL</div>
       </center>
-      {sidebar_routes[role].map((item, index) => (
+      {sidebar_routes[userInfo.role].map((item, index) => (
         <NavLink activeClassName="active__sidebar" to={item.route} key={index}>
           <SidebarItem title={item.display_name} icon={item.icon} />
         </NavLink>
       ))}
+      {userInfo.role === "user" && userInfo.isManager && (
+        <NavLink activeClassName="active__sidebar" to="/reports">
+          <SidebarItem title="Reports" icon="bx bxs-bar-chart-alt-2" />
+        </NavLink>
+      )}
     </div>
   );
 };
