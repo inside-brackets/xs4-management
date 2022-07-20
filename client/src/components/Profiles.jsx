@@ -58,7 +58,7 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
           setLoading(false);
         });
     } else {
-      const res = await axios
+      await axios
         .put(
           `${process.env.REACT_APP_BACKEND_URL}/profiles/${defaultValue._id}`,
           state

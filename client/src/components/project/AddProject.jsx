@@ -324,7 +324,7 @@ const AddProject = () => {
     };
 
     populateForm().then(() => setLoading(false));
-  }, [id]);
+  }, [id,userInfo._id,userInfo.role]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

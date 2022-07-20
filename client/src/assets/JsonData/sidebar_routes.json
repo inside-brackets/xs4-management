@@ -18,7 +18,7 @@
     {
       "display_name": "Profiles",
       "route": "/profiles",
-      "icon": "bx bx-file"
+      "icon": "bx bxs-id-card"
     },
     {
       "display_name": "Reports",
