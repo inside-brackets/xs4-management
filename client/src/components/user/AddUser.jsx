@@ -52,9 +52,6 @@ const AddUser = ({ setShowModal }) => {
     const form = event.currentTarget;
     setValidated(true);
     if (form.checkValidity() === true) {
-      if (state.role === "admin") {
-        state.isManager = true;
-      }
       dispatch(Register(state));
       setTimeout(() => {
         setShowModal();
@@ -133,17 +130,15 @@ const AddUser = ({ setShowModal }) => {
             Please provide a valid Role.
           </Form.Control.Feedback>
         </Form.Group>
-        {state.role === "user" && (
-          <Form.Group className="mt-4" as={Col} md="2">
-            <Form.Check
-              type="checkbox"
-              name="isManager"
-              checked={state.isManager ?? false}
-              label={`Is Manager`}
-              onChange={handleChange}
-            />
-          </Form.Group>
-        )}
+        <Form.Group className="mt-4" as={Col} md="2">
+          <Form.Check
+            type="checkbox"
+            name="isManager"
+            checked={state.isManager ?? false}
+            label={`Is Manager`}
+            onChange={handleChange}
+          />
+        </Form.Group>
       </Row>
 
       <Button

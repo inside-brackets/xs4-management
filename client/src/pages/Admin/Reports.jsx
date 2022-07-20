@@ -44,9 +44,13 @@ const Reports = () => {
     </Row>
   ) : (
     <Row>
-      <Form.Group className="my-2" as={Col} md="1">
+      <Form.Group className="my-2" as={Col} md="2">
         <Form.Label>Year</Form.Label>
-        <Form.Select required value={year} onChange={(e) => setYear(e.target.value)}>
+        <Form.Select
+          required
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+        >
           {getYears().map((y) => (
             <option value={y}>{y}</option>
           ))}

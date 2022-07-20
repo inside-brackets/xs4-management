@@ -213,7 +213,7 @@ const UserDetail = () => {
                 </Row>
                 <hr />
                 <Row className="mt-2">
-                  <Form.Group as={Col} md="4" sm="12">
+                  <Form.Group as={Col} md="3" sm="12">
                     <Form.Label>Role</Form.Label>
                     <Form.Select
                       name="role"
@@ -227,19 +227,8 @@ const UserDetail = () => {
                       <option value="user">User</option>
                     </Form.Select>
                   </Form.Group>
-                  {user?.role === "user" && (
-                    <Form.Group className="mt-4" as={Col} md="2">
-                      <Form.Check
-                        type="checkbox"
-                        name="isManager"
-                        checked={state.isManager ?? false}
-                        label={`Is Manager`}
-                        disabled={!editFields}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
-                  )}
-                  <Form.Group as={Col} md="4" sm="12">
+
+                  <Form.Group as={Col} md="3" sm="12">
                     <Form.Label>Salary</Form.Label>
                     <Form.Control
                       name="salary"
@@ -247,6 +236,16 @@ const UserDetail = () => {
                       defaultValue={user?.salary ?? ""}
                       type="number"
                       readOnly={!editFields}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mt-4" as={Col} md="2">
+                    <Form.Check
+                      type="checkbox"
+                      name="isManager"
+                      checked={state.isManager ?? false}
+                      label={`Is Manager`}
+                      disabled={!editFields}
+                      onChange={handleChange}
                     />
                   </Form.Group>
                   <Col className="text-center">
@@ -366,17 +365,6 @@ const UserDetail = () => {
           }}
         />
       </MyModal>
-      {/* <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      /> */}
     </Row>
   );
 };
