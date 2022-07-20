@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Oval } from "react-loader-spinner";
 import Select from "react-select";
 import "./table.css";
 import { Row, Col, Form, Alert, Spinner } from "react-bootstrap";

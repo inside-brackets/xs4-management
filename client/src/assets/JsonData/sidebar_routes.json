@@ -16,6 +16,11 @@
       "icon": "bx bx-file"
     },
     {
+      "display_name": "Profiles",
+      "route": "/profiles",
+      "icon": "bx bx-file"
+    },
+    {
       "display_name": "Reports",
       "route": "/reports",
       "icon": "bx bxs-bar-chart-alt-2"
