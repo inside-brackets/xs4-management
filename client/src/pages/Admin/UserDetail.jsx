@@ -16,7 +16,7 @@ const renderHead = (item, index) => <th key={index}>{item}</th>;
 const UserDetail = () => {
   const [editFields, setEditFields] = useState(false);
   const [user, setUser] = useState(null);
-  const [state, setState] = useState({isManager:false});
+  const [state, setState] = useState({ isManager: false });
   const [loading, setLoading] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
   const [defaultValue, setDefaultValue] = useState(null);
@@ -54,13 +54,14 @@ const UserDetail = () => {
           ...prev,
           isManager: res.data.isManager,
         };
-      });};
+      });
+    };
     getUser();
   }, [id]);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
-    const name  = evt.target.name
+    const name = evt.target.name;
     if (name === "isManager") {
       setState((prev) => {
         return {
@@ -69,11 +70,11 @@ const UserDetail = () => {
         };
       });
     } else {
-    setState({
-      ...state,
-      [name]: value,
-    });
-  }
+      setState({
+        ...state,
+        [name]: value,
+      });
+    }
   };
   const handleSubmit = async () => {
     setLoading(true);
@@ -214,13 +215,17 @@ const UserDetail = () => {
                 <Row className="mt-2">
                   <Form.Group as={Col} md="4" sm="12">
                     <Form.Label>Role</Form.Label>
-                    <Form.Control
+                    <Form.Select
                       name="role"
-                      defaultValue={user?.role ?? ""}
                       onChange={handleChange}
-                      type="text"
-                      readOnly={!editFields}
-                    />
+                      defaultValue={user?.role ?? ""}
+                      disabled={!editFields}
+                      required
+                    >
+                      <option value={null}>Select-Role</option>
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </Form.Select>
                   </Form.Group>
                   {user?.role === "user" && (
                     <Form.Group className="mt-4" as={Col} md="2">
@@ -346,7 +351,9 @@ const UserDetail = () => {
       <MyModal
         size="lg"
         show={showModal}
-        heading={`Create Profile For ${user?.userName}`}
+        heading={`${defaultValue ? "Edit" : "Create"} Profile For ${
+          user?.userName
+        }`}
         onClose={() => setShowModal(false)}
         style={{ width: "auto" }}
       >

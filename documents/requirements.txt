@@ -1,9 +1,5 @@
 => add relevent security to server end points.(backend)
 
-is bidder change from is managers 
-change user from profile
-
-
 - ADMIN
     - projects (faraz)
         - view
