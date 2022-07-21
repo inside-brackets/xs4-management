@@ -31,7 +31,6 @@ const Projects = () => {
           "Title",
           "Client",
           "Profile",
-          "Platform",
           "Awarded",
           "Deadline",
           "Total Amount",
@@ -43,7 +42,6 @@ const Projects = () => {
           "Title",
           "Client",
           "Profile",
-          "Platform",
           "Awarded",
           "Deadline",
           "Status",
@@ -54,8 +52,9 @@ const Projects = () => {
       <td>{index + 1 + currPage * 10}</td>
       <td>{item.title}</td>
       <td>{item.clientName ?? "N/A"}</td>
-      <td>{item.profile.title}</td>
-      <td>{item.profile.platform}</td>
+      <td>
+        {item.profile.title} ({item.profile.platform})
+      </td>
       <td>
         {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
       </td>

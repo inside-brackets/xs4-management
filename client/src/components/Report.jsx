@@ -20,7 +20,7 @@ const Report = ({ report }) => {
   const combinedArray = months.map((item, index) => {
     return {
       month: item,
-      awarded: report.awardedSummary[index],
+      closed: report.closedSummary[index],
       cashRecieved: report.cashRecievedSummary[index],
     };
   });
@@ -45,7 +45,7 @@ const Report = ({ report }) => {
           <hr className="m-0" />
           <Row>
             <Col md={9}>
-              <p> Project Awarded During Month </p>
+              <p>Projects Closed</p>
             </Col>
             <Col
               style={{
@@ -55,13 +55,13 @@ const Report = ({ report }) => {
               md={3}
               className="text-center"
             >
-              <p> {report.awardedTotal} </p>
+              <p> {report.closedTotal} </p>
             </Col>
           </Row>
           <hr className="m-0" />
           <Row>
             <Col m={9}>
-              <p> Cash Recieved During Month </p>
+              <p>Cash Recieved</p>
             </Col>
             <Col
               style={{
@@ -78,7 +78,7 @@ const Report = ({ report }) => {
           <hr className="m-0" />
           <Row>
             <Col m={9}>
-              <p> Current Pending Projects </p>
+              <p>Projects Pending</p>
             </Col>
             <Col
               style={{
@@ -94,7 +94,7 @@ const Report = ({ report }) => {
           <hr className="m-0" />
           <Row>
             <Col m={9}>
-              <p> Total Cancelled Projects </p>
+              <p>Projects Cancelled</p>
             </Col>
             <Col
               style={{

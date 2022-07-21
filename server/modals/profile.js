@@ -5,7 +5,6 @@ const profileSchema = new mongoose.Schema(
     // search
     title: {
       type: String,
-      unique: true,
       required: true,
     },
     platform: {
@@ -32,6 +31,8 @@ profileSchema.post("remove", function (doc) {
   console.log("%s has been removed", doc._id);
   // delete all related projects
 });
+
+profileSchema.index({ title: 1, platform: 1 }, { unique: true });
 
 const Profile = mongoose.model("Profile", profileSchema);
 export default Profile;

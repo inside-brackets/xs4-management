@@ -8,12 +8,16 @@ import ProfileModal from "../modals/profile.js";
 // route: /profiles
 export const createProfile = asyncHandler(async (req, res) => {
   try {
-    let profile = await ProfileModal.findOne({ title: req.body.title });
+    const postProfile = req.body;
+    let profile = await ProfileModal.findOne({
+      title: postProfile.title,
+      platform: postProfile.platform,
+    });
     if (profile) {
-      res.status(500).send({ msg: "Title must be unique" });
+      res.status(500).send({ msg: "This profile already exists" });
       return;
     }
-    let createdProfile = await ProfileModal.create(req.body);
+    let createdProfile = await ProfileModal.create(postProfile);
 
     res.status(201);
 
@@ -83,7 +87,7 @@ export const listProfiles = asyncHandler(async (req, res) => {
     const { search, searchExact, share__lte, share__gte, bidder, platform } =
       req.body;
     let filter = { share: { $lte: 100, $gte: 0 } };
-console.log(bidder)
+    console.log(bidder);
     if (platform?.length > 0) {
       filter.platform = { $in: platform };
     }

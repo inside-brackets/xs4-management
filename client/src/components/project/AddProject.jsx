@@ -221,7 +221,6 @@ const AddProject = () => {
   const [editAble, setEditAble] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isClosed, setIsClosed] = useState(false);
-  const [isMyProjectOrAdmin, setIsMyProjectOrAdmin] = useState(false);
   const history = useHistory();
 
   const { id } = useParams();
@@ -305,13 +304,11 @@ const AddProject = () => {
         setIsClosed(tempProject.status === "closed");
 
         // if it is not user's project don't show profile options
-        const isMyProjectOrAdmin = tempProfiles.some(
+        const isMyProject = tempProfiles.some(
           (p) => p._id === tempProject.profile._id
         );
-        if (!isMyProjectOrAdmin && userInfo.role !== "admin") {
+        if (!isMyProject && userInfo.role !== "admin") {
           tempProfiles = [tempProject.profile];
-        } else {
-          setIsMyProjectOrAdmin(true);
         }
         tempProject.profile = tempProject.profile._id;
         setState((prev) => ({ ...prev, ...tempProject }));
@@ -482,7 +479,7 @@ const AddProject = () => {
                   {profiles.map((profile, index) => {
                     return (
                       <option key={index} value={profile._id}>
-                        {profile.title}
+                        {profile.title} {profile.platform}
                       </option>
                     );
                   })}
@@ -623,7 +620,7 @@ const AddProject = () => {
               )}
             </Row>
             <hr className="my-5" />
-            {(isMyProjectOrAdmin || !id) && (
+            {(userInfo.role === "admin" || userInfo.isManager || !id) && (
               <>
                 <Row className="my-2">
                   <Form.Group as={Col} md="2">
@@ -804,8 +801,7 @@ const AddProject = () => {
               )}
               Create
             </Button>
-          ) : (userInfo.role === "user" && !userInfo.isManager) ||
-            !isMyProjectOrAdmin ? (
+          ) : userInfo.role === "user" && !userInfo.isManager ? (
             <></>
           ) : !editAble ? (
             <Button

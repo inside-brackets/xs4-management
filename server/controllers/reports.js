@@ -134,7 +134,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
             month: "$month",
             profile: "$profile.title",
           },
-
+          count: { $sum: 1 },
           amountRecieved: {
             $sum: "$amountRecieved",
           },
@@ -146,6 +146,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           month: "$_id.month",
           profile: "$_id.profile",
           amountRecieved: "$amountRecieved",
+          count: "$count",
         },
       },
       {
@@ -153,7 +154,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           _id: {
             profile: "$profile",
           },
-
+          count: { $sum: "$count" },
           amountRecieved: {
             $sum: "$amountRecieved",
           },
@@ -162,6 +163,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
               month: "$month",
               projects: "$projects",
               amountRecieved: "$amountRecieved",
+              count: "$count",
             },
           },
         },
@@ -170,8 +172,9 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
-          total: "$amountRecieved",
+          totalAmount: "$amountRecieved",
           projects: "$projects",
+          totalCount: "$count",
         },
       },
     ]);
@@ -251,28 +254,31 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
     const profilesSummary = profiles.map((p) => {
       let temp = {
         profile: p.title,
-        awardedTotal: 0,
-        awardedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        closedTotal: 0,
+        closedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         cashRecievedTotal: 0,
         cashRecievedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         pendingTotal: 0,
         cancelledTotal: 0,
       };
-      const tempAwarded = awardedProjects.find(
-        (project) => project.profile === p.title
-      );
-      if (tempAwarded) {
-        temp.awardedTotal = tempAwarded.total;
-        tempAwarded.projects.map(
-          (s) => (temp.awardedSummary[s.month - 1] = s.count)
-        );
-      }
+      // const tempAwarded = awardedProjects.find(
+      //   (project) => project.profile === p.title
+      // );
+      // if (tempAwarded) {
+      //   temp.awardedTotal = tempAwarded.total;
+      //   tempAwarded.projects.map(
+      //     (s) => (temp.awardedSummary[s.month - 1] = s.count)
+      //   );
+      // }
       const tempClosed = closed.find((project) => project.profile === p.title);
       if (tempClosed) {
-        temp.cashRecievedTotal = tempClosed.total;
-        tempClosed.projects.map(
-          (s) => (temp.cashRecievedSummary[s.month - 1] = s.amountRecieved)
-        );
+        temp.cashRecievedTotal = tempClosed.totalAmount;
+        temp.closedTotal = tempClosed.totalCount;
+
+        tempClosed.projects.map((s) => {
+          temp.cashRecievedSummary[s.month - 1] = s.amountRecieved;
+          temp.closedSummary[s.month - 1] = s.count;
+        });
       }
       const tempPending = pending.find(
         (project) => project.profile === p.title
@@ -287,8 +293,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         temp.cancelledTotal = tempCancelled.total;
       }
 
-      if (tempAwarded || tempClosed || tempCancelled || tempPending)
-        return temp;
+      if (tempClosed || tempCancelled || tempPending) return temp;
     });
 
     const cleanedProfileSumaries = profilesSummary.filter((n) => n);

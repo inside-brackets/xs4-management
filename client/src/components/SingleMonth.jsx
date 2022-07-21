@@ -19,7 +19,7 @@ const SingleMonth = ({ item }) => {
       </Row>
       <Row>
         <Col className="text-center">
-          <p>{item.awarded}</p>
+          <p>{item.closed}</p>
         </Col>
       </Row>
       <Row className="mt-2 ">

@@ -1,8 +1,8 @@
 => add relevent security to server end points.(backend)
 => change profile add and edit modal. (input bidder on add and do not ask for change user just dropdown on edit)
-=> in add profile modal check for profile name uniqueness.
 => in reports formate cash recieved row to PKR, make months list scrollable horizontally
 => After applying filters in Projects Tab, export result to excel feature.
+=> clossing date range flter in projects
 
 - ADMIN
     - projects (faraz)
