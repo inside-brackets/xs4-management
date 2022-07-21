@@ -62,7 +62,9 @@ const Projects = () => {
       <td>
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
-      {userInfo.role === "admin" && <td>{item.totalAmount}</td>}
+      {userInfo.role === "admin" && (
+        <td>{formatter(item.currency).format(item.totalAmount)}</td>
+      )}
       <td>
         <h5>
           <Badge bg={status_map[item.status]}>{item.status}</Badge>

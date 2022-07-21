@@ -405,7 +405,13 @@ const AddProject = () => {
         };
       });
     }
-  }, [state.status, state.totalAmount, selectedProfile, state.hasRecruiter]);
+  }, [
+    state.status,
+    state.totalAmount,
+    selectedProfile,
+    state.hasRecruiter,
+    state.exchangeRate,
+  ]);
   return (
     <Card>
       <Card.Header className="text-center">

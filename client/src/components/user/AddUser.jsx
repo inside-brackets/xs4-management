@@ -9,7 +9,6 @@ const AddUser = ({ setShowModal }) => {
   const [validated, setValidated] = useState(false);
   const [state, setState] = useState({ isManager: false });
   const [usernameIsValid, setUsernameIsValid] = useState(null);
-  console.log(state);
   const { loading } = useSelector((state) => state.userRegister);
 
   const handleChange = (evt) => {
