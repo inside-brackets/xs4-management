@@ -22,6 +22,7 @@ const Report = ({ report }) => {
       month: item,
       closed: report.closedSummary[index],
       cashRecieved: report.cashRecievedSummary[index],
+      empShare: report.empShareSummary[index],
     };
   });
   return (
@@ -73,6 +74,22 @@ const Report = ({ report }) => {
             >
               <p>{report.cashRecievedTotal}</p>
               {/* <p>{formatter("PKR").format(10000000)}</p> */}
+            </Col>
+          </Row>
+          <hr className="m-0" />
+          <Row>
+            <Col m={9}>
+              <p>Employee Share</p>
+            </Col>
+            <Col
+              style={{
+                backgroundColor: "#222B35",
+                color: "#7193B0",
+              }}
+              md={3}
+              className="text-center"
+            >
+              <p>{report.empShareTotal}</p>
             </Col>
           </Row>
           <hr className="m-0" />

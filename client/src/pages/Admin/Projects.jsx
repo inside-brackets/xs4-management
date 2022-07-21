@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Row, Col, Button, Badge } from "react-bootstrap";
 
@@ -34,6 +34,7 @@ const Projects = () => {
           "Awarded",
           "Deadline",
           "Total Amount",
+          "Employee Share",
           "Status",
           "Actions",
         ]
@@ -47,6 +48,7 @@ const Projects = () => {
           "Status",
           "Actions",
         ];
+
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * 10}</td>
@@ -62,7 +64,12 @@ const Projects = () => {
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
       {userInfo.role === "admin" && (
-        <td>{formatter(item.currency).format(item.totalAmount)}</td>
+        <Fragment>
+          <td>{formatter(item.currency).format(item.totalAmount)}</td>
+          <td>
+            {item.empShare ? formatter("PKR").format(item.empShare) : "N/A"}
+          </td>
+        </Fragment>
       )}
       <td>
         <h5>

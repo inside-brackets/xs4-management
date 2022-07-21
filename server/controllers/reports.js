@@ -138,6 +138,9 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           amountRecieved: {
             $sum: "$amountRecieved",
           },
+          empShare: {
+            $sum: "$empShare",
+          },
         },
       },
       {
@@ -146,6 +149,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           month: "$_id.month",
           profile: "$_id.profile",
           amountRecieved: "$amountRecieved",
+          empShare: "$empShare",
           count: "$count",
         },
       },
@@ -158,11 +162,15 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           amountRecieved: {
             $sum: "$amountRecieved",
           },
+          empShare: {
+            $sum: "$empShare",
+          },
           projects: {
             $push: {
               month: "$month",
               projects: "$projects",
               amountRecieved: "$amountRecieved",
+              empShare: "$empShare",
               count: "$count",
             },
           },
@@ -172,9 +180,10 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
-          totalAmount: "$amountRecieved",
-          projects: "$projects",
           totalCount: "$count",
+          totalAmount: "$amountRecieved",
+          totalEmpShare: "$empShare",
+          projects: "$projects",
         },
       },
     ]);
@@ -258,6 +267,8 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         closedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         cashRecievedTotal: 0,
         cashRecievedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        empShareTotal: 0,
+        empShareSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         pendingTotal: 0,
         cancelledTotal: 0,
       };
@@ -274,10 +285,12 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
       if (tempClosed) {
         temp.cashRecievedTotal = tempClosed.totalAmount;
         temp.closedTotal = tempClosed.totalCount;
+        temp.empShareTotal = tempClosed.totalEmpShare;
 
         tempClosed.projects.map((s) => {
           temp.cashRecievedSummary[s.month - 1] = s.amountRecieved;
           temp.closedSummary[s.month - 1] = s.count;
+          temp.empShareSummary[s.month - 1] = s.empShare;
         });
       }
       const tempPending = pending.find(

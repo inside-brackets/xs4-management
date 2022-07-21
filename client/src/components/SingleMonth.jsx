@@ -27,6 +27,11 @@ const SingleMonth = ({ item }) => {
           <p>{item.cashRecieved}</p>
         </Col>
       </Row>
+      <Row className="mt-2 ">
+        <Col className="text-center">
+          <p>{item.empShare}</p>
+        </Col>
+      </Row>
     </Col>
   );
 };
