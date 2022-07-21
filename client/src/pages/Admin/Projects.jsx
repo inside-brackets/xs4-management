@@ -157,6 +157,7 @@ const Projects = () => {
       bidder: bidder,
       assignee: users,
       profile: profiles,
+      date_range:"closedAt",
     };
   } else {
     filter = {

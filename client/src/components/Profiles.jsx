@@ -6,20 +6,17 @@ import { toast } from "react-toastify";
 const Profiles = ({ user, defaultValue, onSuccess }) => {
   const [state, setState] = useState({ bidder: user?._id });
   const [users, setUsers] = useState([]);
-  const [changeUser, setChangeUser] = useState(false);
 
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (defaultValue) {
       axios
         .post(`${process.env.REACT_APP_BACKEND_URL}/users/100/0`)
         .then((res) => {
           setUsers(res.data.data);
         });
-    }
-  }, [defaultValue]);
+  }, []);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -121,36 +118,22 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
               type="number"
             />
           </Form.Group>
-          {defaultValue && (
-            <Col
-              className="text-center"
-              style={{
-                marginTop: "29px",
-              }}
-            >
-              <Button onClick={() => setChangeUser(!changeUser)}>
-                Change User
-              </Button>
-            </Col>
-          )}
-          {changeUser && (
-            <Form.Group as={Col} md="6">
-              <Form.Label>Bidder</Form.Label>
-              <Form.Control
-                as="select"
-                name="bidder"
-                onChange={handleChange}
-                required
-              >
-                {" "}
-                {users
-                  .filter((item) => item.isManager)
-                  .map((user) => (
-                    <option value={user._id}>{user.userName}</option>
-                  ))}{" "}
-              </Form.Control>
-            </Form.Group>
-          )}
+          <Form.Group as={Col} md="6">
+            <Form.Label>Bidder</Form.Label>
+            <Form.Select name="bidder" onChange={handleChange} required>
+              {" "}
+              <option>{defaultValue?.bidder?.userName ?? null}</option>
+              {users
+                .filter(
+                  (item) =>
+                    item.isManager &&
+                     defaultValue ? item.userName !== defaultValue?.bidder?.userName : item.isManager
+                )
+                .map((user) => (
+                  <option value={user._id}>{user.userName}</option>
+                ))}{" "}
+            </Form.Select>
+          </Form.Group>
           <Row className="mt-3">
             <Col md="6">
               <Button disabled={loading} type="submit">

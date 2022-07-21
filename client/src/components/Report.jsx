@@ -28,7 +28,7 @@ const Report = ({ report }) => {
   return (
     <Card>
       <Row className="m-0">
-        <Col md={4}>
+        <Col md={3}>
           <Row
             style={{
               backgroundColor: "#222B35",
@@ -36,16 +36,16 @@ const Report = ({ report }) => {
             }}
             className="pb-2"
           >
-            <Col className="pt-3 " m={9}>
+            <Col className="pt-3 " m={7}>
               <p> {report.profile} </p>
             </Col>
-            <Col md={3} className="text-center">
+            <Col md={5} className="text-center">
               <p className="mt-3"> Total </p>
             </Col>
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col md={9}>
+            <Col md={7}>
               <p>Projects Closed</p>
             </Col>
             <Col
@@ -53,7 +53,7 @@ const Report = ({ report }) => {
                 backgroundColor: "#222B35",
                 color: "#7193B0",
               }}
-              md={3}
+              md={5}
               className="text-center"
             >
               <p> {report.closedTotal} </p>
@@ -61,7 +61,7 @@ const Report = ({ report }) => {
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col m={9}>
+            <Col m={7}>
               <p>Cash Recieved</p>
             </Col>
             <Col
@@ -69,7 +69,7 @@ const Report = ({ report }) => {
                 backgroundColor: "#222B35",
                 color: "#7193B0",
               }}
-              md={3}
+              md={5}
               className="text-center"
             >
               <p>{report.cashRecievedTotal}</p>
@@ -78,7 +78,7 @@ const Report = ({ report }) => {
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col m={9}>
+            <Col m={7}>
               <p>Employee Share</p>
             </Col>
             <Col
@@ -86,7 +86,7 @@ const Report = ({ report }) => {
                 backgroundColor: "#222B35",
                 color: "#7193B0",
               }}
-              md={3}
+              md={5}
               className="text-center"
             >
               <p>{report.empShareTotal}</p>
@@ -102,7 +102,7 @@ const Report = ({ report }) => {
                 backgroundColor: "#222B35",
                 color: "#7193B0",
               }}
-              md={3}
+              md={5}
               className="text-center"
             >
               <p> {report.pendingTotal} </p>
@@ -110,7 +110,7 @@ const Report = ({ report }) => {
           </Row>
           <hr className="m-0" />
           <Row>
-            <Col m={9}>
+            <Col m={7}>
               <p>Projects Cancelled</p>
             </Col>
             <Col
@@ -118,14 +118,14 @@ const Report = ({ report }) => {
                 backgroundColor: "#222B35",
                 color: "#7193B0",
               }}
-              md={3}
+              md={5}
               className="text-center"
             >
               <p> {report.cancelledTotal} </p>
             </Col>
           </Row>
         </Col>
-        <Col md={8}>
+        <Col md={9}>
           <Row>
             {combinedArray.map((item, index) => {
               return <SingleMonth key={index} item={item} />;

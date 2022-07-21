@@ -6,6 +6,10 @@ import { Row, Col, Form, Alert, Spinner,Button } from "react-bootstrap";
 import * as XLSX from "xlsx";
 const makeFilter = (filter) => {
   let temp = {};
+  filter[filter.startDate.label] = filter.startDate.value
+  filter[filter.endDate.label] = filter.endDate.value
+  delete filter.startDate
+  delete filter.endDate
   for (let [key, value] of Object.entries(filter)) {
     if (value instanceof Array) {
       value = value.map((item) => item.value ?? item);
@@ -28,8 +32,8 @@ const Table = (props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState({label:null,value:null});
+  const [endDate, setEndDate] = useState({label:null,value:null});
   let pages = 1;
   let range = [];
 
@@ -70,7 +74,10 @@ const Table = (props) => {
         axios
           .post(
             `${props.api.url}/${props.limit}/${currPage * props.limit}`,
-            makeFilter({ ...filter, search, ...props.api.body })
+            makeFilter({ ...filter, search, ...props.api.body, 
+              startDate: startDate,
+              endDate : endDate
+             })
           )
           .then((res) => {
             const pageKey = `page${currPage}`;
@@ -166,12 +173,13 @@ const Table = (props) => {
 
         {Object.keys(props.filter).map((key, index) => {
           if (key === "date_range") {
+            console.log("smart table key",props.filter[key])
             return (
               <>
                 <Col md={3}>
                   <label>From</label>
                   <input
-                    onChange={(e) => setStartDate(e.target.value)}
+                    onChange={(e) => setStartDate({label: `${props.filter[key]}__gte`, value: e.target.value})}
                     type="date"
                     className="form-control"
                   />
@@ -181,7 +189,7 @@ const Table = (props) => {
                   <input
                     disabled={!startDate}
                     onChange={(e) => {
-                      setEndDate(e.target.value);
+                      setEndDate({label: `${props.filter[key]}__lt`, value: e.target.value});
                       setBodyData([]);
                       setCurrPage(0);
                     }}
