@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Row, Col, Button } from "react-bootstrap";
 
 import { useSelector } from "react-redux";
@@ -9,26 +8,32 @@ import axios from "axios";
 import ActionButton from "../../components/UI/ActionButton";
 import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
-import ProfileEdit from '../../components/Profiles'
+import ProfileEdit from "../../components/Profiles";
 
-const customerTableHead = ["#", "Title", "Paltform", "Share", "actions"];
+const customerTableHead = [
+  "#",
+  "Title",
+  "Paltform",
+  "Bidder",
+  "Share",
+  "actions",
+];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
+
 const Profiles = () => {
   const [bidder, setBidder] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [defaultValue, setDefaultValue] = useState(null)
-  const [rerenderTable, setRerenderTable] = useState(null)
+  const [defaultValue, setDefaultValue] = useState(null);
+  const [rerenderTable, setRerenderTable] = useState(null);
   const { userInfo } = useSelector((state) => state.userLogin);
-
-  const history = useHistory();
 
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * 10}</td>
       <td>{item.title}</td>
-      {/* <td>{formatter.format(item.salary)}</td> */}
-      <td>{item.platform ?? "NA"}</td>
-      <td>{item.share ?? "NA"}</td>
+      <td>{item.platform ?? "N/A"}</td>
+      <td>{item.bidder.userName}</td>
+      <td>{item.share ? `${item.share}%` : "N/A"}</td>
       <td>
         <ActionButton
           type="edit"
@@ -40,8 +45,6 @@ const Profiles = () => {
       </td>
     </tr>
   );
-
-
 
   useEffect(() => {
     axios
@@ -56,7 +59,7 @@ const Profiles = () => {
 
         setBidder(userOptions);
       });
-      }, []);
+  }, []);
 
   var filter = {};
   var body = {};
@@ -70,7 +73,7 @@ const Profiles = () => {
       ],
       bidder: bidder,
     };
-  } 
+  }
 
   return (
     <Row>
@@ -80,20 +83,22 @@ const Profiles = () => {
         <Col md={4}>
           {userInfo.isManager || userInfo.role === "admin" ? (
             <Button
-              onClick={() => history.push("/projects/project")}
+              onClick={() => {
+                setShowModal(true);
+              }}
               style={{ float: "right" }}
             >
-              Add Project
+              Add Profiles
             </Button>
           ) : (
             <></>
-          )}{" "}
+          )}
         </Col>
       </Row>
       <div className="card">
         <div className="card__body">
           <Table
-          key={rerenderTable}
+            key={rerenderTable}
             title="Profiles"
             limit={10}
             headData={customerTableHead}
@@ -113,15 +118,17 @@ const Profiles = () => {
       <MyModal
         size="lg"
         show={showModal}
-        heading={`${defaultValue ? "Edit" : "Create"} Profile For ${
-          defaultValue?.userName
-        }`}
-        onClose={() => setShowModal(false)}
+        heading={`${defaultValue ? "Edit" : "Create"} Profile`}
+        onClose={() => {
+          setDefaultValue(null);
+          setShowModal(false);
+        }}
         style={{ width: "auto" }}
       >
         <ProfileEdit
           defaultValue={defaultValue}
           onSuccess={() => {
+            setDefaultValue(null);
             setRerenderTable(Math.random());
             setShowModal(false);
           }}

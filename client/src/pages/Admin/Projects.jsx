@@ -12,28 +12,7 @@ import Table from "../../components/table/SmartTable";
 import status_map from "../../assets/JsonData/project_status_map.json";
 
 import moment from "moment";
-
-const customerTableHead = [
-  "#",
-  "Title",
-  "Client",
-  "Profile",
-  "Platform",
-  "Awarded",
-  "Deadline",
-  "Total Amount",
-  "Status",
-  "Actions",
-];
-
-var formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "PKR",
-
-  // These options are needed to round to whole numbers if that's what you want.
-  //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-  maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-});
+import { formatter } from "../../util/currencyFormatter";
 
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 
@@ -45,6 +24,31 @@ const Projects = () => {
 
   const history = useHistory();
 
+  const customerTableHead =
+    userInfo.role === "admin"
+      ? [
+          "#",
+          "Title",
+          "Client",
+          "Profile",
+          "Platform",
+          "Awarded",
+          "Deadline",
+          "Total Amount",
+          "Status",
+          "Actions",
+        ]
+      : [
+          "#",
+          "Title",
+          "Client",
+          "Profile",
+          "Platform",
+          "Awarded",
+          "Deadline",
+          "Status",
+          "Actions",
+        ];
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * 10}</td>
@@ -58,7 +62,7 @@ const Projects = () => {
       <td>
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
-      <td>{formatter.format(item.totalAmount)}</td>
+      {userInfo.role === "admin" && <td>{item.totalAmount}</td>}
       <td>
         <h5>
           <Badge bg={status_map[item.status]}>{item.status}</Badge>

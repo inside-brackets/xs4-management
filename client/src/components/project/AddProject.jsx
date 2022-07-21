@@ -225,7 +225,7 @@ const AddProject = () => {
   const history = useHistory();
 
   const { id } = useParams();
-
+  console.log(!id);
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;
@@ -300,7 +300,6 @@ const AddProject = () => {
         );
 
         const tempProject = projectRes.data;
-        console.log("selected", tempProject.profile);
 
         setSelectedProfile(tempProject.profile);
         setIsClosed(tempProject.status === "closed");
@@ -319,12 +318,11 @@ const AddProject = () => {
       } else {
         setEditAble(true);
       }
-      console.log(tempProfiles);
       setProfiles(tempProfiles);
     };
 
     populateForm().then(() => setLoading(false));
-  }, [id,userInfo._id,userInfo.role]);
+  }, [id, userInfo._id, userInfo.role]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -402,8 +400,8 @@ const AddProject = () => {
           : 0;
         return {
           ...prev,
-          empShare: share,
-          amountRecieved: netRec,
+          empShare: share * state.exchangeRate,
+          amountRecieved: netRec * state.exchangeRate,
         };
       });
     }
@@ -619,13 +617,12 @@ const AddProject = () => {
               )}
             </Row>
             <hr className="my-5" />
-            {isMyProjectOrAdmin && (
+            {(isMyProjectOrAdmin || !id) && (
               <>
-                {" "}
                 <Row className="my-2">
                   <Form.Group as={Col} md="2">
                     <Form.Label>
-                      Total Amount{" "}
+                      Total Amount
                       <span
                         style={{
                           color: "red",
@@ -718,11 +715,7 @@ const AddProject = () => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      value={
-                        state.amountRecieved
-                          ? state.amountRecieved * state.exchangeRate
-                          : null
-                      }
+                      value={state.amountRecieved ?? null}
                       readOnly
                     />
                   </Form.Group>
@@ -732,11 +725,7 @@ const AddProject = () => {
                       type="number"
                       placeholder="-"
                       readOnly
-                      value={
-                        state.empShare
-                          ? state.empShare * state.exchangeRate
-                          : null
-                      }
+                      value={state.empShare ?? null}
                     />
                   </Form.Group>
                 </Row>

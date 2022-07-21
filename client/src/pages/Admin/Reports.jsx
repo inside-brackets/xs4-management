@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Col, Form, Row, Spinner } from "react-bootstrap";
+import { Col, Form, Row, Spinner, Card } from "react-bootstrap";
 import Report from "../../components/Report";
 const getYears = () => {
   const year = new Date().getFullYear();
@@ -57,9 +57,11 @@ const Reports = () => {
         </Form.Select>
       </Form.Group>
 
-      {reports.map((report) => (
-        <Report report={report} />
-      ))}
+      <Card className="scroll-container m-0" style={{ maxHeight: "70vh" }}>
+        {reports.map((report) => (
+          <Report report={report} />
+        ))}
+      </Card>
     </Row>
   );
 };

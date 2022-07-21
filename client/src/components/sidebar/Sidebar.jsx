@@ -20,7 +20,6 @@ const SidebarItem = (props) => {
 
 const Sidebar = (props) => {
   const userInfo = useSelector((state) => state.userLogin.userInfo);
-  console.log(userInfo);
   return (
     <div className="sidebar">
       <center>

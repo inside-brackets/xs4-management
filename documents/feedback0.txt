@@ -1,0 +1,13 @@
+1. In, report, data should be take from amount received in PKR, as other fields will have amount in different currencies.(fixed) 
+
+2. How are we planning to get report of "Employee Share" on User | Profile | Month basis? (to be discussed)
+
+3. While adding Project, there is not option of adding value. We have to edit the project to add value. What is the reason for that? (fixed)
+
+4. In profile list, we are only seeing Khurram, not Khurram Freelancer or Khurram Upwork. That will make it difficult to identify profiles.(to be discussed)
+
+5. We cannot show Total Amount in "Projects" page to users who are not Managers. (fixed)
+
+6. After applying filters in Projects Tab, how can we extract that to excel? (IP)
+
+7. In dashboard, we can add 2nd Report in Excel. I can explain how it works over call later in evening today. (to be discussed)

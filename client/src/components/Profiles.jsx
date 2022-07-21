@@ -22,13 +22,12 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
   }, [defaultValue]);
 
   const handleChange = (evt) => {
-      const value = evt.target.value;
-      const name = evt.target.name;
-      setState({
-        ...state,
-        [name]: value,
-      });
-    
+    const value = evt.target.value;
+    const name = evt.target.name;
+    setState({
+      ...state,
+      [name]: value,
+    });
   };
 
   const handleSubmit = async (event) => {
@@ -123,17 +122,20 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
             />
           </Form.Group>
           {defaultValue && (
-            <Col className="text-center" style={{
-              marginTop:'29px'
-            }}>
+            <Col
+              className="text-center"
+              style={{
+                marginTop: "29px",
+              }}
+            >
               <Button onClick={() => setChangeUser(!changeUser)}>
                 Change User
-              </Button>{" "}
+              </Button>
             </Col>
           )}
           {changeUser && (
             <Form.Group as={Col} md="6">
-              <Form.Label>Assignee</Form.Label>
+              <Form.Label>Bidder</Form.Label>
               <Form.Control
                 as="select"
                 name="bidder"
@@ -141,9 +143,11 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
                 required
               >
                 {" "}
-                {users.filter(item=> item.isManager).map((user) => (
-                  <option value={user._id}>{user.userName}</option>
-                ))}{" "}
+                {users
+                  .filter((item) => item.isManager)
+                  .map((user) => (
+                    <option value={user._id}>{user.userName}</option>
+                  ))}{" "}
               </Form.Control>
             </Form.Group>
           )}
