@@ -1,7 +1,8 @@
 import React from "react";
+import { Card } from "react-bootstrap";
 
 const Dashboard = () => {
-  return <div>Home</div>;
+  return <Card>Welcome, Home</Card>;
 };
 
 export default Dashboard;

@@ -90,7 +90,7 @@ export const listProjects = asyncHandler(async (req, res) => {
       awardedAt__gte,
       awardedAt__lt,
       closedAt__gte,
-      closedAt__lt,
+      closedAt__lte,
       deadlineAt__gte,
       deadlineAt__lt,
       platform,
@@ -158,10 +158,11 @@ export const listProjects = asyncHandler(async (req, res) => {
         $lt: new Date(awardedAt__lt),
       };
     }
-    if (closedAt__gte && closedAt__lt) {
+    if (closedAt__gte && closedAt__lte) {
       filter.closedAt = {
+        $exists: true,
         $gte: new Date(closedAt__gte),
-        $lt: new Date(closedAt__lt),
+        $lte: new Date(closedAt__lte),
       };
     }
     if (deadlineAt__gte && deadlineAt__lt) {
