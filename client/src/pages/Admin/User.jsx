@@ -47,6 +47,19 @@ const User = () => {
     </tr>
   );
 
+  const renderExportData = (item, index, currPage) => {
+    return {
+      Name: item.userName,
+
+      fullName:
+        item.firstName && item.lastName
+          ? `${item.firstName} ${item.lastName}`
+          : "N/A",
+      salary: formatter("PKR").format(item.salary),
+      role: item.role ?? "NA",
+    };
+  };
+
   return (
     <Row>
       <Row className="m-3">
@@ -83,6 +96,8 @@ const User = () => {
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
             }
+            renderExportData={(data) => renderExportData(data)}
+            exportData
           />
         </div>
       </div>

@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import "./table.css";
-import { Row, Col, Form, Alert, Spinner } from "react-bootstrap";
-
+import { Row, Col, Form, Alert, Spinner,Button } from "react-bootstrap";
+import * as XLSX from "xlsx";
 const makeFilter = (filter) => {
   let temp = {};
   for (let [key, value] of Object.entries(filter)) {
@@ -90,6 +90,23 @@ const Table = (props) => {
     }
   };
 
+  const downloadExcel = () => {
+    axios
+      .post(
+        `${props.api.url}/${totalLength}/0`,
+        makeFilter({ ...filter, search, ...props.api.body })
+      )
+      .then(({ data }) => {
+        const sortedData = data.data.map((item)=>props.renderExportData(item)) 
+        const worksheet = XLSX.utils.json_to_sheet(sortedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+        //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+        XLSX.writeFile(workbook, `${props.title} DataSheet.xlsx`);
+      });
+  };
+
   let bodyHtml = null;
   if (loading) {
     bodyHtml = (
@@ -130,6 +147,7 @@ const Table = (props) => {
       </Row>
     );
   }
+
   return (
     <div>
       <Row className="align-items-center">
@@ -145,6 +163,7 @@ const Table = (props) => {
             />
           </Col>
         )}
+
         {Object.keys(props.filter).map((key, index) => {
           if (key === "date_range") {
             return (
@@ -165,7 +184,6 @@ const Table = (props) => {
                       setEndDate(e.target.value);
                       setBodyData([]);
                       setCurrPage(0);
-                      // getData();
                     }}
                     min={startDate}
                     type="date"
@@ -184,17 +202,21 @@ const Table = (props) => {
                 isMulti={true}
                 value={filter[key]}
                 onChange={(value) => {
-                  // setFilter(value);
                   filterData(value, key);
                   setBodyData([]);
                   setCurrPage(0);
-                  // getData();
                 }}
                 options={props.filter[key]}
               />
             </Col>
           );
         })}
+
+{props.exportData && (
+          <Col className="mt-4" md={3}>
+          <Button onClick={downloadExcel}>Download As Excel</Button>
+          </Col>
+        )}
       </Row>
 
       <div
@@ -247,17 +269,6 @@ const Table = (props) => {
                   {" "}
                   {`<`}{" "}
                 </button>
-                {/* {range.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`table__pagination-item ${
-                        currPage === index ? "active" : ""
-                      }`}
-                      onClick={() => selectPage(index)}
-                    >
-                      {item + 1}
-                    </div>
-                  ))} */}
                 <button
                   className="table__pagination-item"
                   onClick={() =>

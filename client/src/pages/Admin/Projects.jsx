@@ -84,6 +84,23 @@ const Projects = () => {
       </td>
     </tr>
   );
+  const renderExportData = (item, index, currPage) => {
+    return {
+      Title: item.title,
+      Client_Name: item.clientName ?? "N/A",
+      Profile: item.profile.title,
+      Platform: item.profile.platform,
+      AwardedAt: item.awardedAt
+        ? moment(item.awardedAt).format("DD MMM")
+        : "N/A",
+      DeadlineAt: item.awardedAt
+        ? moment(item.deadlineAt).format("DD MMM")
+        : "N/A",
+      totalAmount:
+        userInfo.role === "admin" &&
+        formatter(item.currency).format(item.totalAmount),
+    };
+  };
 
   useEffect(() => {
     axios
@@ -187,6 +204,8 @@ const Projects = () => {
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
             }
+            renderExportData={(data) => renderExportData(data)}
+            exportData
           />
         </div>
       </div>

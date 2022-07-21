@@ -45,7 +45,14 @@ const Profiles = () => {
       </td>
     </tr>
   );
-
+  const renderExportData = (item) => {
+    return {
+      title: item.title,
+      platform: item.platform ?? null,
+      bidder: item.bidder.userName,
+      share: item.share ? `${item.share}%` : null,
+    };
+  };
   useEffect(() => {
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/users/1000/0`, {
@@ -112,6 +119,8 @@ const Profiles = () => {
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
             }
+            renderExportData={(data) => renderExportData(data)}
+            exportData
           />
         </div>
       </div>
