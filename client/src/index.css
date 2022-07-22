@@ -15,3 +15,8 @@ code {
 .btn {
   min-width: 150px !important;
 }
+
+.my-card {
+  background-color: #fafafb !important;
+  border: none !important;
+}

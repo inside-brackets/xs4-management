@@ -2,21 +2,7 @@ import React from "react";
 import { Row, Col, Card } from "react-bootstrap";
 import SingleMonth from "./SingleMonth";
 
-const Report = ({ report }) => {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+const Report = ({ report, months }) => {
   const combinedArray = months.map((item, index) => {
     return {
       month: item,
