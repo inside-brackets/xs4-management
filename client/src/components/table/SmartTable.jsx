@@ -200,7 +200,7 @@ const Table = (props) => {
                     disabled={!startDate}
                     onChange={(e) => {
                       setEndDate({
-                        label: `${props.filter[key]}__lt`,
+                        label: `${props.filter[key]}__lte`,
                         value: e.target.value,
                       });
                       setBodyData([]);
