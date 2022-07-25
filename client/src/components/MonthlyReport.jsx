@@ -13,11 +13,11 @@ const ans = combinedArray.find((item)=> item.month === currMonth)
   return (
     <Row className="mt-3">
       <Col><h6> {report.profile}</h6></Col>
-      <Col className="text-center">{ans.cashRecieved}</Col>
-      <Col className="text-center">{ans.empShare}</Col>
-      <Col className="text-center">{ans.closed}</Col>
-      <Col className="text-center">{report.pendingTotal}</Col>
-      <Col className="text-center">{report.cancelledTotal}</Col>
+      <Col className="text-center">{ans?.cashRecieved}</Col>
+      <Col className="text-center">{ans?.empShare}</Col>
+      <Col className="text-center">{ans?.closed}</Col>
+      <Col className="text-center">{report?.pendingTotal}</Col>
+      <Col className="text-center">{report?.cancelledTotal}</Col>
     </Row>
   );
 };

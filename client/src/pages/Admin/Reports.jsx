@@ -78,7 +78,7 @@ const Reports = () => {
           value={month}
           onChange={(e) => setMonth(e.target.value)}
         >
-          <option value={null}>Year-View</option>
+          <option value="">Year-View</option>
           {months.map((y) => (
             <option value={y}>{y}</option>
           ))}
