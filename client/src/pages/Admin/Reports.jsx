@@ -30,14 +30,13 @@ const months = [
 const Reports = () => {
   const [reports, setReports] = useState(null);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [month, setMonth] = useState(null);
+  const [month, setMonth] = useState("");
   useEffect(() => {
     const getReports = async () => {
       const res = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/reports/profiles_summary/${year}`
       );
       if (res.status === 200) {
-        console.log(res.data);
         setReports(res.data);
       }
     };
@@ -66,8 +65,8 @@ const Reports = () => {
           value={year}
           onChange={(e) => setYear(e.target.value)}
         >
-          {getYears().map((y) => (
-            <option value={y}>{y}</option>
+          {getYears().map((y,i) => (
+            <option key={i} value={y}>{y}</option>
           ))}
         </Form.Select>
       </Form.Group>
@@ -79,8 +78,8 @@ const Reports = () => {
           onChange={(e) => setMonth(e.target.value)}
         >
           <option value="">Year-View</option>
-          {months.map((y) => (
-            <option value={y}>{y}</option>
+          {months.map((y,i) => (
+            <option key={i} value={y}>{y}</option>
           ))}
         </Form.Select>
       </Form.Group>
@@ -106,17 +105,18 @@ const Reports = () => {
             <hr />
           </>
         )}
-        {reports.map((report) => {
+        {reports.map((report,index) => {
           if (month) {
             return (
               <MonthlyReport
+              key={index}
                 report={report}
                 months={months}
                 currMonth={month}
               />
             );
           } else {
-            return <Report report={report} months={months} />;
+            return <Report key={index} report={report} months={months} />;
           }
         })}
       </Card>
