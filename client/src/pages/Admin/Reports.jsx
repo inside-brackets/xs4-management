@@ -84,10 +84,7 @@ const Reports = () => {
           ))}
         </Form.Select>
       </Form.Group>
-      <Card
-        className={`scroll-container m-0 ${month ? "mt-2" : ""}`}
-        style={{ maxHeight: "70vh" }}
-      >
+      <Card className={`${month ? "mt-2" : "scroll-container"}`}>
         {month && (
           <>
             <Row
