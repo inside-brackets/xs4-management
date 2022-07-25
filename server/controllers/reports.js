@@ -133,6 +133,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           _id: {
             month: "$month",
             profile: "$profile.title",
+            platform: "$profile.platform",
           },
           count: { $sum: 1 },
           amountRecieved: {
@@ -148,6 +149,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           _id: 0,
           month: "$_id.month",
           profile: "$_id.profile",
+          platform: "$_id.platform",
           amountRecieved: "$amountRecieved",
           empShare: "$empShare",
           count: "$count",
@@ -157,6 +159,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $group: {
           _id: {
             profile: "$profile",
+            platform: "$platform",
           },
           count: { $sum: "$count" },
           amountRecieved: {
@@ -180,6 +183,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
+          platform: "$_id.platform",
           totalCount: "$count",
           totalAmount: "$amountRecieved",
           totalEmpShare: "$empShare",
@@ -208,6 +212,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $group: {
           _id: {
             profile: "$profile.title",
+            platform: "$profile.platform",
           },
           count: {
             $sum: 1,
@@ -218,6 +223,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
+          platform: "$_id.platform",
           total: "$count",
         },
       },
@@ -243,6 +249,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $group: {
           _id: {
             profile: "$profile.title",
+            platform: "$profile.platform",
           },
           count: {
             $sum: 1,
@@ -253,16 +260,19 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         $project: {
           _id: 0,
           profile: "$_id.profile",
+          platform: "$_id.platform",
           total: "$count",
         },
       },
     ]);
 
     // combind above 4 results into one
-    const profiles = await ProfileModal.find(filter).select("title -_id");
+    const profiles = await ProfileModal.find(filter).select(
+      "title platform -_id"
+    );
     const profilesSummary = profiles.map((p) => {
       let temp = {
-        profile: p.title,
+        profile: `${p.title} ${p.platform}`,
         closedTotal: 0,
         closedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         cashRecievedTotal: 0,
@@ -272,16 +282,10 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         pendingTotal: 0,
         cancelledTotal: 0,
       };
-      // const tempAwarded = awardedProjects.find(
-      //   (project) => project.profile === p.title
-      // );
-      // if (tempAwarded) {
-      //   temp.awardedTotal = tempAwarded.total;
-      //   tempAwarded.projects.map(
-      //     (s) => (temp.awardedSummary[s.month - 1] = s.count)
-      //   );
-      // }
-      const tempClosed = closed.find((project) => project.profile === p.title);
+      const tempClosed = closed.find(
+        (project) =>
+          project.profile === p.title && project.platform === p.platform
+      );
       if (tempClosed) {
         temp.cashRecievedTotal = tempClosed.totalAmount;
         temp.closedTotal = tempClosed.totalCount;
@@ -294,13 +298,15 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         });
       }
       const tempPending = pending.find(
-        (project) => project.profile === p.title
+        (project) =>
+          project.profile === p.title && project.platform === p.platform
       );
       if (tempPending) {
         temp.pendingTotal = tempPending.total;
       }
       const tempCancelled = cancelled.find(
-        (project) => project.profile === p.title
+        (project) =>
+          project.profile === p.title && project.platform === p.platform
       );
       if (tempCancelled) {
         temp.cancelledTotal = tempCancelled.total;

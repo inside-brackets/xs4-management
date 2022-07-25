@@ -1,9 +1,10 @@
 import React from "react";
 import { Row, Col } from "react-bootstrap";
+import { formatter } from "../util/currencyFormatter";
 
 const SingleMonth = ({ item }) => {
   return (
-    <Col md={1}>
+    <div style={{ width: "fit-content" }} className="mx-3">
       <Row className="mb-2 ">
         <Col className="text-center">
           <p
@@ -24,15 +25,17 @@ const SingleMonth = ({ item }) => {
       </Row>
       <Row className="mt-2 ">
         <Col className="text-center">
-          <p>{item.cashRecieved}</p>
+          <p>
+            {item.cashRecieved ? formatter("PKR").format(item.cashRecieved) : 0}
+          </p>
         </Col>
       </Row>
       <Row className="mt-2 ">
         <Col className="text-center">
-          <p>{item.empShare}</p>
+          <p>{item.empShare ? formatter("PKR").format(item.empShare) : 0}</p>
         </Col>
       </Row>
-    </Col>
+    </div>
   );
 };
 

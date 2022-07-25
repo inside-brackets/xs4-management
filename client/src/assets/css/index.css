@@ -95,3 +95,10 @@ a {
 .scroll-container::-webkit-scrollbar {
   display: none;
 }
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.x-scroll {
+  overflow-x: scroll;
+}
