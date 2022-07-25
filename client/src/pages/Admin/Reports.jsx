@@ -84,40 +84,41 @@ const Reports = () => {
           ))}
         </Form.Select>
       </Form.Group>
-      <Card className={!month ? "my-card" : "mt-2"}>
-        <Card className="scroll-container m-0" style={{ maxHeight: "70vh" }}>
-          {month && (
-            <>
-              <Row
-                style={{
-                  color: "#849AB8",
-                  fontWeight: "bold",
-                }}
-              >
-                <Col className="text-center">Profile Title</Col>
-                <Col className="text-center">Cash Recieved</Col>
-                <Col className="text-center">Employee Share</Col>
-                <Col className="text-center">Projects Closed</Col>
-                <Col className="text-center">Current Pending</Col>
-                <Col className="text-center">Total Cancelled</Col>
-              </Row>
-              <hr />
-            </>
-          )}
-          {reports.map((report) => {
-            if (month) {
-              return (
-                <MonthlyReport
-                  report={report}
-                  months={months}
-                  currMonth={month}
-                />
-              );
-            } else {
-              return <Report report={report} months={months} />;
-            }
-          })}
-        </Card>
+      <Card
+        className={`scroll-container m-0 ${month ? "mt-2" : ""}`}
+        style={{ maxHeight: "70vh" }}
+      >
+        {month && (
+          <>
+            <Row
+              style={{
+                color: "#849AB8",
+                fontWeight: "bold",
+              }}
+            >
+              <Col className="text-center">Profile Title</Col>
+              <Col className="text-center">Cash Recieved</Col>
+              <Col className="text-center">Employee Share</Col>
+              <Col className="text-center">Projects Closed</Col>
+              <Col className="text-center">Current Pending</Col>
+              <Col className="text-center">Total Cancelled</Col>
+            </Row>
+            <hr />
+          </>
+        )}
+        {reports.map((report) => {
+          if (month) {
+            return (
+              <MonthlyReport
+                report={report}
+                months={months}
+                currMonth={month}
+              />
+            );
+          } else {
+            return <Report report={report} months={months} />;
+          }
+        })}
       </Card>
     </Row>
   );
