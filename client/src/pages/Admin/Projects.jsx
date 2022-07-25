@@ -90,6 +90,7 @@ const Projects = () => {
       Client_Name: item.clientName ?? "N/A",
       Profile: item.profile.title,
       Platform: item.profile.platform,
+      status:item.status,
       AwardedAt: item.awardedAt
         ? moment(item.awardedAt).format("DD MMM")
         : "N/A",
