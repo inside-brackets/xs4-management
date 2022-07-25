@@ -90,9 +90,15 @@ a {
   border: none;
   box-shadow: none !important;
   overflow-y: scroll;
-  max-height: "70vh";
 }
 
 .scroll-container::-webkit-scrollbar {
   display: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.x-scroll {
+  overflow-x: scroll;
 }

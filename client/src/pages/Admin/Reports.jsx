@@ -84,27 +84,26 @@ const Reports = () => {
           ))}
         </Form.Select>
       </Form.Group>
-      <Card className={`${month ? "mt-2" : "scroll-container"}`}>
-        {month && (
-          <>
-            <Row
-              style={{
-                color: "#849AB8",
-                fontWeight: "bold",
-              }}
-            >
-              <Col className="text-center">Profile Title</Col>
-              <Col className="text-center">Cash Recieved</Col>
-              <Col className="text-center">Employee Share</Col>
-              <Col className="text-center">Projects Closed</Col>
-              <Col className="text-center">Current Pending</Col>
-              <Col className="text-center">Total Cancelled</Col>
-            </Row>
-            <hr />
-          </>
-        )}
-        {reports.map((report) => {
-          if (month) {
+
+      {month ? (
+        <Card className="mt-2">
+          <Row
+            style={{
+              color: "#849AB8",
+              fontWeight: "bold",
+            }}
+          >
+            <Col md={3} className="text-center">
+              Profile Title
+            </Col>
+            <Col className="text-center">Cash Recieved</Col>
+            <Col className="text-center">Employee Share</Col>
+            <Col className="text-center">Projects Closed</Col>
+            <Col className="text-center">Current Pending</Col>
+            <Col className="text-center">Total Cancelled</Col>
+          </Row>
+          <hr />
+          {reports.map((report) => {
             return (
               <MonthlyReport
                 report={report}
@@ -112,11 +111,15 @@ const Reports = () => {
                 currMonth={month}
               />
             );
-          } else {
+          })}
+        </Card>
+      ) : (
+        <Card className="scroll-container" style={{ maxHeight: "75vh" }}>
+          {reports.map((report) => {
             return <Report report={report} months={months} />;
-          }
-        })}
-      </Card>
+          })}
+        </Card>
+      )}
     </Row>
   );
 };

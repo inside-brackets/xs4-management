@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Card } from "react-bootstrap";
 import SingleMonth from "./SingleMonth";
+import { formatter } from "../util/currencyFormatter";
 
 const Report = ({ report, months }) => {
   const combinedArray = months.map((item, index) => {
@@ -13,8 +14,8 @@ const Report = ({ report, months }) => {
   });
   return (
     <Card>
-      <Row className="m-0">
-        <Col md={3}>
+      <div className="m-0 d-flex flex-row">
+        <Col md={4}>
           <Row
             style={{
               backgroundColor: "#222B35",
@@ -58,8 +59,7 @@ const Report = ({ report, months }) => {
               md={5}
               className="text-center"
             >
-              <p>{report.cashRecievedTotal}</p>
-              {/* <p>{formatter("PKR").format(10000000)}</p> */}
+              <p>{formatter("PKR").format(report.cashRecievedTotal)}</p>
             </Col>
           </Row>
           <hr className="m-0" />
@@ -75,7 +75,7 @@ const Report = ({ report, months }) => {
               md={5}
               className="text-center"
             >
-              <p>{report.empShareTotal}</p>
+              <p>{formatter("PKR").format(report.empShareTotal)}</p>
             </Col>
           </Row>
           <hr className="m-0" />
@@ -111,14 +111,12 @@ const Report = ({ report, months }) => {
             </Col>
           </Row>
         </Col>
-        <Col md={9}>
-          <Row>
-            {combinedArray.map((item, index) => {
-              return <SingleMonth key={index} item={item} />;
-            })}
-          </Row>
-        </Col>
-      </Row>
+        <div className="d-flex flex-row x-scroll hide-scrollbar w-100">
+          {combinedArray.map((item, index) => {
+            return <SingleMonth key={index} item={item} />;
+          })}
+        </div>
+      </div>
     </Card>
   );
 };

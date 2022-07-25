@@ -2,14 +2,14 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import "./table.css";
-import { Row, Col, Form, Alert, Spinner,Button } from "react-bootstrap";
+import { Row, Col, Form, Alert, Spinner, Button } from "react-bootstrap";
 import * as XLSX from "xlsx";
 const makeFilter = (filter) => {
   let temp = {};
-  filter[filter.startDate.label] = filter.startDate.value
-  filter[filter.endDate.label] = filter.endDate.value
-  delete filter.startDate
-  delete filter.endDate
+  filter[filter.startDate.label] = filter.startDate.value;
+  filter[filter.endDate.label] = filter.endDate.value;
+  delete filter.startDate;
+  delete filter.endDate;
   for (let [key, value] of Object.entries(filter)) {
     if (value instanceof Array) {
       value = value.map((item) => item.value ?? item);
@@ -32,8 +32,8 @@ const Table = (props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState({label:null,value:null});
-  const [endDate, setEndDate] = useState({label:null,value:null});
+  const [startDate, setStartDate] = useState({ label: null, value: null });
+  const [endDate, setEndDate] = useState({ label: null, value: null });
   let pages = 1;
   let range = [];
 
@@ -74,10 +74,13 @@ const Table = (props) => {
         axios
           .post(
             `${props.api.url}/${props.limit}/${currPage * props.limit}`,
-            makeFilter({ ...filter, search, ...props.api.body, 
+            makeFilter({
+              ...filter,
+              search,
+              ...props.api.body,
               startDate: startDate,
-              endDate : endDate
-             })
+              endDate: endDate,
+            })
           )
           .then((res) => {
             const pageKey = `page${currPage}`;
@@ -104,7 +107,9 @@ const Table = (props) => {
         makeFilter({ ...filter, search, ...props.api.body })
       )
       .then(({ data }) => {
-        const sortedData = data.data.map((item)=>props.renderExportData(item)) 
+        const sortedData = data.data.map((item) =>
+          props.renderExportData(item)
+        );
         const worksheet = XLSX.utils.json_to_sheet(sortedData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
@@ -173,13 +178,18 @@ const Table = (props) => {
 
         {Object.keys(props.filter).map((key, index) => {
           if (key === "date_range") {
-            console.log("smart table key",props.filter[key])
+            console.log("smart table key", props.filter[key]);
             return (
               <>
                 <Col md={3}>
                   <label>From</label>
                   <input
-                    onChange={(e) => setStartDate({label: `${props.filter[key]}__gte`, value: e.target.value})}
+                    onChange={(e) =>
+                      setStartDate({
+                        label: `${props.filter[key]}__gte`,
+                        value: e.target.value,
+                      })
+                    }
                     type="date"
                     className="form-control"
                   />
@@ -189,7 +199,10 @@ const Table = (props) => {
                   <input
                     disabled={!startDate}
                     onChange={(e) => {
-                      setEndDate({label: `${props.filter[key]}__lt`, value: e.target.value});
+                      setEndDate({
+                        label: `${props.filter[key]}__lt`,
+                        value: e.target.value,
+                      });
                       setBodyData([]);
                       setCurrPage(0);
                     }}
@@ -220,9 +233,9 @@ const Table = (props) => {
           );
         })}
 
-{props.exportData && (
+        {props.exportData && (
           <Col className="mt-4" md={3}>
-          <Button onClick={downloadExcel}>Download As Excel</Button>
+            <Button onClick={downloadExcel}>Export to Excel</Button>
           </Col>
         )}
       </Row>
