@@ -75,8 +75,8 @@ const Table = (props) => {
           .post(
             `${props.api.url}/${props.limit}/${currPage * props.limit}`,
             makeFilter({ ...filter, search, ...props.api.body, 
-              startDate: startDate,
-              endDate : endDate
+              startDate,
+              endDate
              })
           )
           .then((res) => {
@@ -101,7 +101,9 @@ const Table = (props) => {
     axios
       .post(
         `${props.api.url}/${totalLength}/0`,
-        makeFilter({ ...filter, search, ...props.api.body })
+        makeFilter({ ...filter, search, ...props.api.body, startDate,
+          endDate
+          })
       )
       .then(({ data }) => {
         const sortedData = data.data.map((item)=>props.renderExportData(item)) 
