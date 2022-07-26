@@ -1,6 +1,5 @@
 => add relevent security to server end points.(backend)
-=> in reports formate cash recieved row to PKR, make months list scrollable horizontally
-=> After applying filters in Projects Tab, export result to excel feature.
+=> for managers add new filter "assignment" with values "All projects(default)", "My projects", "Assiged to me"
 
 - ADMIN
     - projects (faraz)
