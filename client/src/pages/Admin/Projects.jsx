@@ -90,7 +90,7 @@ const Projects = () => {
       Client_Name: item.clientName ?? "N/A",
       Profile: item.profile.title,
       Platform: item.profile.platform,
-      status:item.status,
+      status: item.status,
       AwardedAt: item.awardedAt
         ? moment(item.awardedAt).format("DD MMM")
         : "N/A",
@@ -158,7 +158,7 @@ const Projects = () => {
       bidder: bidder,
       assignee: users,
       profile: profiles,
-      date_range:"closedAt",
+      date_range: "closedAt",
     };
   } else {
     filter = {

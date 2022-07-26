@@ -81,18 +81,15 @@ export const listProjects = asyncHandler(async (req, res) => {
     const {
       search,
       profile,
+      assignment,
       assignee,
       projectType,
       hasRecruiter,
       status,
       totalAmount__gte,
-      totalAmount__lt,
-      awardedAt__gte,
-      awardedAt__lt,
+      totalAmount__lte,
       closedAt__gte,
       closedAt__lte,
-      deadlineAt__gte,
-      deadlineAt__lt,
       platform,
       bidder,
       custom,
@@ -149,26 +146,15 @@ export const listProjects = asyncHandler(async (req, res) => {
     if (status && status.length !== 0) {
       filter.status = { $in: status };
     }
-    if (totalAmount__gte && totalAmount__lt) {
-      filter.totalAmount = { $gte: totalAmount__gte, $lt: totalAmount__lt };
+    if (totalAmount__gte && totalAmount__lte) {
+      filter.totalAmount = { $gte: totalAmount__gte, $lte: totalAmount__lt };
     }
-    if (awardedAt__gte && awardedAt__lt) {
-      filter.awardedAt = {
-        $gte: new Date(awardedAt__gte),
-        $lt: new Date(awardedAt__lt),
-      };
-    }
+
     if (closedAt__gte && closedAt__lte) {
       filter.closedAt = {
         $exists: true,
         $gte: new Date(closedAt__gte),
         $lte: new Date(closedAt__lte),
-      };
-    }
-    if (deadlineAt__gte && deadlineAt__lt) {
-      filter.deadlineAt = {
-        $gte: new Date(deadlineAt__gte),
-        $lt: new Date(deadlineAt__lt),
       };
     }
 
@@ -177,11 +163,21 @@ export const listProjects = asyncHandler(async (req, res) => {
       profiles = await ProfileModal.find({
         bidder: user._id,
       });
-
-      filter["$and"] = [
-        ...filter["$and"],
-        { $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }] },
-      ];
+      if (assignment === "assignedtome" || !user.isManager) {
+        filter["$and"] = [...filter["$and"], { assignee: user._id }];
+      } else if (assignment === "myprojects") {
+        filter["$and"] = [
+          ...filter["$and"],
+          { profile: { $in: [...profiles] } },
+        ];
+      } else {
+        filter["$and"] = [
+          ...filter["$and"],
+          {
+            $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }],
+          },
+        ];
+      }
     }
 
     if (filter["$and"].length === 0) delete filter["$and"];
