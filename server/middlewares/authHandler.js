@@ -3,10 +3,6 @@ import User from "../modals/user.js";
 import jwt from "jsonwebtoken";
 
 export const Protected = asyncHandler(async (req, res, next) => {
-  // if (process.env.NODE_ENV === "dev") {
-  //   next();
-  //   return;
-  // }
   let token;
 
   if (
@@ -30,10 +26,6 @@ export const Protected = asyncHandler(async (req, res, next) => {
 });
 
 export const isAdmin = asyncHandler(async (req, res, next) => {
-  if (process.env.NODE_ENV === "dev") {
-    next();
-    return;
-  }
   if (req.user && req.user.role === "admin") {
     next();
   } else {

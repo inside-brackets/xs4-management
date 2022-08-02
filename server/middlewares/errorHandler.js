@@ -1,4 +1,4 @@
-import asyncHandler from 'express-async-handler';
+import asyncHandler from "express-async-handler";
 
 export const NotFound = asyncHandler((req, res, next) => {
   res.status(404);
@@ -10,7 +10,7 @@ export const handlerErrors = (err, req, res, next) => {
   res.status(statusCode);
   res.json({
     message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+    stack: process.env.NODE_ENV === "prod" ? null : err.stack,
   });
   next();
 };

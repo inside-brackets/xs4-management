@@ -1,6 +1,7 @@
 {
   "name": "xs4-management",
   "version": "0.1.0",
+  "homepage": ".",
   "engines": {
     "node": "14.15.0"
   },

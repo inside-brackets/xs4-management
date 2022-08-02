@@ -25,6 +25,7 @@ app.use("/projects", projectRouters);
 app.use("/reports", reportRouters);
 
 app.get("/", (req, res) => {
+  console.log("hello");
   res.send("Api is running...");
 });
 
