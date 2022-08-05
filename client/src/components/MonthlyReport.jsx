@@ -13,7 +13,7 @@ const MonthlyReport = ({ report, months, currMonth }) => {
   const ans = combinedArray.find((item) => item.month === currMonth);
   return (
     <Row className="mt-3">
-      <Col md={3}>
+      <Col md={2}>
         <h6> {report.profile}</h6>
       </Col>
       <Col className="text-center">

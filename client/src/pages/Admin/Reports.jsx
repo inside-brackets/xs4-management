@@ -95,12 +95,12 @@ const Reports = () => {
                 fontWeight: "bold",
               }}
             >
-              <Col className="text-center">Profile Title</Col>
-              <Col className="text-center">Cash Recieved</Col>
-              <Col className="text-center">Employee Share</Col>
-              <Col className="text-center">Projects Closed</Col>
-              <Col className="text-center">Current Pending</Col>
-              <Col className="text-center">Total Cancelled</Col>
+              <Col md={2} className="text-center">Profile Title</Col>
+              <Col md={2} className="text-center">Cash Recieved</Col>
+              <Col md={2} className="text-center">Employee Share</Col>
+              <Col md={2} className="text-center">Projects Closed</Col>
+              <Col md={2} className="text-center">Current Pending</Col>
+              <Col md={2} className="text-center">Total Cancelled</Col>
             </Row>
             <hr />
           </>

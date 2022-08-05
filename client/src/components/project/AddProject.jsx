@@ -262,7 +262,7 @@ const AddProject = () => {
       }));
     }
   };
-console.log(state)
+  console.log(state);
   const changeAssignee = (value) => {
     if (value.length !== 0 && state.status === "new") {
       setState((prev) => ({ ...prev, status: "open" }));
@@ -363,8 +363,8 @@ console.log(state)
     let netRec = 0;
     let platformFee;
     if (selectedProfile?.platform === "freelancer") {
-      if(state.totalAmount < 50 && !state.hasRecruiter){
-amtDec = 5
+      if (state.totalAmount < 50 && state.totalAmount > 0 && !state.hasRecruiter) {
+        amtDec = 5;
       }
       platformFee = 0.1;
     } else if (selectedProfile?.platform === "fiver") {
@@ -399,7 +399,8 @@ amtDec = 5
           ? (selectedProfile.share / 100) * prev.totalAmount
           : 0;
         let tempEmpShare = share * state.exchangeRate;
-        let tempNetRec = netRec * state.exchangeRate + Number(state.adjustment ?? 0);
+        let tempNetRec =
+          netRec * state.exchangeRate + Number(state.adjustment ?? 0);
         return {
           ...prev,
           empShare: round(tempEmpShare, 2),
@@ -413,7 +414,7 @@ amtDec = 5
     selectedProfile,
     state.hasRecruiter,
     state.exchangeRate,
-    state.adjustment
+    state.adjustment,
   ]);
   return (
     <Card>
@@ -683,33 +684,34 @@ amtDec = 5
                   </Form.Group>
                   {state.status === "closed" && (
                     <>
-                    <Form.Group as={Col} md="3">
-                      <Form.Label>Exchange Rate</Form.Label>
-                      <Form.Control
-                        type="number"
-                        placeholder="Exchange Rate"
-                        min={0}
-                        step="any"
-                        readOnly={!editAble}
-                        value={state.exchangeRate ?? null}
-                        name="exchangeRate"
-                        required={state.status === "closed"}
-                        onChange={handleChange}
-                      />
-                    </Form.Group>
-                                                        <Form.Group as={Col} md="3">
-                                                        <Form.Label>Adjustment</Form.Label>
-                                                        <Form.Control
-                                                          type="number"
-                                                          placeholder="Ajustment"
-                                                          step="any"
-                                                          readOnly={!editAble}
-                                                          value={state.adjustment ?? null}
-                                                          name="adjustment"
-                                                          onChange={handleChange}
-                                                        />
-                                                      </Form.Group>
-                                                      </>)}
+                      <Form.Group as={Col} md="3">
+                        <Form.Label>Exchange Rate</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder="Exchange Rate"
+                          min={0}
+                          step="any"
+                          readOnly={!editAble}
+                          value={state.exchangeRate ?? null}
+                          name="exchangeRate"
+                          required={state.status === "closed"}
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} md="3">
+                        <Form.Label>Adjustment</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder="Ajustment"
+                          step="any"
+                          readOnly={!editAble}
+                          value={state.adjustment ?? null}
+                          name="adjustment"
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                    </>
+                  )}
                 </Row>
                 <Row>
                   <Form.Group as={Col} md="3">
