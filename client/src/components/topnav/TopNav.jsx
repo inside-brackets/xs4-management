@@ -31,7 +31,7 @@ const Topnav = () => {
             }}
           >
             <img alt="Logo" src={logo} height="30" className="m-1" />
-            Xs4 Financial
+            Xs4 Financial Management
           </Navbar.Brand>
         </LinkContainer>
 

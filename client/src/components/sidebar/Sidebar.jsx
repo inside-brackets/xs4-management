@@ -23,7 +23,7 @@ const Sidebar = (props) => {
   return (
     <div className="sidebar">
       <center>
-        <div className="sidebar__department">MANAGEMENT PORTAL</div>
+        <div className="sidebar__department">PROJECT MANAGEMENT</div>
       </center>
       {sidebar_routes[userInfo.role].map((item, index) => (
         <NavLink activeClassName="active__sidebar" to={item.route} key={index}>
