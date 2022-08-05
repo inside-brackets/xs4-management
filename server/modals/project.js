@@ -41,7 +41,8 @@ const projectSchema = new mongoose.Schema(
     }, // $in
     totalAmount: { type: Number }, // range
     amountRecieved: { type: Number }, // range
-    exchangeRate: { type: Number }, // range
+    exchangeRate: { type: Number }, // range\
+    adjustment: { type: Number }, // range
     
     empShare: { type: Number }, // range
     awardedAt: { type: Date }, // range

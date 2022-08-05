@@ -11,11 +11,11 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-      axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/users/100/0`)
-        .then((res) => {
-          setUsers(res.data.data);
-        });
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/users/100/0`)
+      .then((res) => {
+        setUsers(res.data.data);
+      });
   }, []);
 
   const handleChange = (evt) => {
@@ -118,22 +118,24 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
               type="number"
             />
           </Form.Group>
-          <Form.Group as={Col} md="6">
-            <Form.Label>Bidder</Form.Label>
-            <Form.Select name="bidder" onChange={handleChange} required>
-              {" "}
-              <option>{defaultValue?.bidder?.userName ?? null}</option>
-              {users
-                .filter(
-                  (item) =>
-                    item.isManager &&
-                     defaultValue ? item.userName !== defaultValue?.bidder?.userName : item.isManager
-                )
-                .map((user) => (
-                  <option value={user._id}>{user.userName}</option>
-                ))}{" "}
-            </Form.Select>
-          </Form.Group>
+          {!user && (
+            <Form.Group as={Col} md="6">
+              <Form.Label>Bidder</Form.Label>
+              <Form.Select name="bidder" onChange={handleChange} required>
+                {" "}
+                <option>{defaultValue?.bidder?.userName ?? null}</option>
+                {users
+                  .filter((item) =>
+                    item.isManager && defaultValue
+                      ? item.userName !== defaultValue?.bidder?.userName
+                      : item.isManager
+                  )
+                  .map((user) => (
+                    <option value={user._id}>{user.userName}</option>
+                  ))}{" "}
+              </Form.Select>
+            </Form.Group>
+          )}
           <Row className="mt-3">
             <Col md="6">
               <Button disabled={loading} type="submit">

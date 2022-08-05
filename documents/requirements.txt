@@ -1,6 +1,7 @@
 => add relevent security to server end points.(backend)
 => default value for role dropdown in userdetail
 => remove bidder drop down from add profile in userdetail
+50> 10 % ,50< 5$ non-rexc + frelaancer
 
 - ADMIN
     - projects (faraz)

@@ -98,7 +98,7 @@ const UserDetail = () => {
     toast.success(`Password set to: ${newPass}`);
     setLoading(false);
   };
-
+console.log("user",user)
   return (
     <Row className="mt-2">
       <Col md={1}>
@@ -222,7 +222,7 @@ const UserDetail = () => {
                       disabled={!editFields}
                       required
                     >
-                      <option value={null}>Select-Role</option>
+                      <option value={null}>{user?.role ?? "Select-Role"}</option>
                       <option value="admin">Admin</option>
                       <option value="user">User</option>
                     </Form.Select>
