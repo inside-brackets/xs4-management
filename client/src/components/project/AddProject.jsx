@@ -7,6 +7,7 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { round } from "../../util/number";
 
 const projectTypeOptions = [
   "BP",
@@ -224,7 +225,6 @@ const AddProject = () => {
   const history = useHistory();
 
   const { id } = useParams();
-  console.log(!id);
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;
@@ -395,10 +395,12 @@ const AddProject = () => {
         let share = selectedProfile
           ? (selectedProfile.share / 100) * prev.totalAmount
           : 0;
+        let tempEmpShare = share * state.exchangeRate;
+        let tempNetRec = netRec * state.exchangeRate;
         return {
           ...prev,
-          empShare: share * state.exchangeRate,
-          amountRecieved: netRec * state.exchangeRate,
+          empShare: round(tempEmpShare, 2),
+          amountRecieved: round(tempNetRec, 2),
         };
       });
     }
@@ -682,6 +684,7 @@ const AddProject = () => {
                         type="number"
                         placeholder="Exchange Rate"
                         min={0}
+                        step="any"
                         readOnly={!editAble}
                         value={state.exchangeRate ?? null}
                         name="exchangeRate"

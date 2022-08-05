@@ -1,5 +1,6 @@
 => add relevent security to server end points.(backend)
-=> for managers add new filter "assignment" with values "All projects(default)", "My projects", "Assiged to me"
+=> default value for role dropdown in userdetail
+=> remove bidder drop down from add profile in userdetail
 
 - ADMIN
     - projects (faraz)

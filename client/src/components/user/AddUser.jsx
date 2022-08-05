@@ -33,11 +33,11 @@ const AddUser = ({ setShowModal }) => {
     if (state.userName) {
       const indentifier = setTimeout(async () => {
         let userName = state.userName.replace(/\s+/g, " ").trim().toLowerCase();
-        const response = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/users/10/0`,
-          { search: userName }
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/users/byusername/${userName}`
         );
-        setUsernameIsValid(response.data.length === 0);
+        console.log(response.data);
+        setUsernameIsValid(response.data);
       }, 500);
       return () => {
         clearTimeout(indentifier);

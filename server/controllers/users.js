@@ -10,7 +10,7 @@ export const getToken = asyncHandler(async (req, res) => {
     let { password, userName } = req.body;
 
     let user = await User.findOne({
-      userName,
+      userName: { $regex: `^${userName}$`, $options: "i" },
     });
 
     if (!user) {
@@ -27,7 +27,7 @@ export const getToken = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.userName,
       role: user.role,
-      isManager:user.isManager,
+      isManager: user.isManager,
       token: user.generateToken(),
     });
   } catch (error) {
@@ -90,7 +90,7 @@ export const updateUserPassword = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
     const { password } = req.body;
-    console.log(password)
+    console.log(password);
     if (password) {
       user.password = password;
     }
@@ -122,6 +122,25 @@ export const getUser = asyncHandler(async (req, res) => {
   }
 });
 
+// Access: Private
+// Method: GET
+// route: /users/:username
+export const getUserByUsername = asyncHandler(async (req, res) => {
+  try {
+    let user = await User.findOne({
+      userName: { $regex: `^${req.params.username}$`, $options: "i" },
+    });
+    if (!user) {
+      res.status(200);
+      res.json(true);
+    }
+    res.status(200);
+    res.json(false);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+});
+
 // Access: Admin
 // Method: GET
 // Route:  /users/:id
@@ -134,7 +153,7 @@ export const listUsers = asyncHandler(async (req, res) => {
     const filter = {};
 
     if (search) {
-      filter["$or"] = [{ userName: search }];
+      filter.userName = { $regex: search, $options: "i" };
     }
     if (role?.length > 0) {
       filter.role = { $in: role };
