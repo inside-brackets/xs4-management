@@ -20,6 +20,8 @@ const customerTableHead = [
 ];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 
+const PAGE_SIZE = 50;
+
 const Profiles = () => {
   const [bidder, setBidder] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -29,7 +31,7 @@ const Profiles = () => {
 
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
-      <td>{index + 1 + currPage * 10}</td>
+      <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
       <td>{item.platform ?? "N/A"}</td>
       <td>{item.bidder.userName}</td>
@@ -107,7 +109,7 @@ const Profiles = () => {
           <Table
             key={rerenderTable}
             title="Profiles"
-            limit={10}
+            limit={PAGE_SIZE}
             headData={customerTableHead}
             renderHead={(item, index) => renderHead(item, index)}
             api={{

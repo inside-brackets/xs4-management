@@ -363,7 +363,11 @@ const AddProject = () => {
     let netRec = 0;
     let platformFee;
     if (selectedProfile?.platform === "freelancer") {
-      if (state.totalAmount < 50 && state.totalAmount > 0 && !state.hasRecruiter) {
+      if (
+        state.totalAmount < 50 &&
+        state.totalAmount > 0 &&
+        !state.hasRecruiter
+      ) {
         amtDec = 5;
       }
       platformFee = 0.1;
@@ -486,7 +490,7 @@ const AddProject = () => {
                   {profiles.map((profile, index) => {
                     return (
                       <option key={index} value={profile._id}>
-                        {profile.title} {profile.platform}
+                        {profile.title} ({profile.platform})
                       </option>
                     );
                   })}

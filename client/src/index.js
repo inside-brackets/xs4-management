@@ -15,7 +15,7 @@ import "./index.css";
 
 import App from "./App";
 
-document.title = "Xs4 Managemant Portal";
+document.title = "XS4 Managemant Portal";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>

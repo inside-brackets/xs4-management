@@ -12,6 +12,7 @@ import BackButton from "../../components/UI/BackButton";
 
 const customerTableHead = ["#", "Title", "Paltform", "Share", "actions"];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
+const PAGE_SIZE = 10;
 
 const UserDetail = () => {
   const [editFields, setEditFields] = useState(false);
@@ -26,9 +27,8 @@ const UserDetail = () => {
   const history = useHistory();
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
-      <td>{index + 1 + currPage * 10}</td>
+      <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
-      {/* <td>{formatter.format(item.salary)}</td> */}
       <td>{item.platform ?? "NA"}</td>
       <td>{item.share ?? "NA"}</td>
       <td>
@@ -98,7 +98,7 @@ const UserDetail = () => {
     toast.success(`Password set to: ${newPass}`);
     setLoading(false);
   };
-console.log("user",user)
+  console.log("user", user);
   return (
     <Row className="mt-2">
       <Col md={1}>
@@ -222,7 +222,9 @@ console.log("user",user)
                       disabled={!editFields}
                       required
                     >
-                      <option value={null}>{user?.role ?? "Select-Role"}</option>
+                      <option value={null}>
+                        {user?.role ?? "Select-Role"}
+                      </option>
                       <option value="admin">Admin</option>
                       <option value="user">User</option>
                     </Form.Select>
@@ -330,7 +332,7 @@ console.log("user",user)
             <div className="card__body">
               <Table
                 key={rerenderTable}
-                limit={10}
+                limit={PAGE_SIZE}
                 title="Profiles"
                 headData={customerTableHead}
                 renderHead={(item, index) => renderHead(item, index)}

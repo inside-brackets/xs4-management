@@ -19,6 +19,8 @@ const customerTableHead = [
 
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 
+const PAGE_SIZE = 50;
+
 const User = () => {
   const [addUserModal, setAddUserModal] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
@@ -27,7 +29,7 @@ const User = () => {
 
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
-      <td>{index + 1 + currPage * 10}</td>
+      <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.userName}</td>
       <td>
         {item.firstName && item.lastName
@@ -79,7 +81,7 @@ const User = () => {
           <Table
             key={rerenderTable}
             title="Users"
-            limit={10}
+            limit={PAGE_SIZE}
             headData={customerTableHead}
             renderHead={(item, index) => renderHead(item, index)}
             api={{

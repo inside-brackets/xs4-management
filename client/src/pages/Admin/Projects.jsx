@@ -15,6 +15,7 @@ import moment from "moment";
 import { formatter } from "../../util/currencyFormatter";
 
 const renderHead = (item, index) => <th key={index}>{item}</th>;
+const PAGE_SIZE = 50;
 
 const Projects = () => {
   const [users, setUsers] = useState(null);
@@ -51,7 +52,7 @@ const Projects = () => {
 
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
-      <td>{index + 1 + currPage * 10}</td>
+      <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
       <td>{item.clientName ?? "N/A"}</td>
       <td>
@@ -90,7 +91,7 @@ const Projects = () => {
       Client_Name: item.clientName ?? "N/A",
       Profile: item.profile.title,
       Platform: item.profile.platform,
-      status:item.status,
+      status: item.status,
       AwardedAt: item.awardedAt
         ? moment(item.awardedAt).format("DD MMM")
         : "N/A",
@@ -130,7 +131,7 @@ const Projects = () => {
       .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`, {})
       .then((res) => {
         const profileOptions = res.data.data.map((profile) => ({
-          label: profile.title,
+          label: `${profile.title} (${profile.platform})`,
           value: profile._id,
         }));
 
@@ -158,9 +159,9 @@ const Projects = () => {
       bidder: bidder,
       assignee: users,
       profile: profiles,
-      date_range:"closedAt",
+      date_range: "closedAt",
     };
-  } else if(userInfo.isManager){
+  } else if (userInfo.isManager) {
     filter = {
       status: [
         { label: "New", value: "new" },
@@ -169,13 +170,13 @@ const Projects = () => {
         { label: "Closed", value: "closed" },
         { label: "Cancelled", value: "cancelled" },
       ],
-      assignment_Single:[
+      assignment_Single: [
         { label: "All projects", value: "all" },
         { label: "My projects", value: "myprojects" },
         { label: "Assiged to me", value: "assignedtome" },
-      ]
+      ],
     };
-  }else  {
+  } else {
     filter = {
       status: [
         { label: "New", value: "new" },
@@ -209,7 +210,7 @@ const Projects = () => {
         <div className="card__body">
           <Table
             title="Projects"
-            limit={10}
+            limit={PAGE_SIZE}
             headData={customerTableHead}
             renderHead={(item, index) => renderHead(item, index)}
             api={{
