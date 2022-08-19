@@ -22,11 +22,23 @@ const Projects = () => {
   const [profiles, setProfiles] = useState(null);
   const [bidder, setBidder] = useState(null);
   const { userInfo } = useSelector((state) => state.userLogin);
-
   const history = useHistory();
 
   const customerTableHead =
     userInfo.role === "admin"
+      ? [
+          "#",
+          "Title",
+          "Client",
+          "Profile",
+          "Awarded",
+          "Deadline",
+          "Total Amount",
+          "Employee Share",
+          "Status",
+          "Actions",
+        ]
+      : userInfo.isManager
       ? [
           "#",
           "Title",
@@ -64,7 +76,7 @@ const Projects = () => {
       <td>
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
-      {userInfo.role === "admin" && (
+      {(userInfo.role === "admin" || userInfo.isManager) && (
         <Fragment>
           <td>{formatter(item.currency).format(item.totalAmount)}</td>
           <td>

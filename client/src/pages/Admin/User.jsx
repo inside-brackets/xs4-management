@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col, Button, Badge } from "react-bootstrap";
 
 import MyModal from "../../components/modals/MyModal";
 import Table from "../../components/table/SmartTable";
@@ -30,7 +30,9 @@ const User = () => {
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
-      <td>{item.userName}</td>
+      <td>
+        {item.userName} {item.isManager && <Badge bg="primary">Manager</Badge>}
+      </td>
       <td>
         {item.firstName && item.lastName
           ? `${item.firstName} ${item.lastName}`

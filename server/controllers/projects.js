@@ -151,11 +151,31 @@ export const listProjects = asyncHandler(async (req, res) => {
     }
 
     if (closedAt__gte && closedAt__lte) {
-      filter.closedAt = {
-        $exists: true,
-        $gte: new Date(closedAt__gte),
-        $lte: new Date(closedAt__lte),
-      };
+      // filter.closedAt = {
+      //   $exists: true,
+      //   $gte: new Date(closedAt__gte),
+      //   $lte: new Date(closedAt__lte),
+      // };
+      filter["$and"] = [
+        ...filter["$and"],
+        {
+          $or: [
+            {
+              awardedAt: {
+                $gte: new Date(closedAt__gte),
+                $lte: new Date(closedAt__lte),
+              },
+            },
+            {
+              closedAt: {
+                $exists: true,
+                $gte: new Date(closedAt__gte),
+                $lte: new Date(closedAt__lte),
+              },
+            },
+          ],
+        },
+      ];
     }
 
     const user = req.user;
