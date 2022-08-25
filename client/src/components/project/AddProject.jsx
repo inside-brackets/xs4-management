@@ -39,6 +39,7 @@ var currency_list = [
   { name: "SGD", code: "SGD" },
   { name: "EUR", code: "EUR" },
   { name: "INR", code: "INR" },
+  { name: "CAD" ,code: "CAD" },
 ];
 
 const AddProject = () => {
