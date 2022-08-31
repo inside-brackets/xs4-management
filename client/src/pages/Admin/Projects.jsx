@@ -25,12 +25,13 @@ const Projects = () => {
   const history = useHistory();
 
   const customerTableHead =
-    userInfo.role === "admin"
+    userInfo.role === "admin" || userInfo.isManager
       ? [
           "#",
           "Title",
           "Client",
           "Profile",
+          "Assignee",
           "Awarded",
           "Deadline",
           "Total Amount",
@@ -38,20 +39,20 @@ const Projects = () => {
           "Status",
           "Actions",
         ]
-      : userInfo.isManager
-      ? [
-          "#",
-          "Title",
-          "Client",
-          "Profile",
-          "Awarded",
-          "Deadline",
-          "Total Amount",
-          "Employee Share",
-          "Status",
-          "Actions",
-        ]
-      : [
+      : // : userInfo.isManager
+        // ? [
+        //     "#",
+        //     "Title",
+        //     "Client",
+        //     "Profile",
+        //     "Awarded",
+        //     "Deadline",
+        //     "Total Amount",
+        //     "Employee Share",
+        //     "Status",
+        //     "Actions",
+        //   ]
+        [
           "#",
           "Title",
           "Client",
@@ -61,15 +62,13 @@ const Projects = () => {
           "Status",
           "Actions",
         ];
-
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
       <td>{item.clientName ?? "N/A"}</td>
-      <td>
-        {item.profile.title} ({item.profile.platform})
-      </td>
+      <td>{`${item.profile.title} (${item.profile.platform})`}</td>
+      <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
       <td>
         {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
       </td>

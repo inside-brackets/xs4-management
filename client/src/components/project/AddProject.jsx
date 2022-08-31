@@ -39,7 +39,7 @@ var currency_list = [
   { name: "SGD", code: "SGD" },
   { name: "EUR", code: "EUR" },
   { name: "INR", code: "INR" },
-  { name: "CAD" ,code: "CAD" },
+  { name: "CAD", code: "CAD" },
 ];
 
 const AddProject = () => {
@@ -89,6 +89,8 @@ const AddProject = () => {
           delete temp.empShare;
           delete temp.netRecieveable;
           delete temp.amountRecieved;
+          console.log(temp);
+
           return temp;
         });
       }
@@ -244,16 +246,14 @@ const AddProject = () => {
 
     if (state.status === "closed") {
       setState((prev) => {
-        let share = selectedProfile
-          ? (selectedProfile.share / 100) * prev.totalAmount
-          : 0;
-        let tempEmpShare = share * state.exchangeRate;
-        let tempNetRec =
+        let amountRecievedInPKR =
           netRec * state.exchangeRate + Number(state.adjustment ?? 0);
+
+        let shareInPKR = selectedProfile ? 20 * (amountRecievedInPKR / 100) : 0;
         return {
           ...prev,
-          empShare: round(tempEmpShare, 2),
-          amountRecieved: round(tempNetRec, 2),
+          empShare: round(shareInPKR, 2),
+          amountRecieved: round(amountRecievedInPKR, 2),
         };
       });
     }
@@ -589,7 +589,7 @@ const AddProject = () => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      value={state.amountRecieved ?? null}
+                      value={state.amountRecieved ?? 0}
                       readOnly
                     />
                   </Form.Group>
@@ -599,7 +599,7 @@ const AddProject = () => {
                       type="number"
                       placeholder="-"
                       readOnly
-                      value={state.empShare ?? null}
+                      value={state.empShare ?? 0}
                     />
                   </Form.Group>
                 </Row>

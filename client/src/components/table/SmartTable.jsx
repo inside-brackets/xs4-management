@@ -65,7 +65,7 @@ const Table = (props) => {
       return temp;
     });
   };
-console.log("filter",filter)
+  console.log("filter", filter);
   const getData = () => {
     if (!bodyData[`page${currPage}`]) {
       if (props.api) {
@@ -74,10 +74,13 @@ console.log("filter",filter)
         axios
           .post(
             `${props.api.url}/${props.limit}/${currPage * props.limit}`,
-            makeFilter({ ...filter, search, ...props.api.body, 
+            makeFilter({
+              ...filter,
+              search,
+              ...props.api.body,
               startDate,
-              endDate
-             })
+              endDate,
+            })
           )
           .then((res) => {
             const pageKey = `page${currPage}`;
@@ -101,9 +104,7 @@ console.log("filter",filter)
     axios
       .post(
         `${props.api.url}/${totalLength}/0`,
-        makeFilter({ ...filter, search, ...props.api.body, startDate,
-          endDate
-          })
+        makeFilter({ ...filter, search, ...props.api.body, startDate, endDate })
       )
       .then(({ data }) => {
         const sortedData = data.data.map((item) =>
@@ -212,27 +213,30 @@ console.log("filter",filter)
                 </Col>
               </>
             );
-          } 
-          if (key.split('_')[1] === "Single") {
+          }
+          if (key.split("_")[1] === "Single") {
             console.log("smart table key", props.filter[key]);
             return (
               <>
-            <Col md={3} className="mb-2">
-              <Form.Label className="text-capitalize">{key}</Form.Label>
-              <Select
-                label={key.split('_')[0]}
-                value={{label:filter[key.split('_')[0]],value:filter[key.split('_')[0]]}}
-                onChange={(value) => {
-                  filterData(value.value, key.split('_')[0]);
-                  setBodyData([]);
-                  setCurrPage(0);
-                }}
-                options={props.filter[key]}
-              />
-            </Col>
+                <Col md={3} className="mb-2">
+                  <Form.Label className="text-capitalize">{key}</Form.Label>
+                  <Select
+                    label={key.split("_")[0]}
+                    value={{
+                      label: filter[key.split("_")[0]],
+                      value: filter[key.split("_")[0]],
+                    }}
+                    onChange={(value) => {
+                      filterData(value.value, key.split("_")[0]);
+                      setBodyData([]);
+                      setCurrPage(0);
+                    }}
+                    options={props.filter[key]}
+                  />
+                </Col>
               </>
             );
-          } 
+          }
           return (
             <Col md={3} className="mb-2">
               <Form.Label className="text-capitalize">{key}</Form.Label>
