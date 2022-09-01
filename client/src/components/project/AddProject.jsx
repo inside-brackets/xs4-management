@@ -109,7 +109,7 @@ const AddProject = () => {
       }));
     }
   };
-  console.log(state);
+
   const changeAssignee = (value) => {
     if (value.length !== 0 && state.status === "new") {
       setState((prev) => ({ ...prev, status: "open" }));
@@ -230,7 +230,7 @@ const AddProject = () => {
     }
     if (amtDec === 0) {
       var recruiterFee = 0.05;
-      if (state.hasRecruiter) {
+      if (state.hasRecruiter || selectedProfile?.platform !== "freelancer") {
         if (state.status === "closed") {
           amtDec = (platformFee + recruiterFee) * state.totalAmount;
         } else {

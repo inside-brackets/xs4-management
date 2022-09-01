@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Row, Col, Button, Badge } from "react-bootstrap";
 
 import { useSelector } from "react-redux";
@@ -89,10 +89,9 @@ const Projects = () => {
         </h5>
       </td>
       <td>
-        <ActionButton
-          onClick={() => history.push(`/projects/project/${item._id}`)}
-          type="edit"
-        />
+        <Link className="table__row__edit" to={`/projects/project/${item._id}`}>
+          <i className="bx bx-edit action-button"></i>
+        </Link>
       </td>
     </tr>
   );
