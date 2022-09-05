@@ -75,7 +75,17 @@ const AddProject = () => {
     const name = evt.target.name;
 
     if (name === "profile") {
-      setSelectedProfile(profiles.find((pro) => pro._id === value));
+      const tempProfile = profiles.find((pro) => pro._id === value);
+      setSelectedProfile(tempProfile);
+
+      if (tempProfile?.platform !== "freelancer") {
+        setState((prev) => {
+          return {
+            ...prev,
+            hasRecruiter: false,
+          };
+        });
+      }
     }
     if (name === "status") {
       // remove assigne & set closed at
@@ -95,6 +105,7 @@ const AddProject = () => {
         });
       }
     }
+
     if (name === "hasRecruiter") {
       setState((prev) => {
         return {
@@ -210,36 +221,47 @@ const AddProject = () => {
     let netRec = 0;
     let platformFee;
     if (selectedProfile?.platform === "freelancer") {
-      if (
-        state.totalAmount < 50 &&
-        state.totalAmount > 0 &&
-        !state.hasRecruiter
-      ) {
-        amtDec = 5;
-      }
       platformFee = 0.1;
-    } else if (selectedProfile?.platform === "fiver") {
-      platformFee = 0.2;
-    } else if (selectedProfile?.platform === "upwork") {
-      if (state.totalAmount <= 500) {
-        platformFee = 0.2;
-      } else {
-        let moreThanFive = state.totalAmount - 500;
-        amtDec = moreThanFive * 0.1 + 100;
-      }
-    }
-    if (amtDec === 0) {
       var recruiterFee = 0.05;
-      if (state.hasRecruiter || selectedProfile?.platform !== "freelancer") {
+      if (state.hasRecruiter) {
         if (state.status === "closed") {
-          amtDec = (platformFee + recruiterFee) * state.totalAmount;
+          if (
+            state.totalAmount < 50 &&
+            state.totalAmount > 0 &&
+            !state.hasRecruiter
+          ) {
+            amtDec = 5;
+          } else {
+            amtDec = (platformFee + recruiterFee) * state.totalAmount;
+          }
         } else {
           amtDec = 0;
         }
       } else {
         amtDec = platformFee * state.totalAmount;
       }
+    } else if (selectedProfile?.platform === "fiver") {
+      platformFee = 0.2;
+      if (state.status === "closed") {
+        amtDec = platformFee * state.totalAmount;
+      } else {
+        amtDec = 0;
+      }
+    } else if (selectedProfile?.platform === "upwork") {
+      if (state.status === "closed") {
+        if (state.totalAmount <= 500) {
+          platformFee = 0.2;
+          amtDec = platformFee * state.totalAmount;
+        } else {
+          platformFee = 0.1;
+          let moreThanFive = state.totalAmount - 500;
+          amtDec = moreThanFive * platformFee + 100;
+        }
+      } else {
+        amtDec = 0;
+      }
     }
+
     netRec = state.totalAmount - amtDec;
     setAmountDeducted(Math.round(amtDec * 100) / 100);
     setNetRecieveable(netRec);
@@ -456,6 +478,7 @@ const AddProject = () => {
                   name="hasRecruiter"
                   checked={state.hasRecruiter ?? false}
                   label={`Has Recruiter`}
+                  disabled={selectedProfile?.platform !== "freelancer"}
                   onChange={(value) => {
                     if (editAble && !isClosed) handleChange(value);
                   }}
