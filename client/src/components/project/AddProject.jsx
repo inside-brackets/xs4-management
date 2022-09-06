@@ -271,7 +271,9 @@ const AddProject = () => {
         let amountRecievedInPKR =
           netRec * state.exchangeRate + Number(state.adjustment ?? 0);
 
-        let shareInPKR = selectedProfile ? 20 * (amountRecievedInPKR / 100) : 0;
+        let shareInPKR = selectedProfile
+          ? selectedProfile.share * (amountRecievedInPKR / 100)
+          : 0;
         return {
           ...prev,
           empShare: round(shareInPKR, 2),
