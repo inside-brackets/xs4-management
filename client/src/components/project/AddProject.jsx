@@ -67,6 +67,7 @@ const AddProject = () => {
   const [editAble, setEditAble] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isClosed, setIsClosed] = useState(false);
+  const [recalculate, setRecalculate] = useState(false);
   const history = useHistory();
 
   const { id } = useParams();
@@ -160,6 +161,7 @@ const AddProject = () => {
 
         setSelectedProfile(tempProject.profile);
         setIsClosed(tempProject.status === "closed");
+        setRecalculate(tempProject.status !== "closed");
 
         // if it is not user's project don't show profile options
         const isMyProject = tempProfiles.some(
@@ -181,6 +183,7 @@ const AddProject = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setRecalculate(false);
     const form = event.currentTarget;
     setValidated(true);
 
@@ -217,69 +220,72 @@ const AddProject = () => {
   // calculate amount deducted
   // calculate amount recieved and employee share
   useEffect(() => {
-    let amtDec = 0;
-    let netRec = 0;
-    let platformFee;
-    if (selectedProfile?.platform === "freelancer") {
-      platformFee = 0.1;
-      var recruiterFee = 0.05;
-      if (state.hasRecruiter) {
-        if (state.status === "closed") {
-          if (
-            state.totalAmount < 50 &&
-            state.totalAmount > 0 &&
-            !state.hasRecruiter
-          ) {
-            amtDec = 5;
+    console.log(!isClosed, recalculate, selectedProfile);
+    if (!isClosed || recalculate) {
+      let amtDec = 0;
+      let netRec = 0;
+      let platformFee;
+      if (selectedProfile?.platform === "freelancer") {
+        platformFee = 0.1;
+        var recruiterFee = 0.05;
+        if (state.hasRecruiter) {
+          if (state.status === "closed") {
+            if (
+              state.totalAmount < 50 &&
+              state.totalAmount > 0 &&
+              !state.hasRecruiter
+            ) {
+              amtDec = 5;
+            } else {
+              amtDec = (platformFee + recruiterFee) * state.totalAmount;
+            }
           } else {
-            amtDec = (platformFee + recruiterFee) * state.totalAmount;
+            amtDec = 0;
+          }
+        } else {
+          amtDec = platformFee * state.totalAmount;
+        }
+      } else if (selectedProfile?.platform === "fiver") {
+        platformFee = 0.2;
+        if (state.status === "closed") {
+          amtDec = platformFee * state.totalAmount;
+        } else {
+          amtDec = 0;
+        }
+      } else if (selectedProfile?.platform === "upwork") {
+        if (state.status === "closed") {
+          if (state.totalAmount <= 500) {
+            platformFee = 0.2;
+            amtDec = platformFee * state.totalAmount;
+          } else {
+            platformFee = 0.1;
+            let moreThanFive = state.totalAmount - 500;
+            amtDec = moreThanFive * platformFee + 100;
           }
         } else {
           amtDec = 0;
         }
-      } else {
-        amtDec = platformFee * state.totalAmount;
       }
-    } else if (selectedProfile?.platform === "fiver") {
-      platformFee = 0.2;
+
+      netRec = state.totalAmount - amtDec;
+      setAmountDeducted(Math.round(amtDec * 100) / 100);
+      setNetRecieveable(netRec);
+
       if (state.status === "closed") {
-        amtDec = platformFee * state.totalAmount;
-      } else {
-        amtDec = 0;
+        setState((prev) => {
+          let amountRecievedInPKR =
+            netRec * state.exchangeRate + Number(state.adjustment ?? 0);
+
+          let shareInPKR = selectedProfile
+            ? selectedProfile.share * (amountRecievedInPKR / 100)
+            : 0;
+          return {
+            ...prev,
+            empShare: round(shareInPKR, 2),
+            amountRecieved: round(amountRecievedInPKR, 2),
+          };
+        });
       }
-    } else if (selectedProfile?.platform === "upwork") {
-      if (state.status === "closed") {
-        if (state.totalAmount <= 500) {
-          platformFee = 0.2;
-          amtDec = platformFee * state.totalAmount;
-        } else {
-          platformFee = 0.1;
-          let moreThanFive = state.totalAmount - 500;
-          amtDec = moreThanFive * platformFee + 100;
-        }
-      } else {
-        amtDec = 0;
-      }
-    }
-
-    netRec = state.totalAmount - amtDec;
-    setAmountDeducted(Math.round(amtDec * 100) / 100);
-    setNetRecieveable(netRec);
-
-    if (state.status === "closed") {
-      setState((prev) => {
-        let amountRecievedInPKR =
-          netRec * state.exchangeRate + Number(state.adjustment ?? 0);
-
-        let shareInPKR = selectedProfile
-          ? selectedProfile.share * (amountRecievedInPKR / 100)
-          : 0;
-        return {
-          ...prev,
-          empShare: round(shareInPKR, 2),
-          amountRecieved: round(amountRecievedInPKR, 2),
-        };
-      });
     }
   }, [
     state.status,
@@ -288,6 +294,8 @@ const AddProject = () => {
     state.hasRecruiter,
     state.exchangeRate,
     state.adjustment,
+    recalculate,
+    isClosed,
   ]);
   return (
     <Card>
@@ -565,7 +573,7 @@ const AddProject = () => {
                           placeholder="Exchange Rate"
                           min={0}
                           step="any"
-                          readOnly={!editAble}
+                          readOnly={!editAble || !recalculate}
                           value={state.exchangeRate ?? null}
                           name="exchangeRate"
                           required={state.status === "closed"}
@@ -578,7 +586,7 @@ const AddProject = () => {
                           type="number"
                           placeholder="Ajustment"
                           step="any"
-                          readOnly={!editAble}
+                          readOnly={!editAble || !recalculate}
                           value={state.adjustment ?? null}
                           name="adjustment"
                           onChange={handleChange}
@@ -627,6 +635,16 @@ const AddProject = () => {
                       value={state.empShare ?? 0}
                     />
                   </Form.Group>
+                  {userInfo.role === "admin" && (
+                    <Col md={3} className="mt-3">
+                      <Button
+                        disabled={!editAble}
+                        onClick={() => setRecalculate(Math.random().toFixed(2))}
+                      >
+                        Recalculate
+                      </Button>
+                    </Col>
+                  )}
                 </Row>
                 <br />
                 <hr className="my-5" />
@@ -739,6 +757,7 @@ const AddProject = () => {
                   setState(revertState);
                   setValidated(false);
                   setEditAble(false);
+                  setRecalculate(false);
                 }}
               >
                 Cancel
