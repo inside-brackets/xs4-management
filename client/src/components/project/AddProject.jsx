@@ -202,8 +202,10 @@ const AddProject = () => {
         state
       );
       if (res.status === 200) {
-        toast.success("Project Updated Successfully");
+        // toast.success("Project Updated Successfully");
         setEditAble(false);
+      } else {
+        toast.error("Sorry, couldn't update the project");
       }
     } else {
       const res = await axios.post(
@@ -220,72 +222,69 @@ const AddProject = () => {
   // calculate amount deducted
   // calculate amount recieved and employee share
   useEffect(() => {
-    console.log(!isClosed, recalculate, selectedProfile);
-    if (!isClosed || recalculate) {
-      let amtDec = 0;
-      let netRec = 0;
-      let platformFee;
-      if (selectedProfile?.platform === "freelancer") {
-        platformFee = 0.1;
-        var recruiterFee = 0.05;
-        if (state.hasRecruiter) {
-          if (state.status === "closed") {
-            if (
-              state.totalAmount < 50 &&
-              state.totalAmount > 0 &&
-              !state.hasRecruiter
-            ) {
-              amtDec = 5;
-            } else {
-              amtDec = (platformFee + recruiterFee) * state.totalAmount;
-            }
-          } else {
-            amtDec = 0;
-          }
-        } else {
-          amtDec = platformFee * state.totalAmount;
-        }
-      } else if (selectedProfile?.platform === "fiver") {
-        platformFee = 0.2;
+    let amtDec = 0;
+    let netRec = 0;
+    let platformFee;
+    if (selectedProfile?.platform === "freelancer") {
+      platformFee = 0.1;
+      var recruiterFee = 0.05;
+      if (state.hasRecruiter) {
         if (state.status === "closed") {
-          amtDec = platformFee * state.totalAmount;
-        } else {
-          amtDec = 0;
-        }
-      } else if (selectedProfile?.platform === "upwork") {
-        if (state.status === "closed") {
-          if (state.totalAmount <= 500) {
-            platformFee = 0.2;
-            amtDec = platformFee * state.totalAmount;
+          if (
+            state.totalAmount < 50 &&
+            state.totalAmount > 0 &&
+            !state.hasRecruiter
+          ) {
+            amtDec = 5;
           } else {
-            platformFee = 0.1;
-            let moreThanFive = state.totalAmount - 500;
-            amtDec = moreThanFive * platformFee + 100;
+            amtDec = (platformFee + recruiterFee) * state.totalAmount;
           }
         } else {
           amtDec = 0;
         }
+      } else {
+        amtDec = platformFee * state.totalAmount;
       }
-
-      netRec = state.totalAmount - amtDec;
-      setAmountDeducted(Math.round(amtDec * 100) / 100);
-      setNetRecieveable(netRec);
-
+    } else if (selectedProfile?.platform === "fiver") {
+      platformFee = 0.2;
       if (state.status === "closed") {
-        setState((prev) => {
-          let amountRecievedInPKR =
-            netRec * state.exchangeRate + Number(state.adjustment ?? 0);
-
-          let shareInPKR = selectedProfile
-            ? selectedProfile.share * (amountRecievedInPKR / 100)
-            : 0;
-          return {
-            ...prev,
-            empShare: round(shareInPKR, 2),
-            amountRecieved: round(amountRecievedInPKR, 2),
-          };
-        });
+        amtDec = platformFee * state.totalAmount;
+      } else {
+        amtDec = 0;
       }
+    } else if (selectedProfile?.platform === "upwork") {
+      if (state.status === "closed") {
+        if (state.totalAmount <= 500) {
+          platformFee = 0.2;
+          amtDec = platformFee * state.totalAmount;
+        } else {
+          platformFee = 0.1;
+          let moreThanFive = state.totalAmount - 500;
+          amtDec = moreThanFive * platformFee + 100;
+        }
+      } else {
+        amtDec = 0;
+      }
+    }
+
+    netRec = state.totalAmount - amtDec;
+    setAmountDeducted(Math.round(amtDec * 100) / 100);
+    setNetRecieveable(netRec);
+
+    if ((state.status === "closed" && !isClosed) || recalculate) {
+      setState((prev) => {
+        let amountRecievedInPKR =
+          netRec * prev.exchangeRate + Number(prev.adjustment ?? 0);
+
+        let shareInPKR = selectedProfile
+          ? selectedProfile.share * (amountRecievedInPKR / 100)
+          : 0;
+        return {
+          ...prev,
+          empShare: round(shareInPKR, 2),
+          amountRecieved: round(amountRecievedInPKR, 2),
+        };
+      });
     }
   }, [
     state.status,
@@ -524,7 +523,7 @@ const AddProject = () => {
                       </span>
                     </Form.Label>
                     <Form.Control
-                      readOnly={!editAble || isClosed}
+                      readOnly={!editAble || (!recalculate && id)}
                       type="number"
                       placeholder="Total Amount"
                       name="totalAmount"
@@ -545,12 +544,10 @@ const AddProject = () => {
                       </span>
                     </Form.Label>
                     <Form.Control
-                      readOnly={!editAble || isClosed}
+                      readOnly={!editAble || (!recalculate && id)}
                       as="select"
                       name="currency"
-                      onChange={(value) => {
-                        if (editAble && !isClosed) handleChange(value);
-                      }}
+                      onChange={(value) => handleChange(value)}
                       value={state.currency ?? ""}
                       required
                     >
@@ -573,7 +570,7 @@ const AddProject = () => {
                           placeholder="Exchange Rate"
                           min={0}
                           step="any"
-                          readOnly={!editAble || !recalculate}
+                          readOnly={!editAble || (!recalculate && id)}
                           value={state.exchangeRate ?? null}
                           name="exchangeRate"
                           required={state.status === "closed"}
@@ -586,7 +583,7 @@ const AddProject = () => {
                           type="number"
                           placeholder="Ajustment"
                           step="any"
-                          readOnly={!editAble || !recalculate}
+                          readOnly={!editAble || (!recalculate && id)}
                           value={state.adjustment ?? null}
                           name="adjustment"
                           onChange={handleChange}
@@ -627,7 +624,12 @@ const AddProject = () => {
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="3">
-                    <Form.Label>Employee Share</Form.Label>
+                    <Form.Label>
+                      Employee Share
+                      <span style={{ color: "red" }}>{` ${
+                        selectedProfile ? selectedProfile.share : ""
+                      }%`}</span>
+                    </Form.Label>
                     <Form.Control
                       type="number"
                       placeholder="-"
@@ -635,8 +637,8 @@ const AddProject = () => {
                       value={state.empShare ?? 0}
                     />
                   </Form.Group>
-                  {userInfo.role === "admin" && (
-                    <Col md={3} className="mt-3">
+                  {userInfo.role === "admin" && isClosed && (
+                    <Col md={3} className="mt-4">
                       <Button
                         disabled={!editAble}
                         onClick={() => setRecalculate(Math.random().toFixed(2))}
