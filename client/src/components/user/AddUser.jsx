@@ -112,6 +112,9 @@ const AddUser = ({ setShowModal }) => {
             Please provide a valid Salary.
           </Form.Control.Feedback>
         </Form.Group>
+
+
+        
         <Form.Group as={Col} md="4">
           <Form.Label>Role</Form.Label>
           <Form.Control
@@ -129,6 +132,26 @@ const AddUser = ({ setShowModal }) => {
             Please provide a valid Role.
           </Form.Control.Feedback>
         </Form.Group>
+
+         <Form.Group as={Col} md="4">
+          <Form.Label>Department</Form.Label>
+          <Form.Control
+            as="select"
+            name="department"
+            onChange={handleChange}
+            required
+          >
+            <option value={null}>Select-Department</option>
+            <option value="accounts">Accounts</option>
+            <option value="graphics">Graphics</option>
+          </Form.Control>
+
+          <Form.Control.Feedback type="invalid">
+            Please provide a valid Role.
+          </Form.Control.Feedback>
+        </Form.Group>
+
+
         <Form.Group className="mt-4" as={Col} md="2">
           <Form.Check
             type="checkbox"

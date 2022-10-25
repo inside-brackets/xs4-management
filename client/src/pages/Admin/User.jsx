@@ -14,6 +14,7 @@ const customerTableHead = [
   "Name",
   "Salary",
   "Role",
+  "Department",
   "Actions",
 ];
 
@@ -40,6 +41,7 @@ const User = () => {
       </td>
       <td>{formatter("PKR").format(item.salary)}</td>
       <td>{item.role ?? "NA"}</td>
+        <td>{item.department ?? "NA"}</td>
       <td>
         <div>
           <ActionButton
@@ -61,6 +63,7 @@ const User = () => {
           : "N/A",
       salary: formatter("PKR").format(item.salary),
       role: item.role ?? "NA",
+      department: item.department ?? "NA",
     };
   };
 
@@ -96,7 +99,12 @@ const User = () => {
                 { label: "Admin", value: "admin" },
                 { label: "User", value: "user" },
               ],
+               department: [
+                { label: "Account", value: "accounts" },
+                { label: "Graphics", value: "graphics" },
+              ],
             }}
+            
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
             }

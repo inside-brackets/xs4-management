@@ -230,6 +230,24 @@ const UserDetail = () => {
                     </Form.Select>
                   </Form.Group>
 
+
+                    <Form.Group as={Col} md="3" sm="12">
+                    <Form.Label>Department</Form.Label>
+                    <Form.Select
+                      name="department"
+                      onChange={handleChange}
+                      defaultValue={user?.department ?? ""}
+                      disabled={!editFields}
+                      required
+                    >
+                      <option value={null}>
+                        {user?.department ?? "Select-Department"}
+                      </option>
+                      <option value="account">Accounts</option>
+                      <option value="department">Department</option>
+                    </Form.Select>
+                  </Form.Group>
+
                   <Form.Group as={Col} md="3" sm="12">
                     <Form.Label>Salary</Form.Label>
                     <Form.Control

@@ -55,6 +55,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    department: {
+      type: String,
+      enum: ["accounts", "graphics"],
+      default: "accounts",
+      required: true,
+    },
   },
   {
     timestamps: true,
