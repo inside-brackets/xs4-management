@@ -27,6 +27,7 @@ export const getToken = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.userName,
       role: user.role,
+      department: user.department,
       isManager: user.isManager,
       token: user.generateToken(),
     });
@@ -148,7 +149,7 @@ export const listUsers = asyncHandler(async (req, res) => {
   try {
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
-    const { search, role, isManager } = req.body;
+    const { search, role, isManager, department } = req.body;
 
     const filter = {};
 
@@ -157,6 +158,9 @@ export const listUsers = asyncHandler(async (req, res) => {
     }
     if (role?.length > 0) {
       filter.role = { $in: role };
+    }
+    if (department?.length > 0) {
+      filter.department = { $in: department };
     }
     if (isManager) {
       filter.isManager = true;
