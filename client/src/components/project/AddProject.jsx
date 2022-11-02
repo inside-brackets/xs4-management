@@ -8,6 +8,9 @@ import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { round } from "../../util/number";
+import Milestone from "./AddMilestone";
+import ShowMilestone from "./ShowMilestone";
+import MyModal from "../modals/MyModal";
 
 const projectTypeOptions = [
   "BP",
@@ -44,6 +47,8 @@ var currency_list = [
 
 const AddProject = () => {
   const [validated, setValidated] = useState(false);
+  const [addMilestoneModal, setMilestoneModal] = useState(false);
+  const [rerenderTable, setRerenderTable] = useState(null);
   const [state, setState] = useState({
     hasRecruiter: false,
     totalAmount: 0,
@@ -101,7 +106,6 @@ const AddProject = () => {
           delete temp.netRecieveable;
           delete temp.amountRecieved;
           console.log(temp);
-
           return temp;
         });
       }
@@ -214,7 +218,7 @@ const AddProject = () => {
       );
       if (res.status === 201) {
         toast.success("Project Created Successfully");
-        history.push("/projects");
+        history.push("/projects/project/id");
       }
     }
   };
@@ -297,218 +301,189 @@ const AddProject = () => {
     isClosed,
   ]);
   return (
-    <Card>
-      <Card.Header className="text-center">
-        <h1>Project Detail</h1>
-      </Card.Header>
-      {loading ? (
-        <Row>
-          <Col className="text-center">
-            <Spinner
-              animation="border"
-              variant="primary"
-              style={{
-                height: "50px",
-                width: "50px",
-              }}
-            />
-          </Col>
-        </Row>
-      ) : (
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <Row className="my-2 mx-3">
-            <Row className="my-2">
-              <Form.Group as={Col} md="4">
-                <Form.Label>
-                  Title
-                  <span
-                    style={{
-                      color: "red",
-                    }}
-                  >
-                    *
-                  </span>
-                </Form.Label>
-                <Form.Control
-                  readOnly={!editAble}
-                  name="title"
-                  onChange={handleChange}
-                  type="text"
-                  value={state.title ?? ""}
-                  placeholder="Enter title"
-                  required
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="4">
-                <Form.Label>
-                  Profile
-                  <span
-                    style={{
-                      color: "red",
-                    }}
-                  >
-                    *
-                  </span>
-                </Form.Label>
-                <Form.Control
-                  readOnly={!editAble || isClosed}
-                  as="select"
-                  name="profile"
-                  onChange={(value) => {
-                    if (editAble && !isClosed) handleChange(value);
-                  }}
-                  value={state.profile ?? ""}
-                  required
-                >
-                  <option key="initial" value="">
-                    Select-Profile
-                  </option>
-                  {profiles.map((profile, index) => {
-                    return (
-                      <option key={index} value={profile._id}>
-                        {profile.title} ({profile.platform})
-                      </option>
-                    );
-                  })}
-                </Form.Control>
-              </Form.Group>
-              <Form.Group as={Col} md="4">
-                <Form.Label>Assignee</Form.Label>
-                <ReactSelect
-                  defaultValue={
-                    state.assignee
-                      ? state.assignee.map((item) => {
-                          return { value: item._id, label: item.userName };
-                        })
-                      : []
-                  }
-                  isMulti
-                  name="assignee"
-                  options={users}
-                  onChange={changeAssignee}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  isDisabled={!editAble || isClosed}
-                />
-              </Form.Group>
-            </Row>
-
-            <Row>
-              <Form.Group as={Col} md="4">
-                <Form.Label>Client Name</Form.Label>
-                <Form.Control
-                  readOnly={!editAble}
-                  type="text"
-                  value={state.clientName ?? ""}
-                  placeholder="Client Name"
-                  name="clientName"
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="4">
-                <Form.Label>Client Country</Form.Label>
-                <Form.Control
-                  readOnly={!editAble}
-                  type="text"
-                  value={state.clientCountry ?? ""}
-                  placeholder="Client Country"
-                  name="clientCountry"
-                  onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="4">
-                <Form.Label>
-                  Project Type
-                  <span
-                    style={{
-                      color: "red",
-                    }}
-                  >
-                    *
-                  </span>
-                </Form.Label>
-                <Form.Control
-                  readOnly={!editAble || isClosed}
-                  as="select"
-                  name="projectType"
-                  onChange={(value) => {
-                    if (editAble && !isClosed) handleChange(value);
-                  }}
-                  value={state.projectType ?? ""}
-                  required
-                >
-                  <option key="initial" value="">
-                    Select Project Type
-                  </option>
-                  {projectTypeOptions.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-
-              <Form.Group as={Col} md="4">
-                <Form.Label>
-                  Status
-                  <span
-                    style={{
-                      color: "red",
-                    }}
-                  >
-                    *
-                  </span>
-                </Form.Label>
-                <Form.Control
-                  readOnly={!editAble || isClosed}
-                  as="select"
-                  name="status"
-                  onChange={(value) => {
-                    if (editAble) {
-                      handleChange(value);
-                    }
-                  }}
-                  value={state.status}
-                  required
-                >
-                  {assignee?.length === 0 && <option value="new">New</option>}
-                  <option value="open">Open</option>
-                  <option value="underreview">Underreview</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="closed">Closed</option>
-                </Form.Control>
-              </Form.Group>
-            </Row>
-
-            <Row className="mt-3 ml-3 align-items-center">
-              <Form.Group className="mt-4" as={Col} md="2">
-                <Form.Check
-                  type="checkbox"
-                  name="hasRecruiter"
-                  checked={state.hasRecruiter ?? false}
-                  label={`Has Recruiter`}
-                  disabled={selectedProfile?.platform !== "freelancer"}
-                  onChange={(value) => {
-                    if (editAble && !isClosed) handleChange(value);
-                  }}
-                />
-              </Form.Group>
-              {state.hasRecruiter && (
+    <div>
+      {" "}
+      <Card>
+        <Card.Header className="text-center">
+          <h1>Project Detail</h1>
+        </Card.Header>
+        {loading ? (
+          <Row>
+            <Col className="text-center">
+              <Spinner
+                animation="border"
+                variant="primary"
+                style={{
+                  height: "50px",
+                  width: "50px",
+                }}
+              />
+            </Col>
+          </Row>
+        ) : (
+          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Row className="my-2 mx-3">
+              <Row className="my-2">
                 <Form.Group as={Col} md="4">
-                  <Form.Label>Recruiter Name</Form.Label>
+                  <Form.Label>
+                    Title
+                    <span
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      *
+                    </span>
+                  </Form.Label>
+                  <Form.Control
+                    readOnly={!editAble}
+                    name="title"
+                    onChange={handleChange}
+                    type="text"
+                    value={state.title ?? ""}
+                    placeholder="Enter title"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group as={Col} md="4">
+                  <Form.Label>
+                    Profile
+                    <span
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      *
+                    </span>
+                  </Form.Label>
+                  <Form.Control
+                    readOnly={!editAble || isClosed}
+                    as="select"
+                    name="profile"
+                    onChange={(value) => {
+                      if (editAble && !isClosed) handleChange(value);
+                    }}
+                    value={state.profile ?? ""}
+                    required
+                  >
+                    <option key="initial" value="">
+                      Select-Profile
+                    </option>
+                    {profiles.map((profile, index) => {
+                      return (
+                        <option key={index} value={profile._id}>
+                          {profile.title} ({profile.platform})
+                        </option>
+                      );
+                    })}
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group as={Col} md="4">
+                  <Form.Label>Assignee</Form.Label>
+                  <ReactSelect
+                    defaultValue={
+                      state.assignee
+                        ? state.assignee.map((item) => {
+                            return { value: item._id, label: item.userName };
+                          })
+                        : []
+                    }
+                    isMulti
+                    name="assignee"
+                    options={users}
+                    onChange={changeAssignee}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    isDisabled={!editAble || isClosed}
+                  />
+                </Form.Group>
+              </Row>
+
+              <Row>
+                <Form.Group as={Col} md="4">
+                  <Form.Label>Client Name</Form.Label>
                   <Form.Control
                     readOnly={!editAble}
                     type="text"
-                    placeholder="Recruiter Name"
-                    name="recruiterName"
+                    value={state.clientName ?? ""}
+                    placeholder="Client Name"
+                    name="clientName"
                     onChange={handleChange}
-                    value={state.recruiterName ?? ""}
                   />
                 </Form.Group>
-              )}
-            </Row>
-            <hr className="my-5" />
-            {(userInfo.role === "admin" || userInfo.isManager || !id) && (
+                <Form.Group as={Col} md="4">
+                  <Form.Label>Client Country</Form.Label>
+                  <Form.Control
+                    readOnly={!editAble}
+                    type="text"
+                    value={state.clientCountry ?? ""}
+                    placeholder="Client Country"
+                    name="clientCountry"
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} md="4">
+                  <Form.Label>
+                    Project Type
+                    <span
+                      style={{
+                        color: "red",
+                      }}
+                    >
+                      *
+                    </span>
+                  </Form.Label>
+                  <Form.Control
+                    readOnly={!editAble || isClosed}
+                    as="select"
+                    name="projectType"
+                    onChange={(value) => {
+                      if (editAble && !isClosed) handleChange(value);
+                    }}
+                    value={state.projectType ?? ""}
+                    required
+                  >
+                    <option key="initial" value="">
+                      Select Project Type
+                    </option>
+                    {projectTypeOptions.map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Row>
+
+              <Row className="mt-3 ml-3 align-items-center">
+                <Form.Group className="mt-4" as={Col} md="2">
+                  <Form.Check
+                    type="checkbox"
+                    name="hasRecruiter"
+                    checked={state.hasRecruiter ?? false}
+                    label={`Has Recruiter`}
+                    disabled={selectedProfile?.platform !== "freelancer"}
+                    onChange={(value) => {
+                      if (editAble && !isClosed) handleChange(value);
+                    }}
+                  />
+                </Form.Group>
+                {state.hasRecruiter && (
+                  <Form.Group as={Col} md="4">
+                    <Form.Label>Recruiter Name</Form.Label>
+                    <Form.Control
+                      readOnly={!editAble}
+                      type="text"
+                      placeholder="Recruiter Name"
+                      name="recruiterName"
+                      onChange={handleChange}
+                      value={state.recruiterName ?? ""}
+                    />
+                  </Form.Group>
+                )}
+              </Row>
+              {/* <hr className="my-5" /> */}
+              {/* {(userInfo.role === "admin" || userInfo.isManager || !id) && (
               <>
                 <Row className="my-2">
                   <Form.Group as={Col} md="2">
@@ -651,93 +626,60 @@ const AddProject = () => {
                 <br />
                 <hr className="my-5" />
               </>
-            )}
-            <Row className="my-2">
-              <Form.Group as={Col} md="4">
-                <Form.Label>Awarded At</Form.Label>
-                <Form.Control
-                  type="date"
-                  placeholder="Awarded At"
-                  value={moment(state.awardedAt).format("YYYY-MM-DD")}
-                  name="awardedAt"
-                  onChange={handleChange}
-                  required
-                  readOnly={!editAble}
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="4">
-                <Form.Label>Closed At</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={
-                    state.closedAt
-                      ? moment(state.closedAt).format("YYYY-MM-DD")
-                      : ""
-                  }
-                  placeholder="Closed At"
-                  name="closedAt"
-                  onChange={handleChange}
-                  readOnly={!editAble}
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="4">
-                <Form.Label>Deadline At</Form.Label>
-                <Form.Control
-                  type="date"
-                  placeholder="Deadline At"
-                  value={
-                    state.deadlineAt
-                      ? moment(state.deadlineAt).format("YYYY-MM-DD")
-                      : ""
-                  }
-                  name="deadlineAt"
-                  onChange={handleChange}
-                  readOnly={!editAble}
-                />
-              </Form.Group>
-            </Row>
-          </Row>
+            )} */}
 
-          {!id ? (
-            <Button
-              disabled={loading}
-              className="p-2 m-3"
-              variant="success"
-              md={3}
-              type="submit"
-            >
-              {loading && (
-                <Spinner
-                  as="span"
-                  animation="grow"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              )}
-              Create
-            </Button>
-          ) : userInfo.role === "user" && !userInfo.isManager ? (
-            <></>
-          ) : !editAble ? (
-            <Button
-              className="p-2 m-3"
-              variant="outline-primary"
-              md={3}
-              onClick={() => {
-                setRevertState(state);
-                setEditAble(true);
-              }}
-            >
-              Edit
-            </Button>
-          ) : (
-            <>
+              <Row className="my-2">
+                <Form.Group as={Col} md="4">
+                  <Form.Label>Awarded At</Form.Label>
+                  <Form.Control
+                    type="date"
+                    placeholder="Awarded At"
+                    value={moment(state.awardedAt).format("YYYY-MM-DD")}
+                    name="awardedAt"
+                    onChange={handleChange}
+                    required
+                    readOnly={!editAble}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} md="4">
+                  <Form.Label>Closed At</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={
+                      state.closedAt
+                        ? moment(state.closedAt).format("YYYY-MM-DD")
+                        : ""
+                    }
+                    placeholder="Closed At"
+                    name="closedAt"
+                    onChange={handleChange}
+                    readOnly={!editAble}
+                  />
+                </Form.Group>
+                <Form.Group as={Col} md="4">
+                  <Form.Label>Deadline At</Form.Label>
+                  <Form.Control
+                    type="date"
+                    placeholder="Deadline At"
+                    value={
+                      state.deadlineAt
+                        ? moment(state.deadlineAt).format("YYYY-MM-DD")
+                        : ""
+                    }
+                    name="deadlineAt"
+                    onChange={handleChange}
+                    readOnly={!editAble}
+                  />
+                </Form.Group>
+              </Row>
+            </Row>
+
+            {!id ? (
               <Button
+                disabled={loading}
                 className="p-2 m-3"
                 variant="success"
                 md={3}
-                disabled={loading}
                 type="submit"
               >
                 {loading && (
@@ -749,26 +691,96 @@ const AddProject = () => {
                     aria-hidden="true"
                   />
                 )}
-                Save
+                Create
               </Button>
+            ) : userInfo.role === "user" && !userInfo.isManager ? (
+              <></>
+            ) : !editAble ? (
               <Button
                 className="p-2 m-3"
+                variant="outline-primary"
                 md={3}
-                variant="outline-danger"
                 onClick={() => {
-                  setState(revertState);
-                  setValidated(false);
-                  setEditAble(false);
-                  setRecalculate(false);
+                  setRevertState(state);
+                  setEditAble(true);
                 }}
               >
-                Cancel
+                Edit
               </Button>
-            </>
-          )}
-        </Form>
+            ) : (
+              <>
+                <Button
+                  className="p-2 m-3"
+                  variant="success"
+                  md={3}
+                  disabled={loading}
+                  type="submit"
+                >
+                  {loading && (
+                    <Spinner
+                      as="span"
+                      animation="grow"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  )}
+                  Save
+                </Button>
+                <Button
+                  className="p-2 m-3"
+                  md={3}
+                  variant="outline-danger"
+                  onClick={() => {
+                    setState(revertState);
+                    setValidated(false);
+                    setEditAble(false);
+                    setRecalculate(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </Form>
+        )}
+      </Card>
+      {id && (
+        <Row>
+          <Row>
+            <Col md={3}></Col>
+            <Col md={5}></Col>
+            <Col md={4}>
+              {" "}
+              <Button
+                className="m-3 "
+                onClick={() => setMilestoneModal(true)}
+                style={{ float: "right" }}
+              >
+                Add Milestone
+              </Button>
+              <MyModal
+                size="xl"
+                show={addMilestoneModal}
+                heading="Add Milestone"
+                onClose={() => setMilestoneModal(false)}
+              >
+                <Milestone
+                  projectID={id}
+                  profile={selectedProfile?.platform}
+                  hasRecruiter={state.hasRecruiter}
+                  setShowModal={() => {
+                    setRerenderTable(Math.random());
+                    setMilestoneModal(false);
+                  }}
+                />
+              </MyModal>
+            </Col>
+          </Row>
+          <ShowMilestone />
+        </Row>
       )}
-    </Card>
+    </div>
   );
 };
 

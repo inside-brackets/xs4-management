@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import ReactDOM from "react-dom";
-import { Modal,Button } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import "./modal.css";
 
 const portalElement = document.getElementById("overlays");

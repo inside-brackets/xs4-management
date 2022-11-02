@@ -98,7 +98,7 @@ const UserDetail = () => {
     toast.success(`Password set to: ${newPass}`);
     setLoading(false);
   };
-  console.log("user", user);
+
   return (
     <Row className="mt-2">
       <Col md={1}>
@@ -230,8 +230,7 @@ const UserDetail = () => {
                     </Form.Select>
                   </Form.Group>
 
-
-                    <Form.Group as={Col} md="3" sm="12">
+                  <Form.Group as={Col} md="3" sm="12">
                     <Form.Label>Department</Form.Label>
                     <Form.Select
                       name="department"

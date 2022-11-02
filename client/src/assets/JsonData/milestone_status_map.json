@@ -1,0 +1,6 @@
+{
+  "unpaid": "info",
+  "paid": "success",
+  "cancelled": "danger"
+
+}

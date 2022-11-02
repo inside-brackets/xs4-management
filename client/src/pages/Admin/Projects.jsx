@@ -21,6 +21,7 @@ const Projects = () => {
   const [users, setUsers] = useState(null);
   const [profiles, setProfiles] = useState(null);
   const [bidder, setBidder] = useState(null);
+  const [rerenderTable, setRerenderTable] = useState(null);
   const { userInfo } = useSelector((state) => state.userLogin);
   const history = useHistory();
 
@@ -39,20 +40,7 @@ const Projects = () => {
           "Status",
           "Actions",
         ]
-      : // : userInfo.isManager
-        // ? [
-        //     "#",
-        //     "Title",
-        //     "Client",
-        //     "Profile",
-        //     "Awarded",
-        //     "Deadline",
-        //     "Total Amount",
-        //     "Employee Share",
-        //     "Status",
-        //     "Actions",
-        //   ]
-        [
+      : [
           "#",
           "Title",
           "Client",
@@ -219,6 +207,7 @@ const Projects = () => {
       <div className="card">
         <div className="card__body">
           <Table
+            key={rerenderTable}
             title="Projects"
             limit={PAGE_SIZE}
             headData={customerTableHead}
