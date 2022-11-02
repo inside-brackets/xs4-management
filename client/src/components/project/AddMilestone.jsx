@@ -4,34 +4,25 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { round } from "../../util/number";
 import { useSelector } from "react-redux";
-const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
+const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
   const [state, setState] = useState({
     project: projectID,
-    selectedProfile: platform,
+    profile: profile,
     hasRecruiter: hasRecruiter,
     totalAmount: 0,
     status: "unpaid",
     paymentDate: new Date(),
   });
-  console.log(platform);
-  const [projects, setProjects] = useState([]);
+
   const { userInfo } = useSelector((state) => state.userLogin);
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [revertState, setRevertState] = useState(null);
   const [editAble, setEditAble] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState(null);
 
+  // invoice calculation states
   const [netRecieveable, setNetRecieveable] = useState(0);
   const [amountDeducted, setAmountDeducted] = useState(0);
-  const [isClosed, setIsClosed] = useState(false);
-  useEffect(() => {
-    axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/projects/100/0`)
-      .then((res) => {
-        setProjects(res.data.data);
-      });
-  }, []);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -87,7 +78,7 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
     let amtDec = 0;
     let netRec = 0;
     let platformFee;
-    if (selectedProfile === "freelancer") {
+    if (profile?.platform === "freelancer") {
       platformFee = 0.1;
       var recruiterFee = 0.05;
       if (state.hasRecruiter) {
@@ -107,15 +98,15 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
       } else {
         amtDec = platformFee * state.totalAmount;
       }
-    } else if (selectedProfile === "fiver") {
+    } else if (profile?.platform === "fiver") {
       platformFee = 0.2;
       if (state.status === "paid") {
         amtDec = platformFee * state.totalAmount;
       } else {
         amtDec = 0;
       }
-    } else if (selectedProfile === "upwork") {
-      if (state.status === "paid") {
+    } else if (profile?.platform === "upwork") {
+      if (state.status === "closed") {
         if (state.totalAmount <= 500) {
           platformFee = 0.2;
           amtDec = platformFee * state.totalAmount;
@@ -133,11 +124,13 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
     setAmountDeducted(Math.round(amtDec * 100) / 100);
     setNetRecieveable(netRec);
 
-    if (state.status === "paid" && !isClosed) {
+    if (state.status === "paid") {
       setState((prev) => {
-        let amountRecievedInPKR = netRec * prev.exchangeRate + Number;
-        let shareInPKR = selectedProfile
-          ? selectedProfile.share * (amountRecievedInPKR / 100)
+        let amountRecievedInPKR =
+          netRec * prev.exchangeRate + Number(prev.adjustment ?? 0);
+
+        let shareInPKR = profile
+          ? profile.share * (amountRecievedInPKR / 100)
           : 0;
         return {
           ...prev,
@@ -149,10 +142,11 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
   }, [
     state.status,
     state.totalAmount,
-    state.selectedProfile,
+    profile,
+    ,
     state.hasRecruiter,
     state.exchangeRate,
-    isClosed,
+    state.adjustment,
   ]);
 
   return (
@@ -254,14 +248,15 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="3">
-                    <Form.Label>Amnt Deducted</Form.Label>
+                    <Form.Label>Amnt Deduct</Form.Label>
                     <Form.Control
                       type="number"
                       placeholder="-"
                       name="amountDeducted"
-                      defaultValue={
-                        defaultValue ? defaultValue.amountDeducted : null
-                      }
+                      value={amountDeducted}
+                      // defaultValue={
+                      //   defaultValue ? defaultValue.amountDeducted : null
+                      // }
                       readOnly
                       required
                     />
@@ -273,9 +268,10 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
                       placeholder="-"
                       readOnly
                       onChange={handleChange}
-                      defaultValue={
-                        defaultValue ? defaultValue.netRecieveable : null
-                      }
+                      value={netRecieveable}
+                      // defaultValue={
+                      //   defaultValue ? defaultValue.netRecieveable : null
+                      // }
                     />
                   </Form.Group>
                 </>
@@ -285,9 +281,7 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
               <Form.Group as={Col} md="4">
                 <Form.Label>
                   Employee Share{" "}
-                  <span>{` ${
-                    selectedProfile ? selectedProfile.share : ""
-                  }%`}</span>
+                  <span>{` ${profile ? profile.share : ""}%`}</span>
                 </Form.Label>
                 <Form.Control
                   type="number"
@@ -298,10 +292,7 @@ const AddMilestone = ({ projectID, platform, hasRecruiter, defaultValue }) => {
               </Form.Group>
               <Form.Group as={Col} md="4">
                 <Form.Label>
-                  Grahic Share{" "}
-                  <span>{` ${
-                    selectedProfile ? selectedProfile.share : ""
-                  }`}</span>
+                  Grahic Share <span>{` ${profile ? profile.share : ""}`}</span>
                 </Form.Label>
                 <Form.Control
                   type="number"

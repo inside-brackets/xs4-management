@@ -767,7 +767,7 @@ const AddProject = () => {
               >
                 <Milestone
                   projectID={id}
-                  profile={selectedProfile?.platform}
+                  profile={selectedProfile}
                   hasRecruiter={state.hasRecruiter}
                   setShowModal={() => {
                     setRerenderTable(Math.random());
