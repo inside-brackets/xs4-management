@@ -23,9 +23,9 @@ const ShowMilestone = () => {
           "#",
           "Title",
           "Total Amount",
+          "Net receivable",
           "Amount Deducted",
-          "Net Recevible",
-          "Amount Recevible",
+          "Amount received",
           "Payment Date",
           "Status",
           "Actions",
@@ -34,9 +34,9 @@ const ShowMilestone = () => {
           "#",
           "Title",
           "Total Amount",
+          "Net Receivable",
           "Amount Deducted",
-          "Net Recevible",
-          "Amount Recevied",
+          "Amount Received",
           "Payment Date",
           "Status",
           "Actions",
@@ -49,8 +49,8 @@ const ShowMilestone = () => {
       {(userInfo.role === "admin" || userInfo.isManager) && (
         <Fragment>
           <td>{formatter(item.currency).format(item.totalAmount)}</td>
-          <td>{formatter(item.currency).format(item.netRecieveble)}</td>
-          <td>{formatter(item.currency).format(item.amountDetucted)}</td>
+          <td>{formatter(item.currency).format(item.netRecieveable)}</td>
+          <td>{formatter(item.currency).format(item.amountDeducted)}</td>
           <td>{formatter(item.currency).format(item.amountRecieved)}</td>
         </Fragment>
       )}
@@ -84,12 +84,12 @@ const ShowMilestone = () => {
       totalAmount:
         userInfo.role === "admin" &&
         formatter(item.currency).format(item.totalAmount),
-      netRecieveble:
+      netRecieveable:
         userInfo.role === "admin" &&
-        formatter(item.currency).format(item.netRecieveble),
-      amountDetucted:
+        formatter(item.currency).format(item.netRecieveable),
+      amountDeducted:
         userInfo.role === "admin" &&
-        formatter(item.currency).format(item.amountDetucted),
+        formatter(item.currency).format(item.amountDeducted),
       amountRecieved:
         userInfo.role === "admin" &&
         formatter(item.currency).format(item.amountRecieved),

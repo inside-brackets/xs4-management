@@ -17,10 +17,6 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
   const [revertState, setRevertState] = useState(null);
   const [editAble, setEditAble] = useState(false);
 
-  // invoice calculation states
-  const [netRecieveable, setNetRecieveable] = useState(0);
-  const [amountDeducted, setAmountDeducted] = useState(0);
-
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;
@@ -148,13 +144,11 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
 
     netRec = state.totalAmount - amtDec;
 
-    setAmountDeducted(Math.round(amtDec * 100) / 100);
-    setNetRecieveable(netRec);
-
     if (state.status === "paid") {
       setState((prev) => {
         let amountRecievedInPKR = netRec * prev.exchangeRate + Number(0);
-
+        let amountDeductedInPKR = (amtDec * 100) / 100;
+        let netRecieveableInPKR = netRec;
         let shareInPKR = profile
           ? profile.share * (amountRecievedInPKR / 100)
           : 0;
@@ -162,9 +156,35 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
           ...prev,
           employeeShare: round(shareInPKR, 2),
           amountRecieved: round(amountRecievedInPKR, 2),
+          amountDeducted: round(amountDeductedInPKR, 2),
+          netRecieveable: round(netRecieveableInPKR, 2),
         };
       });
     }
+
+    setState((prev) => {
+      let amountDeductedInPKR = (amtDec * 100) / 100;
+      let netRecieveableInPKR = netRec;
+
+      return {
+        ...prev,
+
+        amountDeducted: round(amountDeductedInPKR, 2),
+        netRecieveable: round(netRecieveableInPKR, 2),
+      };
+    });
+    // if (state.status === "unpaid") {
+    //   setState((prev) => {
+    //     let amountDeductedInPKR = (amtDec * 100) / 100;
+    //     let netRecieveableInPKR = netRec;
+
+    //     return {
+    //       ...prev,
+    //       amountDeducted: round(amountDeductedInPKR, 2),
+    //       netRecieveable: round(netRecieveableInPKR, 2),
+    //     };
+    //   });
+    // }
   }, [
     state.status,
     state.totalAmount,
@@ -172,6 +192,8 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
     state.employeeShare,
     state.hasRecruiter,
     state.exchangeRate,
+    state.amountRecieved,
+    state.amountDeducted,
   ]);
 
   return (
@@ -257,11 +279,12 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
               <Form.Group as={Col} md="4">
                 <Form.Label>Graphic Share</Form.Label>
                 <Form.Control
-                  name="grahicShare"
                   type="number"
-                  onChange={handleChange}
-                  placeholder="0"
+                  placeholder="Graphic Share"
+                  name="grahicShare"
                   defaultValue={defaultValue ? defaultValue.grahicShare : null}
+                  onChange={handleChange}
+                  required
                 />
               </Form.Group>
 
@@ -295,19 +318,16 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                       type="number"
                       placeholder="-"
                       readOnly
-                      value={state.employeeShare ?? 0}
+                      value={state.employeeShare}
                     />
                   </Form.Group>
 
                   <Form.Group as={Col} md="3">
-                    <Form.Label>Amnt Recieved</Form.Label>
+                    <Form.Label>Amnt Received</Form.Label>
                     <Form.Control
                       type="number"
                       placeholder="-"
                       value={state.amountRecieved}
-                      // defaultValue={
-                      //   defaultValue ? defaultValue.amountRecieved : null
-                      // }
                       readOnly
                     />
                   </Form.Group>
@@ -316,13 +336,8 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      name="amountDeducted"
-                      value={amountDeducted}
-                      // defaultValue={
-                      //   defaultValue ? defaultValue.amountDeducted : null
-                      // }
+                      value={state.amountDeducted}
                       readOnly
-                      required
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="3">
@@ -330,12 +345,8 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
+                      value={state.netRecieveable}
                       readOnly
-                      onChange={handleChange}
-                      value={netRecieveable}
-                      // defaultValue={
-                      //   defaultValue ? defaultValue.netRecieveable : null
-                      // }
                     />
                   </Form.Group>
                 </>
