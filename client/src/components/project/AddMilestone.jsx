@@ -9,9 +9,6 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
     project: projectID,
     profile: profile,
     hasRecruiter: hasRecruiter,
-    totalAmount: 0,
-    status: "unpaid",
-    paymentDate: new Date(),
   });
 
   const { userInfo } = useSelector((state) => state.userLogin);
@@ -28,11 +25,40 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
     const value = evt.target.value;
     const name = evt.target.name;
 
-    setState({
-      ...state,
+    if (name === "status") {
+      if (value === "paid") {
+        setState((prev) => ({ ...prev, paymentDate: new Date() }));
+      } else {
+        setState((prev) => {
+          const temp = prev;
+          delete temp.paymentDate;
+          delete temp.employeeShare;
+          return temp;
+        });
+      }
+    }
+    setState((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
+
+  // set values
+  useEffect(() => {
+    const populateForm = async () => {
+      if (defaultValue) {
+        const milestoneRes = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/milestone/${defaultValue._id}`
+        );
+        const tempMilestone = milestoneRes.data;
+        setState((prev) => ({ ...prev, ...tempMilestone }));
+      } else {
+        setEditAble(true);
+      }
+    };
+
+    populateForm().then(() => setLoading(false));
+  }, [defaultValue]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -106,7 +132,7 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
         amtDec = 0;
       }
     } else if (profile?.platform === "upwork") {
-      if (state.status === "closed") {
+      if (state.status === "paid") {
         if (state.totalAmount <= 500) {
           platformFee = 0.2;
           amtDec = platformFee * state.totalAmount;
@@ -121,13 +147,13 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
     }
 
     netRec = state.totalAmount - amtDec;
+
     setAmountDeducted(Math.round(amtDec * 100) / 100);
     setNetRecieveable(netRec);
 
     if (state.status === "paid") {
       setState((prev) => {
-        let amountRecievedInPKR =
-          netRec * prev.exchangeRate + Number(prev.adjustment ?? 0);
+        let amountRecievedInPKR = netRec * prev.exchangeRate + Number(0);
 
         let shareInPKR = profile
           ? profile.share * (amountRecievedInPKR / 100)
@@ -143,10 +169,9 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
     state.status,
     state.totalAmount,
     profile,
-    ,
+    state.employeeShare,
     state.hasRecruiter,
     state.exchangeRate,
-    state.adjustment,
   ]);
 
   return (
@@ -200,8 +225,8 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                   value={state.status ?? ""}
                   required
                 >
-                  <option value="paid">Paid</option>
                   <option value="unpaid">Unpaid</option>
+                  <option value="paid">Paid</option>
                   <option value="cancelled">Cancelled</option>
                 </Form.Control>
               </Form.Group>
@@ -210,13 +235,47 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                 <Form.Control
                   type="date"
                   placeholder="Payment Date"
-                  defaultValue={
-                    defaultValue ? defaultValue.paymentDate : Date.now()
-                  }
+                  defaultValue={defaultValue ? defaultValue.paymentDate : " "}
                   name="paymentDate"
                   onChange={handleChange}
+                />
+              </Form.Group>
+            </Row>
+
+            <Row className="my-2">
+              <Form.Group as={Col} md="4">
+                <Form.Label>Total Amount</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Total Amount"
+                  name="totalAmount"
+                  defaultValue={defaultValue ? defaultValue.totalAmount : null}
+                  onChange={handleChange}
                   required
-                  //  readOnly={!editAble}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="4">
+                <Form.Label>Graphic Share</Form.Label>
+                <Form.Control
+                  name="grahicShare"
+                  type="number"
+                  onChange={handleChange}
+                  placeholder="0"
+                  defaultValue={defaultValue ? defaultValue.grahicShare : null}
+                />
+              </Form.Group>
+
+              <Form.Group as={Col} md="4">
+                <Form.Label>Exchange Rate</Form.Label>
+                <Form.Control
+                  type="number"
+                  min={0}
+                  step="any"
+                  //  readOnly={!editAble || (!recalculate && id)}
+                  defaultValue={defaultValue ? defaultValue.exchangeRate : null}
+                  name="exchangeRate"
+                  required={state.status === "unpaid"}
+                  onChange={handleChange}
                 />
               </Form.Group>
             </Row>
@@ -224,15 +283,19 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
               {
                 <>
                   <Form.Group as={Col} md="3">
-                    <Form.Label>Total Amount</Form.Label>
+                    <Form.Label>
+                      EmpShare{" "}
+                      <span
+                        style={{
+                          color: "red",
+                        }}
+                      >{` ${profile ? profile.share : ""}%`}</span>
+                    </Form.Label>
                     <Form.Control
-                      //  readOnly={!editAble || (!recalculate && id)}
                       type="number"
-                      placeholder="Total Amount"
-                      name="totalAmount"
-                      value={state.totalAmount ?? 0}
-                      onChange={handleChange}
-                      required
+                      placeholder="-"
+                      readOnly
+                      value={state.employeeShare ?? 0}
                     />
                   </Form.Group>
 
@@ -241,9 +304,10 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      defaultValue={
-                        defaultValue ? defaultValue.amountRecieved : null
-                      }
+                      value={state.amountRecieved}
+                      // defaultValue={
+                      //   defaultValue ? defaultValue.amountRecieved : null
+                      // }
                       readOnly
                     />
                   </Form.Group>
@@ -277,70 +341,7 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                 </>
               }
             </Row>
-            <Row className="my-2">
-              <Form.Group as={Col} md="4">
-                <Form.Label>
-                  Employee Share{" "}
-                  <span>{` ${profile ? profile.share : ""}%`}</span>
-                </Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="-"
-                  readOnly
-                  value={state.employeeShare ?? 0}
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="4">
-                <Form.Label>
-                  Grahic Share <span>{` ${profile ? profile.share : ""}`}</span>
-                </Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="-"
-                  readOnly
-                  defaultValue={defaultValue ? defaultValue.grahicShare : null}
-                />
-              </Form.Group>
-
-              <Form.Group as={Col} md="4">
-                <Form.Label>Exchange Rate</Form.Label>
-                <Form.Control
-                  type="number"
-                  min={0}
-                  step="any"
-                  //  readOnly={!editAble || (!recalculate && id)}
-                  defaultValue={defaultValue ? defaultValue.exchangeRate : null}
-                  name="exchangeRate"
-                  required={state.status === "unpaid"}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Row>
           </Row>
-
-          {/* <Row>
-            <Col md={3}></Col>
-            <Col md={5}></Col>
-            <Col md={4}></Col>
-            <Button
-              disabled={loading}
-              className="p-2 m-3"
-              variant="success"
-              md={3}
-              type="submit"
-            >
-              {loading && (
-                <Spinner
-                  as="span"
-                  animation="grow"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              )}
-              Create
-            </Button>
-          </Row> */}
         </Row>
         {!defaultValue ? (
           <Button
@@ -363,18 +364,6 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
           </Button>
         ) : userInfo.role === "user" && !userInfo.isManager ? (
           <></>
-        ) : !editAble ? (
-          <Button
-            className="p-2 m-3"
-            variant="outline-primary"
-            md={3}
-            onClick={() => {
-              setRevertState(state);
-              setEditAble(true);
-            }}
-          >
-            Edit
-          </Button>
         ) : (
           <>
             <Button
@@ -394,18 +383,6 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                 />
               )}
               Save
-            </Button>
-            <Button
-              className="p-2 m-3"
-              md={3}
-              variant="outline-danger"
-              onClick={() => {
-                setState(revertState);
-                setValidated(false);
-                setEditAble(false);
-              }}
-            >
-              Cancel
             </Button>
           </>
         )}

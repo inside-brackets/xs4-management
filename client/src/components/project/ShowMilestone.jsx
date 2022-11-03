@@ -25,7 +25,7 @@ const ShowMilestone = () => {
           "Total Amount",
           "Amount Deducted",
           "Net Recevible",
-          "Amount Dectucted",
+          "Amount Recevible",
           "Payment Date",
           "Status",
           "Actions",

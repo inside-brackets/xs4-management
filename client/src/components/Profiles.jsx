@@ -63,12 +63,14 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
           setLoading(false);
         })
         .catch((err) => {
+    
           toast.error(err.response.data.msg ?? err.response.statusText);
           setLoading(false);
         });
     }
   };
 
+  console.log("default value", defaultValue, state);
   return (
     <Row>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>

@@ -769,6 +769,7 @@ const AddProject = () => {
                   projectID={id}
                   profile={selectedProfile}
                   hasRecruiter={state.hasRecruiter}
+                  // empShare={state.empShare}
                   setShowModal={() => {
                     setRerenderTable(Math.random());
                     setMilestoneModal(false);
