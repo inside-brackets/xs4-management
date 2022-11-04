@@ -4,18 +4,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { round } from "../../util/number";
 import { useSelector } from "react-redux";
-const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
+const AddMilestone = ({ projectID, profile, defaultValue }) => {
   const [state, setState] = useState({
     project: projectID,
-    profile: profile,
-    hasRecruiter: hasRecruiter,
   });
 
   const { userInfo } = useSelector((state) => state.userLogin);
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [revertState, setRevertState] = useState(null);
-  const [editAble, setEditAble] = useState(false);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -48,26 +44,21 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
         );
         const tempMilestone = milestoneRes.data;
         setState((prev) => ({ ...prev, ...tempMilestone }));
-      } else {
-        setEditAble(true);
       }
     };
-
-    populateForm().then(() => setLoading(false));
+    populateForm();
   }, [defaultValue]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
     const form = event.currentTarget;
-
     if (form.checkValidity() === false) {
       setValidated(true);
 
       return;
     }
     setLoading(true);
-
     if (!defaultValue) {
       axios
         .post(`${process.env.REACT_APP_BACKEND_URL}/milestone`, state)
@@ -96,6 +87,8 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
     }
   };
 
+  // calculate amount deducted
+  // calculate amount recieved and employee share
   useEffect(() => {
     let amtDec = 0;
     let netRec = 0;
@@ -168,27 +161,14 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
 
       return {
         ...prev,
-
         amountDeducted: round(amountDeductedInPKR, 2),
         netRecieveable: round(netRecieveableInPKR, 2),
       };
     });
-    // if (state.status === "unpaid") {
-    //   setState((prev) => {
-    //     let amountDeductedInPKR = (amtDec * 100) / 100;
-    //     let netRecieveableInPKR = netRec;
-
-    //     return {
-    //       ...prev,
-    //       amountDeducted: round(amountDeductedInPKR, 2),
-    //       netRecieveable: round(netRecieveableInPKR, 2),
-    //     };
-    //   });
-    // }
   }, [
     state.status,
     state.totalAmount,
-    profile,
+    state.profile,
     state.employeeShare,
     state.hasRecruiter,
     state.exchangeRate,
@@ -214,7 +194,6 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                   </span>
                 </Form.Label>
                 <Form.Control
-                  // readOnly={!editAble}
                   name="title"
                   onChange={handleChange}
                   type="text"
@@ -236,15 +215,12 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                   </span>
                 </Form.Label>
                 <Form.Control
-                  //  readOnly={!editAble || isClosed}
                   as="select"
                   name="status"
                   onChange={(value) => {
-                    // if (editAble && !isClosed) {
                     handleChange(value);
-                    // }
                   }}
-                  value={state.status ?? ""}
+                  defaultValue={defaultValue ? defaultValue.status : " "}
                   required
                 >
                   <option value="unpaid">Unpaid</option>
@@ -277,6 +253,18 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                 />
               </Form.Group>
               <Form.Group as={Col} md="4">
+                <Form.Label>Exchange Rate</Form.Label>
+                <Form.Control
+                  type="number"
+                  min={0}
+                  step="any"
+                  defaultValue={defaultValue ? defaultValue.exchangeRate : null}
+                  name="exchangeRate"
+                  required={state.status === "unpaid"}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="4">
                 <Form.Label>Graphic Share</Form.Label>
                 <Form.Control
                   type="number"
@@ -287,20 +275,6 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                   required
                 />
               </Form.Group>
-
-              <Form.Group as={Col} md="4">
-                <Form.Label>Exchange Rate</Form.Label>
-                <Form.Control
-                  type="number"
-                  min={0}
-                  step="any"
-                  //  readOnly={!editAble || (!recalculate && id)}
-                  defaultValue={defaultValue ? defaultValue.exchangeRate : null}
-                  name="exchangeRate"
-                  required={state.status === "unpaid"}
-                  onChange={handleChange}
-                />
-              </Form.Group>
             </Row>
             <Row className="my-2">
               {
@@ -308,17 +282,15 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                   <Form.Group as={Col} md="3">
                     <Form.Label>
                       EmpShare{" "}
-                      <span
-                        style={{
-                          color: "red",
-                        }}
-                      >{` ${profile ? profile.share : ""}%`}</span>
+                      <span style={{ color: "red" }}>{` ${
+                        profile ? profile.share : ""
+                      }%`}</span>
                     </Form.Label>
                     <Form.Control
                       type="number"
                       placeholder="-"
                       readOnly
-                      value={state.employeeShare}
+                      value={state ? state.employeeShare : " "}
                     />
                   </Form.Group>
 
@@ -327,7 +299,7 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      value={state.amountRecieved}
+                      defaultValue={state ? state.amountRecieved : " "}
                       readOnly
                     />
                   </Form.Group>
@@ -336,7 +308,7 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      value={state.amountDeducted}
+                      defaultValue={state ? state.amountDeducted : " "}
                       readOnly
                     />
                   </Form.Group>
@@ -345,7 +317,7 @@ const AddMilestone = ({ projectID, profile, hasRecruiter, defaultValue }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      value={state.netRecieveable}
+                      defaultValue={state ? state.netRecieveable : " "}
                       readOnly
                     />
                   </Form.Group>

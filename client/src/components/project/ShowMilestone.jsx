@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Row, Badge } from "react-bootstrap";
 import Table from "../table/SmartTable";
 import { useSelector } from "react-redux";
@@ -8,10 +8,14 @@ import ActionButton from "../UI/ActionButton";
 import { formatter } from "../../util/currencyFormatter";
 import MyModal from "../../components/modals/MyModal";
 import AddMilestone from "./AddMilestone";
+
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 const PAGE_SIZE = 50;
-const ShowMilestone = () => {
-  const [users, setUsers] = useState(null);
+const ShowMilestone = (projectID) => {
+  const [state, setState] = useState({
+    project: projectID,
+  });
+
   const { userInfo } = useSelector((state) => state.userLogin);
   const [defaultValue, setDefaultValue] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -74,29 +78,10 @@ const ShowMilestone = () => {
       </td>
     </tr>
   );
-  const renderExportData = (item, index, currPage) => {
-    return {
-      Title: item.title,
-      status: item.status,
-      paymentDate: item.paymentDate
-        ? moment(item.paymentDate).format("DD MMM")
-        : "N/A",
-      totalAmount:
-        userInfo.role === "admin" &&
-        formatter(item.currency).format(item.totalAmount),
-      netRecieveable:
-        userInfo.role === "admin" &&
-        formatter(item.currency).format(item.netRecieveable),
-      amountDeducted:
-        userInfo.role === "admin" &&
-        formatter(item.currency).format(item.amountDeducted),
-      amountRecieved:
-        userInfo.role === "admin" &&
-        formatter(item.currency).format(item.amountRecieved),
-    };
-  };
+
   var body = {};
   var filter = {};
+
   return (
     <Row>
       <div className="card">
@@ -111,13 +96,10 @@ const ShowMilestone = () => {
               url: `${process.env.REACT_APP_BACKEND_URL}/milestone`,
               body,
             }}
-            // placeholder={"title | client name"}
             filter={filter}
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
             }
-            renderExportData={(data) => renderExportData(data)}
-            exportData
           />
         </div>
       </div>
