@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
-
 import { useSelector } from "react-redux";
-
 import axios from "axios";
-
 import ActionButton from "../../components/UI/ActionButton";
 import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";

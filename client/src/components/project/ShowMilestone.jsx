@@ -11,11 +11,7 @@ import AddMilestone from "./AddMilestone";
 
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 const PAGE_SIZE = 50;
-const ShowMilestone = (projectID) => {
-  const [state, setState] = useState({
-    project: projectID,
-  });
-
+const ShowMilestone = ({ projectID }) => {
   const { userInfo } = useSelector((state) => state.userLogin);
   const [defaultValue, setDefaultValue] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -78,8 +74,8 @@ const ShowMilestone = (projectID) => {
       </td>
     </tr>
   );
-
-  var body = {};
+  //var body = {};
+  var body = { project: projectID };
   var filter = {};
 
   return (
@@ -87,7 +83,7 @@ const ShowMilestone = (projectID) => {
       <div className="card">
         <div className="card__body">
           <Table
-            key={rerenderTable}
+            //   key={rerenderTable}
             title="Milestone"
             limit={PAGE_SIZE}
             headData={customerTableHead}

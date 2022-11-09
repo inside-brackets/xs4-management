@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 const AddMilestone = ({ projectID, profile, defaultValue }) => {
   const [state, setState] = useState({
     project: projectID,
+    defaultValue,
   });
 
   const { userInfo } = useSelector((state) => state.userLogin);
@@ -35,20 +36,6 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
     }));
   };
 
-  // set values
-  useEffect(() => {
-    const populateForm = async () => {
-      if (defaultValue) {
-        const milestoneRes = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/milestone/${defaultValue._id}`
-        );
-        const tempMilestone = milestoneRes.data;
-        setState((prev) => ({ ...prev, ...tempMilestone }));
-      }
-    };
-    populateForm();
-  }, [defaultValue]);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -71,19 +58,32 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
           setLoading(false);
         });
     } else {
-      await axios
-        .put(
-          `${process.env.REACT_APP_BACKEND_URL}/milestone/${defaultValue._id}`,
-          state
-        )
-        .then((res) => {
-          toast.success("Milestone Updated Sucessfully");
-          setLoading(false);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.msg ?? err.response.statusText);
-          setLoading(false);
-        });
+      console.log("state==>", state.title);
+      console.log("state==>", state.totalAmount);
+
+      const res = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/milestone/${defaultValue._id}`,
+        {
+          title: state.title,
+          status: state.status,
+          totalAmount: state.totalAmount,
+          exchangeRate: state.exchangeRate,
+          employeeShare: state.employeeShare,
+          grahicShare: state.grahicShare,
+          amountRecieved: event.target.amtRec.value,
+          netRecieveable: event.target.netRec.value,
+          amountDeducted: event.target.amtDect.value,
+          paymentDate: state.paymentDate,
+        }
+      );
+      setState({ defaultValue: res.data });
+      if (res.status === 200) {
+        toast.success("Project Updated Successfully");
+        setState({ defaultValue: res.data });
+        console.log(res.data);
+      } else {
+        toast.error("Sorry, couldn't update the project");
+      }
     }
   };
 
@@ -197,7 +197,14 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                   name="title"
                   onChange={handleChange}
                   type="text"
-                  defaultValue={defaultValue ? defaultValue.title : null}
+                  defaultValue={
+                    defaultValue
+                      ? defaultValue.title
+                      : state
+                      ? state.title
+                      : "unpaid"
+                  }
+                  //defaultValue={defaultValue ? defaultValue.title : null}
                   placeholder="Enter title"
                   required
                 />
@@ -233,7 +240,14 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                 <Form.Control
                   type="date"
                   placeholder="Payment Date"
-                  defaultValue={defaultValue ? defaultValue.paymentDate : " "}
+                  defaultValue={
+                    defaultValue
+                      ? defaultValue.paymentDate
+                      : state
+                      ? state.paymentDate
+                      : " "
+                  }
+                  // defaultValue={defaultValue ? defaultValue.paymentDate : " "}
                   name="paymentDate"
                   onChange={handleChange}
                 />
@@ -247,7 +261,16 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                   type="number"
                   placeholder="Total Amount"
                   name="totalAmount"
-                  defaultValue={defaultValue ? defaultValue.totalAmount : null}
+                  defaultValue={
+                    defaultValue
+                      ? defaultValue.totalAmount
+                      : state
+                      ? state.totalAmount
+                      : ""
+                  }
+                  // defaultValue={
+                  //   state.defaultValue ? state.defaultValue.totalAmount : null
+                  // }
                   onChange={handleChange}
                   required
                 />
@@ -258,7 +281,14 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                   type="number"
                   min={0}
                   step="any"
-                  defaultValue={defaultValue ? defaultValue.exchangeRate : null}
+                  defaultValue={
+                    defaultValue
+                      ? defaultValue.exchangeRate
+                      : state
+                      ? state.exchangeRate
+                      : ""
+                  }
+                  //defaultValue={defaultValue ? defaultValue.exchangeRate : null}
                   name="exchangeRate"
                   required={state.status === "unpaid"}
                   onChange={handleChange}
@@ -270,7 +300,14 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                   type="number"
                   placeholder="Graphic Share"
                   name="grahicShare"
-                  defaultValue={defaultValue ? defaultValue.grahicShare : null}
+                  defaultValue={
+                    defaultValue
+                      ? defaultValue.grahicShare
+                      : state
+                      ? state.grahicShare
+                      : ""
+                  }
+                  //defaultValue={defaultValue ? defaultValue.grahicShare : null}
                   onChange={handleChange}
                   required
                 />
@@ -290,7 +327,13 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                       type="number"
                       placeholder="-"
                       readOnly
-                      value={state ? state.employeeShare : " "}
+                      defaultValue={
+                        defaultValue
+                          ? defaultValue.employeeShare
+                          : state
+                          ? state.employeeShare
+                          : ""
+                      }
                     />
                   </Form.Group>
 
@@ -299,7 +342,14 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      defaultValue={state ? state.amountRecieved : " "}
+                      name="amtRec"
+                      defaultValue={
+                        defaultValue
+                          ? defaultValue.amountRecieved
+                          : state
+                          ? state.amountRecieved
+                          : ""
+                      }
                       readOnly
                     />
                   </Form.Group>
@@ -307,8 +357,15 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                     <Form.Label>Amnt Deduct</Form.Label>
                     <Form.Control
                       type="number"
+                      name="amtDect"
                       placeholder="-"
-                      defaultValue={state ? state.amountDeducted : " "}
+                      defaultValue={
+                        defaultValue
+                          ? defaultValue.amountDeducted
+                          : state
+                          ? state.amountDeducted
+                          : ""
+                      }
                       readOnly
                     />
                   </Form.Group>
@@ -316,8 +373,15 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                     <Form.Label>Net Recieve</Form.Label>
                     <Form.Control
                       type="number"
+                      name="netRec"
                       placeholder="-"
-                      defaultValue={state ? state.netRecieveable : " "}
+                      defaultValue={
+                        defaultValue
+                          ? defaultValue.netRecieveable
+                          : state
+                          ? state.netRecieveable
+                          : ""
+                      }
                       readOnly
                     />
                   </Form.Group>
@@ -353,10 +417,10 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
               className="p-2 m-3"
               variant="success"
               md={3}
-              disabled={loading}
+              //disabled={loading}
               type="submit"
             >
-              {loading && (
+              {/* {loading && (
                 <Spinner
                   as="span"
                   animation="grow"
@@ -364,7 +428,7 @@ const AddMilestone = ({ projectID, profile, defaultValue }) => {
                   role="status"
                   aria-hidden="true"
                 />
-              )}
+              )} */}
               Save
             </Button>
           </>

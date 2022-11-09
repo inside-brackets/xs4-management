@@ -171,9 +171,8 @@ const AddProject = () => {
     const form = event.currentTarget;
     setValidated(true);
 
-    if (form.checkValidity() === false) {
-      return;
-    }
+    setMilestoneModal(false);
+
     if (state.exchangeRate === 0) {
       return toast.error("Please Enter Valid Exchange rate");
     }
@@ -524,6 +523,7 @@ const AddProject = () => {
                 show={addMilestoneModal}
                 heading="Add Milestone"
                 onClose={() => setMilestoneModal(false)}
+                style={{ width: "auto" }}
               >
                 <Milestone
                   projectID={id}
@@ -533,7 +533,6 @@ const AddProject = () => {
                     setRerenderTable(Math.random());
                     setMilestoneModal(false);
                   }}
-                  onClose={() => setMilestoneModal(false)}
                 />
               </MyModal>
             </Col>

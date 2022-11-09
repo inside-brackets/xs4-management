@@ -35,27 +35,17 @@ const Projects = () => {
           "Assignee",
           "Awarded",
           "Deadline",
-          "Total Amount",
-          "Employee Share",
-          "Status",
           "Actions",
         ]
-      : [
-          "#",
-          "Title",
-          "Client",
-          "Profile",
-          "Awarded",
-          "Deadline",
-          "Status",
-          "Actions",
-        ];
+      : ["#", "Title", "Client", "Profile", "Awarded", "Deadline", "Actions"];
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
       <td>{item.clientName ?? "N/A"}</td>
-      <td>{`${item.profile.title} (${item.profile.platform})`}</td>
+      {/* <td>{`${item.profile.title ? item.profile.title : ""} (${
+        item.profile.platform ? item.profile.platform : ""
+      })`}</td> */}
       <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
       <td>
         {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
@@ -63,19 +53,7 @@ const Projects = () => {
       <td>
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
-      {(userInfo.role === "admin" || userInfo.isManager) && (
-        <Fragment>
-          <td>{formatter(item.currency).format(item.totalAmount)}</td>
-          <td>
-            {item.empShare ? formatter("PKR").format(item.empShare) : "N/A"}
-          </td>
-        </Fragment>
-      )}
-      <td>
-        <h5>
-          <Badge bg={status_map[item.status]}>{item.status}</Badge>
-        </h5>
-      </td>
+
       <td>
         <Link className="table__row__edit" to={`/projects/project/${item._id}`}>
           <i className="bx bx-edit action-button"></i>

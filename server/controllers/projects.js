@@ -37,6 +37,19 @@ export const getProject = asyncHandler(async (req, res) => {
   }
 });
 
+export const getAllProjects = asyncHandler(async (req, res) => {
+  try {
+    let getAllProjects = await ProjectModal.find();
+
+    res.status(200);
+
+    res.json(getAllProjects);
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+});
+
 // Access: Private
 // Method: PUT
 // route: /projects/:id
