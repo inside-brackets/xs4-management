@@ -43,9 +43,9 @@ const Projects = () => {
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
       <td>{item.clientName ?? "N/A"}</td>
-      {/* <td>{`${item.profile.title ? item.profile.title : ""} (${
+      <td>{`${item.profile.title ? item.profile.title : ""} (${
         item.profile.platform ? item.profile.platform : ""
-      })`}</td> */}
+      })`}</td>
       <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
       <td>
         {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
