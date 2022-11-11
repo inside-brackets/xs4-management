@@ -241,7 +241,6 @@ const AddMilestone = ({ projectID, profile }) => {
                   name="grahicShare"
                   value={state ? state.grahicShare : ""}
                   onChange={handleChange}
-                  required
                 />
               </Form.Group>
             </Row>

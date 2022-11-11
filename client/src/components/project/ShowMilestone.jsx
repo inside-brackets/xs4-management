@@ -6,7 +6,7 @@ import moment from "moment";
 import status_map from "../../assets/JsonData/milestone_status_map.json";
 import ActionButton from "../UI/ActionButton";
 import { formatter } from "../../util/currencyFormatter";
-import MyModal from "../../components/modals/MyModal"
+import MyModal from "../../components/modals/MyModal";
 import UpdateMilestone from "./UpdateMilestone";
 
 const customerTableHead = [
@@ -23,7 +23,6 @@ const customerTableHead = [
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 const PAGE_SIZE = 50;
 const ShowMilestone = ({ projectID, profile }) => {
-  console.log(profile, "profile in showmilestone");
   const { userInfo } = useSelector((state) => state.userLogin);
   const [defaultValue, setDefaultValue] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -91,7 +90,6 @@ const ShowMilestone = ({ projectID, profile }) => {
         show={showModal}
         heading={"Edit Milestone"}
         onClose={() => {
-          // setDefaultValue(null);
           setShowModal(false);
         }}
         style={{ width: "auto" }}
