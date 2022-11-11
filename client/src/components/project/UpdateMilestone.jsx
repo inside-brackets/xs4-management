@@ -4,35 +4,19 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { round } from "../../util/number";
 
-const AddMilestone = ({ projectID, profile }) => {
+const UpdateMilestone = ({ projectID, profile, defaultValue }) => {
   const [state, setState] = useState({
     project: projectID,
+    defaultValue,
   });
+
+  const [mileValue, setmileValue] = useState(defaultValue);
+  console.log(mileValue.totalAmount, "mileValue.totalAmount");
+  console.log(defaultValue, "defaultValue");
+  console.log(defaultValue.totalAmount, "defaultValue.totalAmount");
 
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleChange = (evt) => {
-    const value = evt.target.value;
-    const name = evt.target.name;
-
-    if (name === "status") {
-      if (value === "paid") {
-        setState((prev) => ({ ...prev, paymentDate: new Date() }));
-      } else {
-        setState((prev) => {
-          const temp = prev;
-          delete temp.paymentDate;
-          delete temp.employeeShare;
-          return temp;
-        });
-      }
-    }
-    setState((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -44,59 +28,87 @@ const AddMilestone = ({ projectID, profile }) => {
       return;
     }
     setLoading(true);
-    axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/milestone`, state)
-      .then((res) => {
-        toast.success("Milestone Created Sucessfully");
+    if (!defaultValue) {
+      axios
+        .post(`${process.env.REACT_APP_BACKEND_URL}/milestone`, state)
+        .then((res) => {
+          toast.success("Milestone Created Sucessfully");
+          setLoading(false);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.msg ?? err.response.statusText);
+          setLoading(false);
+        });
+    } else {
+      const res = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/milestone/${defaultValue._id}`,
+        {
+          title: mileValue.title,
+          status: mileValue.status,
+          totalAmount: mileValue.totalAmount,
+          exchangeRate: mileValue.exchangeRate,
+          employeeShare: mileValue.employeeShare,
+          grahicShare: mileValue.grahicShare,
+          amountRecieved: mileValue.amountRecieved,
+          netRecieveable: mileValue.netRecieveable,
+          amountDeducted: mileValue.amountDeducted,
+          paymentDate: mileValue.paymentDate,
+        }
+      );
+
+      setmileValue({ mileValue: res.data });
+      if (res.status === 200) {
         setLoading(false);
-      })
-      .catch((err) => {
-        toast.error(err.response.data.msg ?? err.response.statusText);
-        setLoading(false);
-      });
+        toast.success("Project Updated Successfully");
+
+        setmileValue({ mileValue: res.data });
+        // console.log(res.data);
+      } else {
+        toast.error("Sorry, couldn't update the project");
+      }
+    }
   };
 
-  // calculate amount deducted
-  // calculate amount recieved and employee share
   useEffect(() => {
     let amtDec = 0;
     let netRec = 0;
     let platformFee;
+    console.log(profile?.platform, "profile.platform===><");
     if (profile?.platform === "freelancer") {
       platformFee = 0.1;
       var recruiterFee = 0.05;
-      if (state.hasRecruiter) {
-        if (state.status === "paid") {
+      if (mileValue.hasRecruiter) {
+        if (mileValue.status === "paid") {
           if (
-            state.totalAmount < 50 &&
-            state.totalAmount > 0 &&
-            !state.hasRecruiter
+            mileValue.totalAmount < 50 &&
+            mileValue.totalAmount > 0 &&
+            !mileValue.hasRecruiter
           ) {
             amtDec = 5;
           } else {
-            amtDec = (platformFee + recruiterFee) * state.totalAmount;
+            amtDec = (platformFee + recruiterFee) * mileValue.totalAmount;
           }
         } else {
           amtDec = 0;
         }
       } else {
-        amtDec = platformFee * state.totalAmount;
+        amtDec = platformFee * mileValue.totalAmount;
       }
     } else if (profile?.platform === "fiver") {
       platformFee = 0.2;
-      if (state.status === "paid") {
-        amtDec = platformFee * state.totalAmount;
+      if (mileValue.status === "paid") {
+        amtDec = platformFee * mileValue.totalAmount;
       } else {
         amtDec = 0;
       }
     } else if (profile?.platform === "upwork") {
-      if (state.status === "paid") {
-        if (state.totalAmount <= 500) {
+      if (mileValue.status === "paid") {
+        if (mileValue.totalAmount <= 500) {
           platformFee = 0.2;
-          amtDec = platformFee * state.totalAmount;
+          amtDec = platformFee * mileValue.totalAmount;
         } else {
           platformFee = 0.1;
-          let moreThanFive = state.totalAmount - 500;
+          let moreThanFive = mileValue.totalAmount - 500;
           amtDec = moreThanFive * platformFee + 100;
         }
       } else {
@@ -104,10 +116,10 @@ const AddMilestone = ({ projectID, profile }) => {
       }
     }
 
-    netRec = state.totalAmount - amtDec;
+    netRec = mileValue.totalAmount - amtDec;
 
-    if (state.status === "paid") {
-      setState((prev) => {
+    if (mileValue.status === "paid") {
+      setmileValue((prev) => {
         let amountRecievedInPKR = netRec * prev.exchangeRate + Number(0);
         let amountDeductedInPKR = (amtDec * 100) / 100;
         let netRecieveableInPKR = netRec;
@@ -123,27 +135,62 @@ const AddMilestone = ({ projectID, profile }) => {
         };
       });
     }
-
-    setState((prev) => {
+    setmileValue((prev) => {
       let amountDeductedInPKR = (amtDec * 100) / 100;
       let netRecieveableInPKR = netRec;
-
       return {
         ...prev,
         amountDeducted: round(amountDeductedInPKR, 2),
         netRecieveable: round(netRecieveableInPKR, 2),
       };
     });
+    setmileValue((prev) => {
+      let amountDeductedInPKR = (amtDec * 100) / 100;
+      let netRecieveableInPKR = netRec;
+      console.log(amountDeductedInPKR, "amountDeductedInPKR setmileValue");
+      return {
+        ...prev,
+        defaultValue: {
+          amountDeducted: round(amountDeductedInPKR, 2),
+          netRecieveable: round(netRecieveableInPKR, 2),
+        },
+      };
+    });
   }, [
-    state.status,
-    state.totalAmount,
-    state.profile,
-    state.employeeShare,
-    state.hasRecruiter,
-    state.exchangeRate,
-    state.amountRecieved,
-    state.amountDeducted,
+    mileValue.status,
+    mileValue.totalAmount,
+    mileValue.profile,
+    mileValue.employeeShare,
+    mileValue.hasRecruiter,
+    mileValue.exchangeRate,
+    mileValue.amountRecieved,
+    mileValue.amountDeducted,
+    mileValue.netRecieveable,
   ]);
+
+  const handleChange = (evt) => {
+    const value = evt.target.value;
+    const name = evt.target.name;
+
+    if (name === "status") {
+      if (value === "paid") {
+        setmileValue((prev) => ({ ...prev, paymentDate: new Date() }));
+      } else {
+        setmileValue((prev) => {
+          const temp = prev;
+          delete temp.paymentDate;
+          delete temp.employeeShare;
+          delete temp.netRecieveable;
+          return temp;
+        });
+      }
+    }
+
+    setmileValue((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   return (
     <Row>
@@ -166,7 +213,13 @@ const AddMilestone = ({ projectID, profile }) => {
                   name="title"
                   onChange={handleChange}
                   type="text"
-                  value={state ? state.title : "unpaid"}
+                  defaultValue={
+                    defaultValue
+                      ? defaultValue.title
+                      : state
+                      ? state.title
+                      : "unpaid"
+                  }
                   placeholder="Enter title"
                   required
                 />
@@ -189,7 +242,7 @@ const AddMilestone = ({ projectID, profile }) => {
                   onChange={(value) => {
                     handleChange(value);
                   }}
-                  value={state ? state.status : " "}
+                  value={mileValue.status}
                   required
                 >
                   <option value="unpaid">Unpaid</option>
@@ -202,7 +255,7 @@ const AddMilestone = ({ projectID, profile }) => {
                 <Form.Control
                   type="date"
                   placeholder="Payment Date"
-                  value={state ? state.paymentDate : " "}
+                  value={mileValue.paymentDate}
                   name="paymentDate"
                   onChange={handleChange}
                 />
@@ -216,7 +269,8 @@ const AddMilestone = ({ projectID, profile }) => {
                   type="number"
                   placeholder="Total Amount"
                   name="totalAmount"
-                  value={state ? state.totalAmount : ""}
+                  defaultValue={mileValue.totalAmount}
+                  value={mileValue.totalAmount}
                   onChange={handleChange}
                   required
                 />
@@ -227,9 +281,9 @@ const AddMilestone = ({ projectID, profile }) => {
                   type="number"
                   min={0}
                   step="any"
-                  value={state ? state.exchangeRate : ""}
+                  value={mileValue.exchangeRate}
                   name="exchangeRate"
-                  required={state.status === "unpaid"}
+                  required={mileValue.status === "unpaid"}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -239,7 +293,7 @@ const AddMilestone = ({ projectID, profile }) => {
                   type="number"
                   placeholder="Graphic Share"
                   name="grahicShare"
-                  value={state ? state.grahicShare : ""}
+                  value={mileValue.grahicShare}
                   onChange={handleChange}
                   required
                 />
@@ -257,9 +311,8 @@ const AddMilestone = ({ projectID, profile }) => {
                     </Form.Label>
                     <Form.Control
                       type="number"
-                      placeholder="-"
                       readOnly
-                      value={state ? state.employeeShare : ""}
+                      value={mileValue.employeeShare}
                     />
                   </Form.Group>
 
@@ -267,9 +320,8 @@ const AddMilestone = ({ projectID, profile }) => {
                     <Form.Label>Amnt Received</Form.Label>
                     <Form.Control
                       type="number"
-                      placeholder="-"
                       name="amtRec"
-                      value={state ? state.amountRecieved : ""}
+                      value={mileValue.amountRecieved}
                       readOnly
                     />
                   </Form.Group>
@@ -278,8 +330,7 @@ const AddMilestone = ({ projectID, profile }) => {
                     <Form.Control
                       type="number"
                       name="amtDect"
-                      placeholder="-"
-                      value={state ? state.amountDeducted : ""}
+                      value={mileValue.amountDeducted}
                       readOnly
                     />
                   </Form.Group>
@@ -289,7 +340,14 @@ const AddMilestone = ({ projectID, profile }) => {
                       type="number"
                       name="netRec"
                       placeholder="-"
-                      value={state ? state.netRecieveable : ""}
+                      defaultValue={
+                        state.defaultValue
+                          ? defaultValue.netRecieveable
+                          : state
+                          ? state.netRecieveable
+                          : ""
+                      }
+                      value={mileValue.netRecieveable}
                       readOnly
                     />
                   </Form.Group>
@@ -300,10 +358,10 @@ const AddMilestone = ({ projectID, profile }) => {
         </Row>
 
         <Button
-          disabled={loading}
           className="p-2 m-3"
           variant="success"
           md={3}
+          disabled={loading}
           type="submit"
         >
           {loading && (
@@ -315,11 +373,11 @@ const AddMilestone = ({ projectID, profile }) => {
               aria-hidden="true"
             />
           )}
-          Create
+          Update
         </Button>
       </Form>
     </Row>
   );
 };
 
-export default AddMilestone;
+export default UpdateMilestone;

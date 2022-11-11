@@ -7,7 +7,7 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { round } from "../../util/number";
+
 import Milestone from "./AddMilestone";
 import ShowMilestone from "./ShowMilestone";
 import MyModal from "../modals/MyModal";
@@ -33,22 +33,10 @@ const projectTypeOptions = [
   "proposal",
 ];
 
-var currency_list = [
-  { name: "USD", code: "USD" },
-  { name: "AUD", code: "AUD" },
-  { name: "NZD", code: "NZD" },
-  { name: "GBP", code: "GBP" },
-  { name: "HKD", code: "HKD" },
-  { name: "SGD", code: "SGD" },
-  { name: "EUR", code: "EUR" },
-  { name: "INR", code: "INR" },
-  { name: "CAD", code: "CAD" },
-];
-
 const AddProject = () => {
   const [validated, setValidated] = useState(false);
   const [addMilestoneModal, setMilestoneModal] = useState(false);
-  const [rerenderTable, setRerenderTable] = useState(null);
+
   const [state, setState] = useState({
     hasRecruiter: false,
     totalAmount: 0,
@@ -68,7 +56,7 @@ const AddProject = () => {
   const [editAble, setEditAble] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isClosed, setIsClosed] = useState(false);
-  const [recalculate, setRecalculate] = useState(false);
+
   const history = useHistory();
 
   const { id } = useParams();
@@ -145,7 +133,6 @@ const AddProject = () => {
 
         setSelectedProfile(tempProject.profile);
         setIsClosed(tempProject.status === "closed");
-        setRecalculate(tempProject.status !== "closed");
 
         // if it is not user's project don't show profile options
         const isMyProject = tempProfiles.some(
@@ -167,8 +154,7 @@ const AddProject = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setRecalculate(false);
-    const form = event.currentTarget;
+
     setValidated(true);
 
     setMilestoneModal(false);
@@ -201,7 +187,7 @@ const AddProject = () => {
       }
     }
   };
-
+  console.log(selectedProfile, "AddProject");
   return (
     <div>
       <div>
@@ -493,7 +479,6 @@ const AddProject = () => {
                       setState(revertState);
                       setValidated(false);
                       setEditAble(false);
-                      setRecalculate(false);
                     }}
                   >
                     Cancel
@@ -530,14 +515,13 @@ const AddProject = () => {
                   profile={selectedProfile}
                   hasRecruiter={state.hasRecruiter}
                   setShowModal={() => {
-                    setRerenderTable(Math.random());
                     setMilestoneModal(false);
                   }}
                 />
               </MyModal>
             </Col>
           </Row>
-          <ShowMilestone projectID={id} />
+          <ShowMilestone projectID={id} profile={selectedProfile} />
         </Row>
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import { Row, Badge } from "react-bootstrap";
 import Table from "../table/SmartTable";
 import { useSelector } from "react-redux";
@@ -6,41 +6,28 @@ import moment from "moment";
 import status_map from "../../assets/JsonData/milestone_status_map.json";
 import ActionButton from "../UI/ActionButton";
 import { formatter } from "../../util/currencyFormatter";
-import MyModal from "../../components/modals/MyModal";
-import AddMilestone from "./AddMilestone";
+import MyModal from "../../components/modals/MyModal"
+import UpdateMilestone from "./UpdateMilestone";
 
+const customerTableHead = [
+  "#",
+  "Title",
+  "Total Amount",
+  "Net receivable",
+  "Amount Deducted",
+  "Amount received",
+  "Payment Date",
+  "Status",
+  "Actions",
+];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 const PAGE_SIZE = 50;
-const ShowMilestone = ({ projectID }) => {
+const ShowMilestone = ({ projectID, profile }) => {
+  console.log(profile, "profile in showmilestone");
   const { userInfo } = useSelector((state) => state.userLogin);
   const [defaultValue, setDefaultValue] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
-
-  const customerTableHead =
-    userInfo.role === "admin" || userInfo.isManager
-      ? [
-          "#",
-          "Title",
-          "Total Amount",
-          "Net receivable",
-          "Amount Deducted",
-          "Amount received",
-          "Payment Date",
-          "Status",
-          "Actions",
-        ]
-      : [
-          "#",
-          "Title",
-          "Total Amount",
-          "Net Receivable",
-          "Amount Deducted",
-          "Amount Received",
-          "Payment Date",
-          "Status",
-          "Actions",
-        ];
 
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
@@ -74,7 +61,7 @@ const ShowMilestone = ({ projectID }) => {
       </td>
     </tr>
   );
-  //var body = {};
+
   var body = { project: projectID };
   var filter = {};
 
@@ -83,7 +70,7 @@ const ShowMilestone = ({ projectID }) => {
       <div className="card">
         <div className="card__body">
           <Table
-            //   key={rerenderTable}
+            key={rerenderTable}
             title="Milestone"
             limit={PAGE_SIZE}
             headData={customerTableHead}
@@ -102,15 +89,16 @@ const ShowMilestone = ({ projectID }) => {
       <MyModal
         size="lg"
         show={showModal}
-        heading={`${defaultValue ? "Edit" : "Create"} Milestone`}
+        heading={"Edit Milestone"}
         onClose={() => {
-          setDefaultValue(null);
+          // setDefaultValue(null);
           setShowModal(false);
         }}
         style={{ width: "auto" }}
       >
-        <AddMilestone
+        <UpdateMilestone
           defaultValue={defaultValue}
+          profile={profile}
           onSuccess={() => {
             setDefaultValue(null);
             setRerenderTable(Math.random());

@@ -29,6 +29,7 @@ export const migrateMilestones = asyncHandler(async (req, res) => {
           exchangeRate: "$exchangeRate",
           employeeShare: "$empShare",
           amountRecieved: "$amountRecieved",
+          profile: "$profile",
           netRecieveable: {
             $cond: {
               if: { status: ["$status" === "closed"] },
@@ -59,17 +60,12 @@ export const migrateMilestones = asyncHandler(async (req, res) => {
       },
     ]);
     res.json(milestones);
-    // milestones.map((milestone) => {});
     const createMilestone = await MilestoneModal.insertMany(milestones);
 
     console.log(createMilestone);
   } catch (error) {
     console.log(error);
   }
-
-  // if milestones
-  // calculate net recieveable and amt deducted
-  // createmany milestones
 });
 
 // Access: Private
