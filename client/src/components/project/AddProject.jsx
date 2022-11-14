@@ -32,6 +32,17 @@ const projectTypeOptions = [
   "market plan",
   "proposal",
 ];
+var currency_list = [
+  { name: "USD", code: "USD" },
+  { name: "AUD", code: "AUD" },
+  { name: "NZD", code: "NZD" },
+  { name: "GBP", code: "GBP" },
+  { name: "HKD", code: "HKD" },
+  { name: "SGD", code: "SGD" },
+  { name: "EUR", code: "EUR" },
+  { name: "INR", code: "INR" },
+  { name: "CAD", code: "CAD" },
+];
 
 const AddProject = () => {
   const [validated, setValidated] = useState(false);
@@ -188,6 +199,7 @@ const AddProject = () => {
     }
   };
   console.log(selectedProfile, "AddProject");
+
   return (
     <div>
       <div>
@@ -340,6 +352,67 @@ const AddProject = () => {
                           {item}
                         </option>
                       ))}
+                    </Form.Control>
+                  </Form.Group>
+                  <Form.Group as={Col} md="4">
+                    <Form.Label>
+                      Currency
+                      <span
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        *
+                      </span>
+                    </Form.Label>
+                    <Form.Control
+                      readOnly={!editAble}
+                      as="select"
+                      name="currency"
+                      onChange={(value) => handleChange(value)}
+                      value={state.currency ?? ""}
+                      required
+                    >
+                      <option key="initial" value="">
+                        Select Currency
+                      </option>
+                      {currency_list.map((item, index) => (
+                        <option key={index} value={item.code}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </Form.Control>
+                  </Form.Group>
+                  <Form.Group as={Col} md="4">
+                    <Form.Label>
+                      Status
+                      <span
+                        style={{
+                          color: "red",
+                        }}
+                      >
+                        *
+                      </span>
+                    </Form.Label>
+                    <Form.Control
+                      readOnly={!editAble || isClosed}
+                      as="select"
+                      name="status"
+                      onChange={(value) => {
+                        if (editAble) {
+                          handleChange(value);
+                        }
+                      }}
+                      value={state.status}
+                      required
+                    >
+                      {assignee?.length === 0 && (
+                        <option value="new">New</option>
+                      )}
+                      <option value="open">Open</option>
+                      <option value="underreview">Underreview</option>
+                      <option value="cancelled">Cancelled</option>
+                      <option value="closed">Closed</option>
                     </Form.Control>
                   </Form.Group>
                 </Row>

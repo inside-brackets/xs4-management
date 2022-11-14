@@ -33,7 +33,7 @@ const Report = ({ report, months }) => {
           <hr className="m-0" />
           <Row>
             <Col md={7}>
-              <p>Projects Closed</p>
+              <p>Paid Milestones</p>
             </Col>
             <Col
               style={{
@@ -81,7 +81,7 @@ const Report = ({ report, months }) => {
           <hr className="m-0" />
           <Row>
             <Col m={9}>
-              <p>Projects Pending</p>
+              <p>Unpaid Milestones</p>
             </Col>
             <Col
               style={{
@@ -97,7 +97,7 @@ const Report = ({ report, months }) => {
           <hr className="m-0" />
           <Row>
             <Col m={7}>
-              <p>Projects Cancelled</p>
+              <p>Cancelled Milestones</p>
             </Col>
             <Col
               style={{
