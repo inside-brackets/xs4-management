@@ -22,6 +22,13 @@ export const migrateMilestones = asyncHandler(async (req, res) => {
   try {
     const milestones = await ProjectModal.aggregate([
       {
+        // $lookup: {
+        //   from: "profiles",
+        //   localField: "profile",
+        //   foreignField: "_id",
+        //   as: "profile",
+        // },
+
         $project: {
           title: "$title",
           project: "$_id",

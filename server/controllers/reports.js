@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
+
 import MilestoneModal from "../modals/milestone.js";
-import ProjectModal from "../modals/project.js";
 import ProfileModal from "../modals/profile.js";
 
 // Access: Private
@@ -13,109 +13,13 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
 
   try {
     var filter = {};
-    //  if (user.role === "user") filter = { bidder: user._id };
+    if (user.role === "user") filter = { bidder: user._id };
 
-    // let awardedProjects = await MilestoneModal.aggregate([
-    //   {
-    //     $lookup: {
-    //       from: "profiles",
-    //       localField: "profile",
-    //       foreignField: "_id",
-    //       as: "profile",
-    //     },
-    //   },
-    //   {
-    //     $addFields: {
-    //       year: { $year: "$paymentDate" },
-    //       month: { $month: "$paymentDate" },
-    //       profile: { $arrayElemAt: ["$profile", 0] },
-    //     },
-    //   },
-    //   { $match: { year: year } },
-    //   {
-    //     $group: {
-    //       _id: {
-    //         month: "$month",
-    //         profile: "$profile.title",
-    //         status: "$status",
-    //       },
-    //       count: {
-    //         $sum: 1,
-    //       },
-    //       totalAmount: {
-    //         $sum: "$totalAmount",
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 0,
-    //       month: "$_id.month",
-    //       profile: "$_id.profile",
-    //       status: "$_id.status",
-    //       count: "$count",
-    //       totalAmount: "$totalAmount",
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: {
-    //         profile: "$profile",
-    //         month: "$month",
-    //       },
-    //       count: {
-    //         $sum: "$count",
-    //       },
-    //       totalAmount: {
-    //         $sum: "$totalAmount",
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 0,
-    //       profile: "$_id.profile",
-    //       month: "$_id.month",
-    //       count: "$count",
-    //       totalAmount: "$totalAmount",
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: {
-    //         profile: "$profile",
-    //       },
-    //       count: {
-    //         $sum: "$count",
-    //       },
-    //       totalAmount: {
-    //         $sum: "$totalAmount",
-    //       },
-    //       projects: {
-    //         $push: {
-    //           month: "$month",
-    //           count: "$count",
-    //           milestone: "$milestones",
-    //           totalAmount: "$totalAmount",
-    //         },
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 0,
-    //       profile: "$_id.profile",
-    //       total: "$count",
-    //       milestone: "$milestones",
-    //     },
-    //   },
-    // ]);
-
-    let paid = await MilestoneModal.aggregate([
+    let awardedProjects = await MilestoneModal.aggregate([
       {
         $lookup: {
-          from: "projects",
-          localField: "project",
+          from: "profiles",
+          localField: "profile",
           foreignField: "_id",
           as: "profile",
         },
@@ -127,7 +31,103 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           profile: { $arrayElemAt: ["$profile", 0] },
         },
       },
-      { $match: { year: year, status: "paid" } },
+      { $match: { year: year } },
+      {
+        $group: {
+          _id: {
+            month: "$month",
+            profile: "$profile.title",
+            status: "$status",
+          },
+          count: {
+            $sum: 1,
+          },
+          totalAmount: {
+            $sum: "$totalAmount",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+          profile: "$_id.profile",
+          status: "$_id.status",
+          count: "$count",
+          totalAmount: "$totalAmount",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            profile: "$profile",
+            month: "$month",
+          },
+          count: {
+            $sum: "$count",
+          },
+          totalAmount: {
+            $sum: "$totalAmount",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          profile: "$_id.profile",
+          month: "$_id.month",
+          count: "$count",
+          totalAmount: "$totalAmount",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            profile: "$profile",
+          },
+          count: {
+            $sum: "$count",
+          },
+          totalAmount: {
+            $sum: "$totalAmount",
+          },
+          milestones: {
+            $push: {
+              month: "$month",
+              count: "$count",
+              milestones: "$milestones",
+              totalAmount: "$totalAmount",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          profile: "$_id.profile",
+          total: "$count",
+          milestones: "$milestones",
+        },
+      },
+    ]);
+
+    let paid = await MilestoneModal.aggregate([
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "profile",
+          foreignField: "_id",
+          as: "profile",
+        },
+      },
+      {
+        $addFields: {
+          year: { $year: "$paymentDate" },
+          month: { $month: "$paymentDate" },
+          profile: { $arrayElemAt: ["$profile", 0] },
+        },
+      },
+      { $match: { year: year, status: "closed" } },
       {
         $group: {
           _id: {
@@ -186,8 +186,8 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           platform: "$_id.platform",
           totalCount: "$count",
           totalAmount: "$amountRecieved",
-          totalEmpShare: "$empShare",
-          milestone: "$milestones",
+          totalEmployeeShare: "$employeeShare",
+          milestones: "$milestones",
         },
       },
     ]);
@@ -277,32 +277,32 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         closedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         cashRecievedTotal: 0,
         cashRecievedSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        empShareTotal: 0,
-        empShareSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        employeeShareTotal: 0,
+        employeeShareSummary: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         pendingTotal: 0,
         cancelledTotal: 0,
       };
-      const tempClosed = paid.find(
+      const tempPaid = paid.find(
         (milestone) =>
           milestone.profile === p.title && milestone.platform === p.platform
       );
-      if (tempClosed) {
-        temp.cashRecievedTotal = tempClosed.totalAmount;
-        temp.closedTotal = tempClosed.totalCount;
-        temp.empShareTotal = tempClosed.totalEmpShare;
+      if (tempPaid) {
+        temp.cashRecievedTotal = tempPaid.totalAmount;
+        temp.closedTotal = tempPaid.totalCount;
+        temp.employeeShareTotal = tempPaid.totalEmployeeShare;
 
-        tempClosed.projects.map((s) => {
+        tempPaid.milestones.map((s) => {
           temp.cashRecievedSummary[s.month - 1] = s.amountRecieved;
           temp.closedSummary[s.month - 1] = s.count;
-          temp.empShareSummary[s.month - 1] = s.empShare;
+          temp.employeeShareSummary[s.month - 1] = s.employeeShare;
         });
       }
-      const tempPending = unpaid.find(
+      const tempUnpaid = unpaid.find(
         (milestone) =>
           milestone.profile === p.title && milestone.platform === p.platform
       );
-      if (tempPending) {
-        temp.pendingTotal = tempPending.total;
+      if (tempUnpaid) {
+        temp.pendingTotal = tempUnpaid.total;
       }
       const tempCancelled = cancelled.find(
         (milestone) =>
@@ -312,7 +312,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         temp.cancelledTotal = tempCancelled.total;
       }
 
-      if (tempClosed || tempCancelled || tempPending) return temp;
+      if (tempPaid || tempCancelled || tempUnpaid) return temp;
     });
 
     const cleanedProfileSumaries = profilesSummary.filter((n) => n);
