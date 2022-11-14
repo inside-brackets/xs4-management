@@ -12,6 +12,7 @@ const milestoneSchema = new mongoose.Schema(
     netRecieveable: { type: Number, default: 0 },
     amountDeducted: { type: Number, default: 0 },
     paymentDate: { type: Date },
+    profile: { type: String, required: true },
     status: {
       type: String,
     },
