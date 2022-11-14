@@ -7,6 +7,7 @@ import { round } from "../../util/number";
 const AddMilestone = ({ projectID, profile }) => {
   const [state, setState] = useState({
     project: projectID,
+    profile: profile,
   });
 
   const [validated, setValidated] = useState(false);
