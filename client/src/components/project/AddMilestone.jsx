@@ -4,10 +4,11 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { round } from "../../util/number";
 
-const AddMilestone = ({ projectID, profile }) => {
+const AddMilestone = ({ projectID, profile, onSuccess }) => {
   const [state, setState] = useState({
     project: projectID,
     profile: profile,
+    status: "unpaid",
   });
 
   const [validated, setValidated] = useState(false);
@@ -48,6 +49,7 @@ const AddMilestone = ({ projectID, profile }) => {
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/milestone`, state)
       .then((res) => {
+        onSuccess();
         toast.success("Milestone Created Sucessfully");
         setLoading(false);
       })
@@ -298,7 +300,6 @@ const AddMilestone = ({ projectID, profile }) => {
             </Row>
           </Row>
         </Row>
-
         <Button
           disabled={loading}
           className="p-2 m-3"

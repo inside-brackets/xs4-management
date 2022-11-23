@@ -6,6 +6,8 @@ import profileRouters from "./routes/profile.js";
 import projectRouters from "./routes/project.js";
 import reportRouters from "./routes/reports.js";
 import Milestone from "./routes/milestone.js";
+import UploadRoute from "./routes/upload.js";
+
 import cors from "cors";
 dotenv.config();
 
@@ -25,6 +27,8 @@ app.use("/profiles", profileRouters);
 app.use("/projects", projectRouters);
 app.use("/reports", reportRouters);
 app.use("/milestone", Milestone);
+app.use("/upload", UploadRoute);
+
 app.get("/", (req, res) => {
   console.log("hello");
   res.send("Api is running...");

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Row, Col, Button, Form, Card, Spinner } from "react-bootstrap";
 import axios from "axios";
 import ReactSelect from "react-select";
@@ -7,10 +7,14 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
-
-import Milestone from "./AddMilestone";
+import TooltipCustom from "../UI/FileTooltip";
+import DeleteConfirmation from "../modals/DeleteConfirmation";
 import ShowMilestone from "./ShowMilestone";
-import MyModal from "../modals/MyModal";
+import MyModal from "../../components/modals/MyModal";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
+import FileUploading from "./FileUploading";
+import cuid from "cuid";
 
 const projectTypeOptions = [
   "BP",
@@ -46,17 +50,17 @@ var currency_list = [
 
 const AddProject = () => {
   const [validated, setValidated] = useState(false);
-  const [addMilestoneModal, setMilestoneModal] = useState(false);
+  const [Modal, setMilestoneModal] = useState(false);
 
   const [state, setState] = useState({
     hasRecruiter: false,
-    totalAmount: 0,
     status: "new",
     awardedAt: new Date(),
   });
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [assignee, setAssignee] = useState([]);
   const { userInfo } = useSelector((state) => state.userLogin);
+  const [sumAmount, setSumAmount] = useState(0);
 
   // dropdown options
   const [profiles, setProfiles] = useState([]);
@@ -67,11 +71,15 @@ const AddProject = () => {
   const [editAble, setEditAble] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isClosed, setIsClosed] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [images, setImages] = useState([]);
 
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [carrier, setCarrier] = useState();
   const history = useHistory();
 
   const { id } = useParams();
-
+  console.log(sumAmount, "totalAmount=====>");
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;
@@ -140,6 +148,8 @@ const AddProject = () => {
           `${process.env.REACT_APP_BACKEND_URL}/projects/${id}`
         );
 
+        // console.log(projectRes.data, "projectRes.data======>");
+        setCarrier(projectRes.data);
         const tempProject = projectRes.data;
 
         setSelectedProfile(tempProject.profile);
@@ -175,7 +185,7 @@ const AddProject = () => {
     }
 
     state.assignee = assignee.map((item) => item.value);
-
+    state.totalAmount = sumAmount;
     if (id) {
       const res = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/projects/${id}`,
@@ -198,7 +208,38 @@ const AddProject = () => {
       }
     }
   };
-  console.log(selectedProfile, "AddProject");
+  const onDrop = useCallback((acceptedFiles) => {
+    acceptedFiles.map((file) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        setImages((prevState) => [
+          ...prevState,
+          { id: cuid(), src: e.target.result },
+        ]);
+      };
+      reader.readAsDataURL(file);
+      return file;
+    });
+  }, []);
+
+  const submitDeleteMisc = async () => {
+    const updatedCarrier = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/projects/delete/${id}`,
+      {
+        files: carrier.files.filter((item) => item._id !== deleteModal._id),
+      }
+    );
+    await axios(
+      `${
+        process.env.REACT_APP_BACKEND_URL
+      }/upload/s3url-delete/documents/${deleteModal.file?.substring(
+        deleteModal.file?.lastIndexOf("/") + 1
+      )}`
+    );
+    setCarrier(updatedCarrier.data);
+    setDeleteModal(false);
+    toast.success("File Deleted");
+  };
 
   return (
     <div>
@@ -222,379 +263,470 @@ const AddProject = () => {
               </Col>
             </Row>
           ) : (
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
-              <Row className="my-2 mx-3">
-                <Row className="my-2">
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>
-                      Title
-                      <span
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        *
-                      </span>
-                    </Form.Label>
-                    <Form.Control
-                      readOnly={!editAble}
-                      name="title"
-                      onChange={handleChange}
-                      type="text"
-                      value={state.title ?? ""}
-                      placeholder="Enter title"
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>
-                      Profile
-                      <span
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        *
-                      </span>
-                    </Form.Label>
-                    <Form.Control
-                      readOnly={!editAble || isClosed}
-                      as="select"
-                      name="profile"
-                      onChange={(value) => {
-                        if (editAble && !isClosed) handleChange(value);
-                      }}
-                      value={state.profile ?? ""}
-                      required
-                    >
-                      <option key="initial" value="">
-                        Select-Profile
-                      </option>
-                      {profiles.map((profile, index) => {
-                        return (
-                          <option key={index} value={profile._id}>
-                            {profile.title} ({profile.platform})
+            <Tabs id="uncontrolled-tab-example" className="mb-3">
+              <Tab eventKey="Basic" title="BASIC INFO">
+                <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                  <Row className="my-2 mx-3">
+                    <Row className="my-2">
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>
+                          Title
+                          <span
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            *
+                          </span>
+                        </Form.Label>
+                        <Form.Control
+                          readOnly={!editAble}
+                          name="title"
+                          onChange={handleChange}
+                          type="text"
+                          value={state.title ?? ""}
+                          placeholder="Enter title"
+                          required
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>
+                          Profile
+                          <span
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            *
+                          </span>
+                        </Form.Label>
+                        <Form.Control
+                          readOnly={!editAble || isClosed}
+                          as="select"
+                          name="profile"
+                          onChange={(value) => {
+                            if (editAble && !isClosed) handleChange(value);
+                          }}
+                          value={state.profile ?? ""}
+                          required
+                        >
+                          <option key="initial" value="">
+                            Select-Profile
                           </option>
-                        );
-                      })}
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Assignee</Form.Label>
-                    <ReactSelect
-                      defaultValue={
-                        state.assignee
-                          ? state.assignee.map((item) => {
-                              return { value: item._id, label: item.userName };
-                            })
-                          : []
-                      }
-                      isMulti
-                      name="assignee"
-                      options={users}
-                      onChange={changeAssignee}
-                      className="basic-multi-select"
-                      classNamePrefix="select"
-                      isDisabled={!editAble || isClosed}
-                    />
-                  </Form.Group>
-                </Row>
+                          {profiles.map((profile, index) => {
+                            return (
+                              <option key={index} value={profile._id}>
+                                {profile.title} ({profile.platform})
+                              </option>
+                            );
+                          })}
+                        </Form.Control>
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>Assignee</Form.Label>
+                        <ReactSelect
+                          defaultValue={
+                            state.assignee
+                              ? state.assignee.map((item) => {
+                                  return {
+                                    value: item._id,
+                                    label: item.userName,
+                                  };
+                                })
+                              : []
+                          }
+                          isMulti
+                          name="assignee"
+                          options={users}
+                          onChange={changeAssignee}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                          isDisabled={!editAble || isClosed}
+                        />
+                      </Form.Group>
+                    </Row>
 
-                <Row>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Client Name</Form.Label>
-                    <Form.Control
-                      readOnly={!editAble}
-                      type="text"
-                      value={state.clientName ?? ""}
-                      placeholder="Client Name"
-                      name="clientName"
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Client Country</Form.Label>
-                    <Form.Control
-                      readOnly={!editAble}
-                      type="text"
-                      value={state.clientCountry ?? ""}
-                      placeholder="Client Country"
-                      name="clientCountry"
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>
-                      Project Type
-                      <span
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        *
-                      </span>
-                    </Form.Label>
-                    <Form.Control
-                      readOnly={!editAble || isClosed}
-                      as="select"
-                      name="projectType"
-                      onChange={(value) => {
-                        if (editAble && !isClosed) handleChange(value);
-                      }}
-                      value={state.projectType ?? ""}
-                      required
-                    >
-                      <option key="initial" value="">
-                        Select Project Type
-                      </option>
-                      {projectTypeOptions.map((item, index) => (
-                        <option key={index} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>
-                      Currency
-                      <span
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        *
-                      </span>
-                    </Form.Label>
-                    <Form.Control
-                      readOnly={!editAble}
-                      as="select"
-                      name="currency"
-                      onChange={(value) => handleChange(value)}
-                      value={state.currency ?? ""}
-                      required
-                    >
-                      <option key="initial" value="">
-                        Select Currency
-                      </option>
-                      {currency_list.map((item, index) => (
-                        <option key={index} value={item.code}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>
-                      Status
-                      <span
-                        style={{
-                          color: "red",
-                        }}
-                      >
-                        *
-                      </span>
-                    </Form.Label>
-                    <Form.Control
-                      readOnly={!editAble || isClosed}
-                      as="select"
-                      name="status"
-                      onChange={(value) => {
-                        if (editAble) {
-                          handleChange(value);
-                        }
-                      }}
-                      value={state.status}
-                      required
-                    >
-                      {assignee?.length === 0 && (
-                        <option value="new">New</option>
+                    <Row>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>Client Name</Form.Label>
+                        <Form.Control
+                          readOnly={!editAble}
+                          type="text"
+                          value={state.clientName ?? ""}
+                          placeholder="Client Name"
+                          name="clientName"
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>Client Country</Form.Label>
+                        <Form.Control
+                          readOnly={!editAble}
+                          type="text"
+                          value={state.clientCountry ?? ""}
+                          placeholder="Client Country"
+                          name="clientCountry"
+                          onChange={handleChange}
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>
+                          Project Type
+                          <span
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            *
+                          </span>
+                        </Form.Label>
+                        <Form.Control
+                          readOnly={!editAble || isClosed}
+                          as="select"
+                          name="projectType"
+                          onChange={(value) => {
+                            if (editAble && !isClosed) handleChange(value);
+                          }}
+                          value={state.projectType ?? ""}
+                          required
+                        >
+                          <option key="initial" value="">
+                            Select Project Type
+                          </option>
+                          {projectTypeOptions.map((item, index) => (
+                            <option key={index} value={item}>
+                              {item}
+                            </option>
+                          ))}
+                        </Form.Control>
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>
+                          Currency
+                          <span
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            *
+                          </span>
+                        </Form.Label>
+                        <Form.Control
+                          readOnly={!editAble}
+                          as="select"
+                          name="currency"
+                          onChange={(value) => handleChange(value)}
+                          value={state.currency ?? ""}
+                          required
+                        >
+                          <option key="initial" value="">
+                            Select Currency
+                          </option>
+                          {currency_list.map((item, index) => (
+                            <option key={index} value={item.code}>
+                              {item.name}
+                            </option>
+                          ))}
+                        </Form.Control>
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>
+                          Status
+                          <span
+                            style={{
+                              color: "red",
+                            }}
+                          >
+                            *
+                          </span>
+                        </Form.Label>
+                        <Form.Control
+                          readOnly={!editAble || isClosed}
+                          as="select"
+                          name="status"
+                          onChange={(value) => {
+                            if (editAble) {
+                              handleChange(value);
+                            }
+                          }}
+                          value={state.status}
+                          required
+                        >
+                          {assignee?.length === 0 && (
+                            <option value="new">New</option>
+                          )}
+                          <option value="open">Open</option>
+                          <option value="underreview">Underreview</option>
+                          <option value="cancelled">Cancelled</option>
+                          <option value="closed">Closed</option>
+                        </Form.Control>
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          aria-label="With textarea"
+                          type="text"
+                          placeholder="Description"
+                          readOnly={!editAble}
+                          onChange={handleChange}
+                          value={state.description ?? ""}
+                          name="description"
+                        />
+                      </Form.Group>
+                    </Row>
+
+                    <Row className="mt-3 ml-3 align-items-center">
+                      <Form.Group className="mt-4" as={Col} md="2">
+                        <Form.Check
+                          type="checkbox"
+                          name="hasRecruiter"
+                          checked={state.hasRecruiter ?? false}
+                          label={`Has Recruiter`}
+                          disabled={selectedProfile?.platform !== "freelancer"}
+                          onChange={(value) => {
+                            if (editAble && !isClosed) handleChange(value);
+                          }}
+                        />
+                      </Form.Group>
+                      {state.hasRecruiter && (
+                        <Form.Group as={Col} md="4">
+                          <Form.Label>Recruiter Name</Form.Label>
+                          <Form.Control
+                            readOnly={!editAble}
+                            type="text"
+                            placeholder="Recruiter Name"
+                            name="recruiterName"
+                            onChange={handleChange}
+                            value={state.recruiterName ?? ""}
+                          />
+                        </Form.Group>
                       )}
-                      <option value="open">Open</option>
-                      <option value="underreview">Underreview</option>
-                      <option value="cancelled">Cancelled</option>
-                      <option value="closed">Closed</option>
-                    </Form.Control>
-                  </Form.Group>
-                </Row>
+                    </Row>
 
-                <Row className="mt-3 ml-3 align-items-center">
-                  <Form.Group className="mt-4" as={Col} md="2">
-                    <Form.Check
-                      type="checkbox"
-                      name="hasRecruiter"
-                      checked={state.hasRecruiter ?? false}
-                      label={`Has Recruiter`}
-                      disabled={selectedProfile?.platform !== "freelancer"}
-                      onChange={(value) => {
-                        if (editAble && !isClosed) handleChange(value);
+                    <Row className="my-2">
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>Awarded At</Form.Label>
+                        <Form.Control
+                          type="date"
+                          placeholder="Awarded At"
+                          value={moment(state.awardedAt).format("YYYY-MM-DD")}
+                          name="awardedAt"
+                          onChange={handleChange}
+                          required
+                          readOnly={!editAble}
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>Closed At</Form.Label>
+                        <Form.Control
+                          type="date"
+                          value={
+                            state.closedAt
+                              ? moment(state.closedAt).format("YYYY-MM-DD")
+                              : ""
+                          }
+                          placeholder="Closed At"
+                          name="closedAt"
+                          onChange={handleChange}
+                          readOnly={!editAble}
+                        />
+                      </Form.Group>
+                      <Form.Group as={Col} md="4">
+                        <Form.Label>Deadline At</Form.Label>
+                        <Form.Control
+                          type="date"
+                          placeholder="Deadline At"
+                          value={
+                            state.deadlineAt
+                              ? moment(state.deadlineAt).format("YYYY-MM-DD")
+                              : ""
+                          }
+                          name="deadlineAt"
+                          onChange={handleChange}
+                          readOnly={!editAble}
+                        />
+                      </Form.Group>
+                    </Row>
+                  </Row>
+
+                  {!id ? (
+                    <Button
+                      disabled={loading}
+                      className="p-2 m-3"
+                      variant="success"
+                      md={3}
+                      type="submit"
+                    >
+                      {loading && (
+                        <Spinner
+                          as="span"
+                          animation="grow"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      )}
+                      Create
+                    </Button>
+                  ) : userInfo.role === "user" && !userInfo.isManager ? (
+                    <></>
+                  ) : !editAble ? (
+                    <Button
+                      className="p-2 m-3"
+                      variant="outline-primary"
+                      md={3}
+                      onClick={() => {
+                        setRevertState(state);
+                        setEditAble(true);
                       }}
-                    />
-                  </Form.Group>
-                  {state.hasRecruiter && (
-                    <Form.Group as={Col} md="4">
-                      <Form.Label>Recruiter Name</Form.Label>
-                      <Form.Control
-                        readOnly={!editAble}
-                        type="text"
-                        placeholder="Recruiter Name"
-                        name="recruiterName"
-                        onChange={handleChange}
-                        value={state.recruiterName ?? ""}
-                      />
-                    </Form.Group>
+                    >
+                      Edit
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        className="p-2 m-3"
+                        variant="success"
+                        md={3}
+                        disabled={loading}
+                        type="submit"
+                      >
+                        {loading && (
+                          <Spinner
+                            as="span"
+                            animation="grow"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                          />
+                        )}
+                        Save
+                      </Button>
+                      <Button
+                        className="p-2 m-3"
+                        md={3}
+                        variant="outline-danger"
+                        onClick={() => {
+                          setState(revertState);
+                          setValidated(false);
+                          setEditAble(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </>
                   )}
-                </Row>
-
-                <Row className="my-2">
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Awarded At</Form.Label>
-                    <Form.Control
-                      type="date"
-                      placeholder="Awarded At"
-                      value={moment(state.awardedAt).format("YYYY-MM-DD")}
-                      name="awardedAt"
-                      onChange={handleChange}
-                      required
-                      readOnly={!editAble}
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Closed At</Form.Label>
-                    <Form.Control
-                      type="date"
-                      value={
-                        state.closedAt
-                          ? moment(state.closedAt).format("YYYY-MM-DD")
-                          : ""
-                      }
-                      placeholder="Closed At"
-                      name="closedAt"
-                      onChange={handleChange}
-                      readOnly={!editAble}
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="4">
-                    <Form.Label>Deadline At</Form.Label>
-                    <Form.Control
-                      type="date"
-                      placeholder="Deadline At"
-                      value={
-                        state.deadlineAt
-                          ? moment(state.deadlineAt).format("YYYY-MM-DD")
-                          : ""
-                      }
-                      name="deadlineAt"
-                      onChange={handleChange}
-                      readOnly={!editAble}
-                    />
-                  </Form.Group>
-                </Row>
-              </Row>
-
-              {!id ? (
-                <Button
-                  disabled={loading}
-                  className="p-2 m-3"
-                  variant="success"
-                  md={3}
-                  type="submit"
-                >
-                  {loading && (
-                    <Spinner
-                      as="span"
-                      animation="grow"
-                      size="sm"
-                      role="status"
-                      aria-hidden="true"
-                    />
-                  )}
-                  Create
-                </Button>
-              ) : userInfo.role === "user" && !userInfo.isManager ? (
-                <></>
-              ) : !editAble ? (
-                <Button
-                  className="p-2 m-3"
-                  variant="outline-primary"
-                  md={3}
-                  onClick={() => {
-                    setRevertState(state);
-                    setEditAble(true);
-                  }}
-                >
-                  Edit
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    className="p-2 m-3"
-                    variant="success"
-                    md={3}
-                    disabled={loading}
-                    type="submit"
+                </Form>
+              </Tab>
+              {id && (
+                <Tab eventKey="Files" title="FILES ">
+                  <Form
+                    noValidate
+                    validated={validated}
+                    onSubmit={handleSubmit}
                   >
-                    {loading && (
-                      <Spinner
-                        as="span"
-                        animation="grow"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
+                    <Row>
+                      <Row as={Col}>
+                        <Col md={3}></Col>
+                        <Col md={5}></Col>
+                        <Col md={4}>
+                          <Button
+                            onClick={() => {
+                              setShowModal(true);
+                            }}
+                            style={{ float: "right" }}
+                          >
+                            Add Files
+                          </Button>
+                        </Col>
+                      </Row>
+
+                      <Row>
+                        {carrier.files?.map((file) => {
+                          return (
+                            <div key={file.file} className="miscWrapper">
+                              <Row className="justify-content-start">
+                                <Col md={2}>
+                                  <h5 className="misc_file_name">
+                                    {" "}
+                                    {file.name.length > 10
+                                      ? file.name.substring(0, 11) + "..."
+                                      : file.name}{" "}
+                                  </h5>
+                                </Col>
+                                <Col md={6}>
+                                  <h6 className="misc_file_name">
+                                    {" "}
+                                    {file.type.length > 10
+                                      ? file.type.substring(0, 11) + "..."
+                                      : file.type}{" "}
+                                  </h6>
+                                </Col>
+                                <Col md={1}>
+                                  <TooltipCustom
+                                    text="view file"
+                                    id={file.name}
+                                  ></TooltipCustom>
+                                  <TooltipCustom
+                                    text="delete file"
+                                    id={file.file}
+                                  ></TooltipCustom>
+                                  <div className="actions_button_misc_wrapper">
+                                    <div data-tip data-for={file.file}>
+                                      <span
+                                        onClick={() => setDeleteModal(file)}
+                                      >
+                                        <i className="bx bx-trash-alt action-button"></i>
+                                      </span>
+                                    </div>
+                                    <div data-tip data-for={file.name}>
+                                      <a href={file.file}>
+                                        <i className="bx bx-show-alt action-button"></i>
+                                      </a>
+                                    </div>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </div>
+                          );
+                        })}
+                      </Row>
+                      <DeleteConfirmation
+                        showModal={deleteModal}
+                        confirmModal={submitDeleteMisc}
+                        hideModal={() => setDeleteModal(false)}
+                        message={"Are you Sure to want to delete File?"}
+                        title="Delete Confirmation"
                       />
-                    )}
-                    Save
-                  </Button>
-                  <Button
-                    className="p-2 m-3"
-                    md={3}
-                    variant="outline-danger"
-                    onClick={() => {
-                      setState(revertState);
-                      setValidated(false);
-                      setEditAble(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </>
+                      <Row></Row>
+                    </Row>
+                  </Form>
+                </Tab>
               )}
-            </Form>
+            </Tabs>
           )}
         </Card>
+        <MyModal
+          size="lg"
+          show={showModal}
+          heading={"Add Files"}
+          onClose={() => {
+            setShowModal(false);
+          }}
+          style={{ width: "auto" }}
+        >
+          <FileUploading onDrop={onDrop} accept={"image/*"} projectID={id} />
+        </MyModal>
       </div>
       {id && (
         <Row>
-          <Row>
-            <Col md={3}></Col>
-            <Col md={5}></Col>
-            <Col md={4}>
-              {" "}
-              <Button
-                className="m-3 "
-                onClick={() => setMilestoneModal(true)}
-                style={{ float: "right" }}
-              >
-                Add Milestone
-              </Button>
-              <MyModal
-                size="xl"
-                show={addMilestoneModal}
-                heading="Add Milestone"
-                onClose={() => setMilestoneModal(false)}
-                style={{ width: "auto" }}
-              >
-                <Milestone
-                  projectID={id}
-                  profile={selectedProfile}
-                  hasRecruiter={state.hasRecruiter}
-                  setShowModal={() => {
-                    setMilestoneModal(false);
-                  }}
-                />
-              </MyModal>
-            </Col>
-          </Row>
-          <ShowMilestone projectID={id} profile={selectedProfile} />
+          <ShowMilestone
+            setSumAmount={setSumAmount}
+            sumAmount={sumAmount}
+            projectID={id}
+            profile={selectedProfile}
+          />
         </Row>
       )}
     </div>

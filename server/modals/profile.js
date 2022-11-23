@@ -21,6 +21,7 @@ const profileSchema = new mongoose.Schema(
     // range
     share: { type: Number, required: true },
   },
+
   {
     timestamps: true,
   }
