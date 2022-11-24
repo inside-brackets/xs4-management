@@ -122,17 +122,21 @@ const Reports = () => {
           </>
         )}
         {reports.map((report, index) => {
-          if (month) {
-            return (
-              <MonthlyReport
-                key={index}
-                report={report}
-                months={months}
-                currMonth={month}
-              />
-            );
+          if (report != null) {
+            if (month) {
+              return (
+                <MonthlyReport
+                  key={index}
+                  report={report}
+                  months={months}
+                  currMonth={month}
+                />
+              );
+            } else {
+              return <Report key={index} report={report} months={months} />;
+            }
           } else {
-            return <Report key={index} report={report} months={months} />;
+            return <></>;
           }
         })}
       </Card>
