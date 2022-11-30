@@ -133,3 +133,13 @@ export const getLastSalary = async (req, res) => {
     res.json(error);
   }
 };
+
+export const temp = async (req, res) => {
+  try {
+    await Salary.deleteMany({});
+    res.status(200).send({ message: "Done!" });
+  } catch (error) {
+    console.log(error);
+    res.json(error);
+  }
+};
