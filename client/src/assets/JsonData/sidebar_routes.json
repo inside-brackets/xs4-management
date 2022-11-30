@@ -13,7 +13,7 @@
     {
       "display_name": "Projects",
       "route": "/projects",
-      "icon": "bx bx-file"
+      "icon": "bx bxs-file"
     },
     {
       "display_name": "Profiles",
@@ -24,6 +24,11 @@
       "display_name": "Reports",
       "route": "/reports",
       "icon": "bx bxs-bar-chart-alt-2"
+    },
+    {
+      "display_name": "Salary",
+      "route": "/salaries",
+      "icon": "bx bxs-wallet-alt"
     }
   ],
   "user": [
