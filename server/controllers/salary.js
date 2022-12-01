@@ -101,18 +101,44 @@ export const getSalaries = async (req, res) => {
 
 export const getProjects = async (req, res) => {
   try {
+    const today = new Date();
+    const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
     const profiles = await Profile.find({
       bidder: req.body.user,
     });
     const milestones = profiles.map(async (profile) => {
       const milestone = await Milestone.find({
         profile: profile._id,
-      }).populate("project");
+      }).populate("project profile");
       return milestone;
     });
     const result = await Promise.all(milestones);
+    let companyGross = 0;
+    let employeeShare = 0;
+    let arr = [];
+    result.map(async (project) => {
+      if (project.length > 0) {
+        project.map(async (milestone) => {
+          const milestoneDate = new Date(milestone.paymentDate);
+          if (
+            milestone.status === "paid" &&
+            milestoneDate >= prevMonth &&
+            milestoneDate < thisMonth
+          ) {
+            companyGross += milestone.amountRecieved;
+            employeeShare += milestone.employeeShare;
+            arr.push(milestone);
+          }
+        });
+      }
+    });
+    if (arr.length > 0) {
+      arr.sort((a, b) => (a.paymentDate < b.paymentDate ? 1 : -1));
+    }
     res.status(200);
-    res.json(result);
+    res.json({ milestones: arr, gross: companyGross, share: employeeShare });
   } catch (error) {
     console.log(error);
     res.json(error);
@@ -128,16 +154,6 @@ export const getLastSalary = async (req, res) => {
     });
     res.status(200);
     res.json(lastSalary[0]);
-  } catch (error) {
-    console.log(error);
-    res.json(error);
-  }
-};
-
-export const temp = async (req, res) => {
-  try {
-    await Salary.deleteMany({});
-    res.status(200).send({ message: "Done!" });
   } catch (error) {
     console.log(error);
     res.json(error);

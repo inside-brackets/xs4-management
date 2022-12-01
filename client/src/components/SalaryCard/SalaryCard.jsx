@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Button, Card } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 import "./SalaryCard.css";
 import UserCard from "./UserCard";
@@ -14,9 +15,6 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
 
   const [prevMonth, setPrevMonth] = useState(
     new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1)
-  );
-  const [thisMonth, setThisMonth] = useState(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
   );
   const [error, setError] = useState(false);
   const [base, setBase] = useState(0);
@@ -56,10 +54,14 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
 
   useEffect(() => {
     if (milestones.length > 0) {
-      const sorted = []
-        .concat(milestones)
-        .sort((a, b) => (a.project.title > b.project.title ? 1 : -1));
-      setTable(<Milestones milestones={sorted} flag={true} />);
+      setTable(
+        <Milestones
+          milestones={milestones}
+          gross={gross}
+          share={incentive}
+          flag={true}
+        />
+      );
     } else {
       setTable(<Milestones flag={false} />);
     }
@@ -74,27 +76,9 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
         user: id,
       },
     });
-    let companyGross = 0;
-    let employeeShare = 0;
-    setMilestones([]);
-    await projects.data.map(async (project) => {
-      if (project.length > 0) {
-        await project.map(async (milestone) => {
-          const milestoneDate = new Date(milestone.paymentDate);
-          if (
-            milestone.status === "paid" &&
-            milestoneDate >= prevMonth &&
-            milestoneDate < thisMonth
-          ) {
-            companyGross += milestone.amountRecieved;
-            employeeShare += milestone.employeeShare;
-            setMilestones((prevState) => [...prevState, milestone]);
-          }
-        });
-      }
-    });
-    setGross(companyGross);
-    setIncentive(employeeShare);
+    setMilestones(projects.data.milestones);
+    setGross(projects.data.gross);
+    setIncentive(projects.data.share);
   };
 
   const handleClick = () => {
@@ -134,6 +118,7 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
       },
     });
     setReadOnly(true);
+    toast.success("Salary Paid!");
   };
 
   return (

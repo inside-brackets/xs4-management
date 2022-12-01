@@ -161,3 +161,23 @@
   -webkit-appearance: none;
   margin: 0;
 }
+.custom-table {
+  border: 1px solid var(--bs-border-color);
+}
+.custom-table > thead > tr > th {
+  border: 1px solid var(--bs-border-color);
+}
+.custom-table > tbody > tr > td {
+  border: 0;
+  border-left: 1px solid var(--bs-border-color);
+  border-right: 1px solid var(--bs-border-color);
+}
+.tabrow {
+  border: 1px solid var(--bs-border-color);
+  background-color: var(--second-bg);
+  color: #000000;
+}
+.tabrow:hover {
+  background-color: var(--second-bg);
+  color: #000000;
+}

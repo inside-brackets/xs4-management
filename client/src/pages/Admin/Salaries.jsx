@@ -18,7 +18,7 @@ const Salaries = () => {
     "Phone",
     "Email",
     "Department",
-    "Manager",
+    "Base Salary",
     "Last Paid",
     "",
   ];
@@ -33,7 +33,7 @@ const Salaries = () => {
       <td>{item.contact ? item.contact : "NA"}</td>
       <td>{item.email ? item.email : "NA"}</td>
       <td>{item.department}</td>
-      <td>{item.isManager ? "Yes" : "No"}</td>
+      <td>{item.salary}</td>
       <td>{item.lastPaid ? moment(item.lastSalary).format("MMMM") : "N/A"}</td>
       <td>
         <Button
