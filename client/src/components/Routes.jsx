@@ -13,6 +13,8 @@ import Profile from "../pages/Profile";
 import Profiles from "../pages/Admin/Profiles";
 import Expense from "../pages/Admin/Expense";
 import OtherRevenue from "../pages/Admin/OtherRevenue";
+import Salaries from "../pages/Admin/Salaries";
+import Salary from "../pages/Admin/Salary";
 
 const Routes = () => {
   const userInfo = useSelector((state) => state.userLogin.userInfo);
@@ -32,6 +34,8 @@ const Routes = () => {
       <Route path="/reports" exact component={Reports} />
       <Route path="/profile" component={Profile} />
       <Route path="/profiles" component={Profiles} />
+      <Route path="/salaries" component={Salaries} />
+      <Route path="/salary/:id" component={Salary} />
       <Route path="*">
         <h1>Not found</h1>
       </Route>

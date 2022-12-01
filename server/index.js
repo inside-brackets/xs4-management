@@ -9,6 +9,7 @@ import Milestone from "./routes/milestone.js";
 import UploadRoute from "./routes/upload.js";
 import ExpenseRoute from "./routes/expense.js";
 import OtherRevenue from "./routes/otherRevenue.js";
+import salaryRoutes from "./routes/salary.js";
 
 import cors from "cors";
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/milestone", Milestone);
 app.use("/upload", UploadRoute);
 app.use("/expense", ExpenseRoute);
 app.use("/other_revenue", OtherRevenue);
+app.use("/salary", salaryRoutes);
 
 app.get("/", (req, res) => {
   console.log("hello");

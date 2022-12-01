@@ -280,7 +280,11 @@ const Table = (props) => {
             {bodyData["page0"]?.length > 0 && (
               <tbody>
                 {bodyData[`page${currPage}`]?.map((item, index) =>
-                  props.renderBody(item, index, currPage)
+                  props.renderBody(
+                    item,
+                    index + currPage * props.limit,
+                    currPage
+                  )
                 )}
               </tbody>
             )}
