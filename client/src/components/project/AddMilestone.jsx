@@ -83,7 +83,16 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
           amtDec = 0;
         }
       } else {
-        amtDec = platformFee * state.totalAmount;
+        if (
+          state.totalAmount < 50 &&
+          state.totalAmount > 0 &&
+          !state.hasRecruiter
+        ) {
+          amtDec = 5;
+        } else {
+          amtDec = platformFee * state.totalAmount;
+        }
+        // amtDec = platformFee * state.totalAmount;
       }
     } else if (profile?.platform === "fiver") {
       platformFee = 0.2;
@@ -232,7 +241,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                   step="any"
                   value={state ? state.exchangeRate : ""}
                   name="exchangeRate"
-                  required={state.status === "unpaid"}
+                  disabled={state.status === "unpaid"}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -260,6 +269,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
+                      disabled={state.status === "unpaid"}
                       readOnly
                       value={state ? state.employeeShare : ""}
                     />
@@ -272,6 +282,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                       placeholder="-"
                       name="amtRec"
                       value={state ? state.amountRecieved : ""}
+                      disabled={state.status === "unpaid"}
                       readOnly
                     />
                   </Form.Group>

@@ -34,7 +34,7 @@ const Projects = () => {
           "Assignee",
           "Awarded",
           "Deadline",
-          "Total Amount",
+          // "Total Amount",
 
           "Status",
           "Actions",
@@ -60,7 +60,7 @@ const Projects = () => {
           "Assignee",
           "Awarded",
           "Deadline",
-          "Total Amount",
+          // "Total Amount",
 
           "Status",
           "Actions",
@@ -78,11 +78,11 @@ const Projects = () => {
       <td>
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
-      {(userInfo.role === "admin" || userInfo.isManager) && (
+      {/* {(userInfo.role === "admin" || userInfo.isManager) && (
         <Fragment>
           <td>{formatter(item.currency).format(item.totalAmount)}</td>
         </Fragment>
-      )}
+      )} */}
       <td>
         <h5>
           <Badge bg={status_map[item.status]}>{item.status}</Badge>

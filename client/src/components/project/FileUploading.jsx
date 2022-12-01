@@ -5,10 +5,12 @@ import { useDropzone } from "react-dropzone";
 import { Row, Col, Button, Form, Card, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import "../UI/DropZone";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
-function FileUploading({ projectID }) {
+function FileUploading({ projectID, onSuccess }) {
   const [file, setFile] = useState();
   const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
   const { getRootProps, getInputProps, acceptedFiles, isDragActive } =
     useDropzone({});
@@ -25,6 +27,7 @@ function FileUploading({ projectID }) {
           e.target.name.value
         }.${acceptedFiles[0].type.split("/")[1]}`
       );
+      setLoading(true);
       await axios.put(url, acceptedFiles[i]);
       arr[i] = url.split("?")[0];
     }
@@ -35,16 +38,17 @@ function FileUploading({ projectID }) {
           {
             name: e.target.name.value,
             type: e.target.type.value,
-
             files: arr,
           },
         ],
         updateFiles: true,
       }
     );
-
+    console.log("tada", updatedProject);
     setFile(updatedProject.data);
-
+    setLoading(false);
+    onSuccess();
+    history.push(`/projects/project/${projectID}`);
     toast.success("File Uploaded");
   };
   return (

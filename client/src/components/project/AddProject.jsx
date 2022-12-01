@@ -208,6 +208,7 @@ const AddProject = () => {
       }
     }
   };
+
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.map((file) => {
       const reader = new FileReader();
@@ -642,12 +643,54 @@ const AddProject = () => {
                         </Col>
                       </Row>
 
+                  
+                        <Row>
+                          <Col className="mx-4">
+                            <h5 className="misc_file_name">
+                              file name{" "}
+                              <span
+                                style={{
+                                  color: "red",
+                                }}
+                              >
+                                *
+                              </span>
+                            </h5>
+                          </Col>
+                          <Col className="mx-4">
+                            <h6>
+                              file type{" "}
+                              <span
+                                style={{
+                                  color: "red",
+                                }}
+                              >
+                                *
+                              </span>
+                            </h6>
+                          </Col>
+                          <Col>
+                            <h6>
+                              Actions
+                              <span
+                                style={{
+                                  color: "red",
+                                }}
+                              >
+                                *
+                              </span>
+                            </h6>
+                          </Col>
+                        </Row>
+                        <hr />
+                  
+
                       <Row>
                         {carrier.files?.map((file) => {
                           return (
                             <div key={file.file} className="miscWrapper">
-                              <Row className="justify-content-start">
-                                <Col md={2}>
+                              <Row className="mx-5">
+                                <Col md={4}>
                                   <h5 className="misc_file_name">
                                     {" "}
                                     {file.name.length > 10
@@ -655,7 +698,7 @@ const AddProject = () => {
                                       : file.name}{" "}
                                   </h5>
                                 </Col>
-                                <Col md={6}>
+                                <Col md={4}>
                                   <h6 className="misc_file_name">
                                     {" "}
                                     {file.type.length > 10
@@ -663,7 +706,7 @@ const AddProject = () => {
                                       : file.type}{" "}
                                   </h6>
                                 </Col>
-                                <Col md={1}>
+                                <Col md={2}>
                                   <TooltipCustom
                                     text="view file"
                                     id={file.name}
@@ -680,10 +723,15 @@ const AddProject = () => {
                                         <i className="bx bx-trash-alt action-button"></i>
                                       </span>
                                     </div>
+
                                     <div data-tip data-for={file.name}>
-                                      <a href={file.file}>
-                                        <i className="bx bx-show-alt action-button"></i>
-                                      </a>
+                                      {file.files.map((file) => {
+                                        return (
+                                          <a href={file.files}>
+                                            <i className="bx bx-show-alt action-button"></i>
+                                          </a>
+                                        );
+                                      })}
                                     </div>
                                   </div>
                                 </Col>
@@ -716,7 +764,14 @@ const AddProject = () => {
           }}
           style={{ width: "auto" }}
         >
-          <FileUploading onDrop={onDrop} accept={"image/*"} projectID={id} />
+          <FileUploading
+            onDrop={onDrop}
+            accept={"image/*"}
+            projectID={id}
+            onSuccess={() => {
+              setShowModal(false);
+            }}
+          />
         </MyModal>
       </div>
       {id && (

@@ -21,6 +21,16 @@
       "icon": "bx bxs-id-card"
     },
     {
+      "display_name": "Expenses",
+      "route": "/expenses",
+      "icon": "bx bx-money"
+    },
+     {
+      "display_name": "Other Revenue",
+      "route": "/other-revenue",
+      "icon": "bx bxs-wallet-alt"
+    },
+    {
       "display_name": "Reports",
       "route": "/reports",
       "icon": "bx bxs-bar-chart-alt-2"

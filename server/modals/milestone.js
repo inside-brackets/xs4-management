@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const milestoneSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-
     totalAmount: { type: Number, default: 0 },
     exchangeRate: { type: Number, default: 0 },
     employeeShare: { type: Number, default: 0 },

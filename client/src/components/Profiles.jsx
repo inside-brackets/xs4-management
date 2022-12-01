@@ -4,9 +4,12 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Profiles = ({ user, defaultValue, onSuccess }) => {
-  const [state, setState] = useState({ bidder: user?._id });
+  const [state, setState] = useState({
+    bidder: user?._id,
+    isAdmin: defaultValue?.isAdmin,
+  });
+  // console.log("default value", state.isAdmin);
   const [users, setUsers] = useState([]);
-
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -21,10 +24,19 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;
-    setState({
-      ...state,
-      [name]: value,
-    });
+    if (name === "isAdmin") {
+      setState((prev) => {
+        return {
+          ...prev,
+          isAdmin: !state.isAdmin,
+        };
+      });
+    } else {
+      setState({
+        ...state,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -40,6 +52,10 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
     setLoading(true);
 
     if (!defaultValue) {
+      // const obj = state;
+      // if (state.isAdmin === null) {
+      //   obj["isAdmin"] = false;
+      // }
       axios
         .post(`${process.env.REACT_APP_BACKEND_URL}/profiles`, state)
         .then((res) => {
@@ -84,6 +100,7 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
               required
             />
           </Form.Group>
+
           <Form.Group as={Col} md="6">
             <Form.Label>Platform</Form.Label>
             <Form.Select
@@ -132,6 +149,15 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
               </Form.Select>
             </Form.Group>
           )}
+          <Form.Group className="mt-4" as={Col} md="4">
+            <Form.Check
+              type="checkbox"
+              name="isAdmin"
+              checked={state.isAdmin ? true : false}
+              label={`Admin Profile`}
+              onChange={handleChange}
+            />
+          </Form.Group>
           <Row className="mt-3">
             <Col md="6">
               <Button disabled={loading} type="submit">

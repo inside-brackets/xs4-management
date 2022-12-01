@@ -283,7 +283,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue }) => {
                   step="any"
                   value={mileValue.exchangeRate}
                   name="exchangeRate"
-                  required={mileValue.status === "unpaid"}
+                  disabled={mileValue.status === "unpaid"}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -313,6 +313,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue }) => {
                       type="number"
                       readOnly
                       value={mileValue.employeeShare}
+                      disabled={mileValue.status === "unpaid"}
                     />
                   </Form.Group>
 
@@ -322,6 +323,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue }) => {
                       type="number"
                       name="amtRec"
                       value={mileValue.amountRecieved}
+                      disabled={mileValue.status === "unpaid"}
                       readOnly
                     />
                   </Form.Group>

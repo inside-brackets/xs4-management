@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Button, Badge } from "react-bootstrap";
+import { Row, Col, Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import ActionButton from "../../components/UI/ActionButton";
 import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
-import ProfileEdit from "../../components/Profiles";
+import ExpenseEdit from "../../components/Expense";
+import moment from "moment";
 
 const customerTableHead = [
   "#",
-  "Title",
-  "Paltform",
-  "Bidder",
-  "Share",
+  "Description",
+  "Date",
+  "Amount",
+  "Category",
+  "Profile",
   "actions",
 ];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 
 const PAGE_SIZE = 50;
 
-const Profiles = () => {
-  const [bidder, setBidder] = useState(null);
+const Expense = () => {
+  const [profile, setProfile] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [defaultValue, setDefaultValue] = useState(null);
   const [rerenderTable, setRerenderTable] = useState(null);
@@ -29,17 +31,13 @@ const Profiles = () => {
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
+      <td>{item.description ?? "N/A"}</td>
       <td>
-        {item.title}
-        {item.isAdmin && (
-          <Badge className="mx-4" bg="primary">
-            Admin Profile
-          </Badge>
-        )}
+        {item.date ? moment(item.date).format("DD MMM YYYY") : Date.now()}
       </td>
-      <td>{item.platform ?? "N/A"}</td>
-      <td>{item.bidder.userName}</td>
-      <td>{item.share ? `${item.share}%` : "N/A"}</td>
+      <td>{item.amount ?? 0}</td>
+      <td>{item.category}</td>
+      <td>{item.profile?.title ?? "N/A"}</td>
       <td>
         <ActionButton
           type="edit"
@@ -53,55 +51,53 @@ const Profiles = () => {
   );
   const renderExportData = (item) => {
     return {
-      title: item.title,
-      platform: item.platform ?? null,
-      bidder: item.bidder.userName,
-      share: item.share ? `${item.share}%` : null,
+      profile: item.profile?.title ?? "N/A",
+      category: item.category ?? null,
+      date: item.data ? moment(item.date).format("DD MMM") : "N/A",
+      amount: item.amount,
     };
   };
   useEffect(() => {
     axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/users/1000/0`, {
-        isManager: true,
-      })
+      .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`)
       .then((res) => {
-        const userOptions = res.data.data.map((user) => ({
-          label: user.userName,
-          value: user._id,
+        const profileOptions = res.data.data.map((profile) => ({
+          label: profile.title,
+          value: profile._id,
         }));
 
-        setBidder(userOptions);
+        setProfile(profileOptions);
       });
   }, []);
 
   var filter = {};
   var body = {};
 
-  if (userInfo.role === "admin") {
+  if (userInfo.role === "admin" || userInfo.handleExpense) {
     filter = {
-      platform: [
-        { label: "Freelancer", value: "freelancer" },
-        { label: "Upwork", value: "upwork" },
-        { label: "Fiver", value: "fiver" },
+      category: [
+        { label: "Office ", value: "office" },
+        { label: "Profile Membership", value: "profileMembership" },
       ],
-      bidder: bidder,
+      date_range: "date",
+
+      profile: profile,
     };
   }
-
   return (
     <Row>
       <Row className="m-3">
         <Col md={3}></Col>
         <Col md={5}></Col>
         <Col md={4}>
-          {userInfo.isManager || userInfo.role === "admin" ? (
+          {userInfo.handleExpense || userInfo.role === "admin" ? (
             <Button
               onClick={() => {
                 setShowModal(true);
               }}
               style={{ float: "right" }}
             >
-              Add Profiles
+              Add Expense
             </Button>
           ) : (
             <></>
@@ -112,15 +108,15 @@ const Profiles = () => {
         <div className="card__body">
           <Table
             key={rerenderTable}
-            title="Profiles"
+            title="expenses"
             limit={PAGE_SIZE}
             headData={customerTableHead}
             renderHead={(item, index) => renderHead(item, index)}
             api={{
-              url: `${process.env.REACT_APP_BACKEND_URL}/profiles`,
+              url: `${process.env.REACT_APP_BACKEND_URL}/expense`,
               body,
             }}
-            placeholder={"title"}
+            placeholder={"description"}
             filter={filter}
             renderBody={(item, index, currPage) =>
               renderBody(item, index, currPage)
@@ -133,14 +129,14 @@ const Profiles = () => {
       <MyModal
         size="lg"
         show={showModal}
-        heading={`${defaultValue ? "Edit" : "Create"} Profile`}
+        heading={`${defaultValue ? "Edit" : "Create"} Expense`}
         onClose={() => {
           setDefaultValue(null);
           setShowModal(false);
         }}
         style={{ width: "auto" }}
       >
-        <ProfileEdit
+        <ExpenseEdit
           defaultValue={defaultValue}
           onSuccess={() => {
             setDefaultValue(null);
@@ -153,4 +149,4 @@ const Profiles = () => {
   );
 };
 
-export default Profiles;
+export default Expense;

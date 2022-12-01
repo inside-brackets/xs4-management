@@ -20,6 +20,10 @@ const profileSchema = new mongoose.Schema(
     },
     // range
     share: { type: Number, required: true },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   {
