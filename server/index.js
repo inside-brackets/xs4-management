@@ -10,6 +10,7 @@ import UploadRoute from "./routes/upload.js";
 import ExpenseRoute from "./routes/expense.js";
 import OtherRevenue from "./routes/otherRevenue.js";
 import salaryRoutes from "./routes/salary.js";
+import balancesheetRoutes from "./routes/balancesheet.js";
 
 import cors from "cors";
 dotenv.config();
@@ -34,6 +35,7 @@ app.use("/upload", UploadRoute);
 app.use("/expense", ExpenseRoute);
 app.use("/other_revenue", OtherRevenue);
 app.use("/salary", salaryRoutes);
+app.use("/balance", balancesheetRoutes);
 
 app.get("/", (req, res) => {
   console.log("hello");
