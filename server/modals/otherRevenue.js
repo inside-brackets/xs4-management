@@ -21,5 +21,5 @@ const otherRevenueSchema = new mongoose.Schema(
   }
 );
 
-const Expense = mongoose.model("OtherRevenue", otherRevenueSchema);
-export default Expense;
+const OtherRevenue = mongoose.model("OtherRevenue", otherRevenueSchema);
+export default OtherRevenue;

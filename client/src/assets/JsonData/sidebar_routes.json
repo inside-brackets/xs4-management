@@ -25,7 +25,7 @@
       "route": "/expenses",
       "icon": "bx bx-money"
     },
-     {
+    {
       "display_name": "Other Revenue",
       "route": "/other-revenue",
       "icon": "bx bxs-wallet-alt"
@@ -39,6 +39,11 @@
       "display_name": "Salary",
       "route": "/salaries",
       "icon": "bx bxs-wallet-alt"
+    },
+    {
+      "display_name": "Balance Sheet",
+      "route": "/balance-sheet",
+      "icon": "bx bx-line-chart-down"
     }
   ],
   "user": [
