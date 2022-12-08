@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Table } from "react-bootstrap";
+import moment from "moment";
 
-function Projects() {
+function Projects({ data }) {
+  const [flag, setFlag] = useState(false);
+
+  useEffect(() => {
+    if (data.length > 0) {
+      setFlag(true);
+    } else {
+      setFlag(false);
+    }
+  }, [data]);
+
   return (
     <>
       <h1 className="h-1">Cleared Projects</h1>
@@ -12,23 +23,39 @@ function Projects() {
             <th>Profile</th>
             <th>Project</th>
             <th>Milestone</th>
-            <th className="text-center">Total</th>
-            <th className="text-center">Cut</th>
+            <th className="text-center">Received</th>
+            <th className="text-center">Employee Cut</th>
+            <th className="text-center">Graphic Cut</th>
             <th>Date</th>
-            <th className="text-center">Status</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Title</td>
-            <td>Project</td>
-            <td>Milestone</td>
-            <td className="text-center">999</td>
-            <td className="text-center">99</td>
-            <td>123</td>
-            <td className="text-center">Done</td>
-          </tr>
+          {flag ? (
+            data.map((v, i) => {
+              return v.milestones.map((milestone, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{i + 1}</td>
+                    <td>{v.profile.title + " (" + v.profile.platform + ")"}</td>
+                    <td>{v.title}</td>
+                    <td>{milestone.title}</td>
+                    <td className="text-center">{milestone.amountRecieved}</td>
+                    <td className="text-center">{milestone.employeeShare}</td>
+                    <td className="text-center">{milestone.grahicShare}</td>
+                    <td>{moment(milestone.paymentDate).format("Do MMM")}</td>
+                  </tr>
+                );
+              });
+            })
+          ) : (
+            <tr>
+              <td colSpan={8}>
+                <div className="text-center m-3 alert alert-danger show">
+                  No Projects completed!
+                </div>
+              </td>
+            </tr>
+          )}
         </tbody>
       </Table>
     </>

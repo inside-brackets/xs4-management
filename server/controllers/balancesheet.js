@@ -147,11 +147,17 @@ export const getBalanceSheet = async (req, res) => {
           totalReceived: 1,
           employeeCut: 1,
           graphicCut: 1,
-          milestones: { title: 1, paymentDate: 1 },
+          milestones: {
+            title: 1,
+            amountRecieved: 1,
+            employeeShare: 1,
+            grahicShare: 1,
+            paymentDate: 1,
+          },
         },
       },
     ]);
-    const profiles = await Profile.countDocuments();
+    const profiles = await Profile.countDocuments({ isAdmin: false });
     const otherRevenues = await OtherRevenue.aggregate([
       {
         $match: {
@@ -190,10 +196,9 @@ export const getBalanceSheet = async (req, res) => {
     result.revenues = {
       amountReceived: received,
       otherReceived: otherRevenues.length > 0 ? otherRevenues[0].amount : 0,
-      graphicShare: graphics > 0 ? graphics / 2 : 0,
+      graphicShare: graphics,
     };
     result.expenses = {
-      graphicPartner: graphics > 0 ? graphics / 2 : 0,
       employeeShare: cut,
       otherExpenses: otherExpenses.length > 0 ? otherExpenses[0].amount : 0,
       salaries: salaries,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card, Form, Spinner } from "react-bootstrap";
+import axios from "axios";
 
 import "../../components/BalanceSheet/BalanceSheet.css";
 import Expenses from "../../components/BalanceSheet/Expenses";
@@ -38,10 +39,26 @@ function BalanceSheet() {
   const [month, setMonth] = useState(new Date().getMonth());
 
   useEffect(() => {
-    console.log(month);
-  }, [month]);
+    fetchBalanceSheet(month, year);
+  }, [month, year]);
 
-  return balanceSheet ? (
+  const fetchBalanceSheet = async (m, y) => {
+    if (!isNaN(m) && !isNaN(y)) {
+      await axios
+        .request({
+          method: "GET",
+          url: `http://localhost:5000/balance/${y}/${m}`,
+        })
+        .then(({ data }) => {
+          setBalanceSheet(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  };
+
+  return !balanceSheet ? (
     <Row className="d-flex align-items-center">
       <Col className="text-center">
         <Spinner
@@ -76,12 +93,12 @@ function BalanceSheet() {
           <Form.Label>Month</Form.Label>
           <Form.Select
             required
-            value={MONTHS[month]}
+            value={month}
             onChange={(e) => setMonth(e.target.value)}
             className="min-200"
           >
             {MONTHS.map((y, i) => (
-              <option key={i} value={y}>
+              <option key={i} value={i}>
                 {y}
               </option>
             ))}
@@ -90,11 +107,11 @@ function BalanceSheet() {
       </div>
       <Card>
         <div className="fix-card">
-          <Overview />
+          <Overview data={balanceSheet} />
           <hr className="h-line pad-b1" />
-          <Revenues />
-          <Expenses />
-          <Projects />
+          <Revenues data={balanceSheet} />
+          <Expenses data={balanceSheet} />
+          <Projects data={balanceSheet.clearedProjects} />
         </div>
       </Card>
     </>
