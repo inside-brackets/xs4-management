@@ -56,6 +56,10 @@ const Routes = () => {
         {userInfo.isManager && (
           <Route path="/reports" exact component={Reports} />
         )}
+        {userInfo.handleExpense && (
+          <Route path="/expenses" exact component={Expense} />
+        )}
+
         <Route path="*">
           <h1>Not found</h1>
         </Route>

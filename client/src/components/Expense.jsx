@@ -134,20 +134,6 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
               onChange={handleChange}
             />
           </Form.Group>
-
-          <Form.Group as={Col} md="6">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              aria-label="With textarea"
-              type="text"
-              placeholder="Description"
-              onChange={handleChange}
-              defaultValue={defaultValue ? defaultValue.description : null}
-              name="description"
-            />
-          </Form.Group>
-
           <Form.Group as={Col} md="6" className="my-4">
             <Form.Label>Profile</Form.Label>
             <Form.Select
@@ -162,6 +148,18 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
                 <option value={profile._id}>{profile.title}</option>
               ))}{" "}
             </Form.Select>
+          </Form.Group>
+          <Form.Group as={Col} md="6">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              aria-label="With textarea"
+              type="text"
+              placeholder="Description"
+              onChange={handleChange}
+              defaultValue={defaultValue ? defaultValue.description : null}
+              name="description"
+            />
           </Form.Group>
 
           <Row className="mt-3">

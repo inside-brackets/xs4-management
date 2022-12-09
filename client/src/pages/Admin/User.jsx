@@ -11,6 +11,7 @@ import { formatter } from "../../util/currencyFormatter";
 const customerTableHead = [
   "#",
   "Username",
+  // "Tags",
   "Name",
   "Salary",
   "Role",
@@ -33,9 +34,14 @@ const User = () => {
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>
         {item.userName} {item.isManager && <Badge bg="primary">Manager</Badge>}
-        {item.handleExpense && <Badge bg="success">Expense Handler</Badge>}
+        {/* {item.handleExpense && <Badge bg="success">Expense Handler</Badge>} */}
       </td>
-
+      {/* <td>
+        {item.isManager && <Badge bg="primary">Manager</Badge>}
+        <br />
+        {item.handleExpense && <Badge bg="success">Expense Handler</Badge>}
+        {!(item.handleExpense || item.isManager) && "NA"}
+      </td> */}
       <td>
         {item.firstName && item.lastName
           ? `${item.firstName} ${item.lastName}`
