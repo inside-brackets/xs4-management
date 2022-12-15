@@ -35,6 +35,11 @@ const Sidebar = (props) => {
           <SidebarItem title="Reports" icon="bx bxs-bar-chart-alt-2" />
         </NavLink>
       )}
+      {userInfo.role === "user" && userInfo.handleExpense && (
+        <NavLink activeClassName="active__sidebar" to="/expenses">
+          <SidebarItem title="Expenses" icon="bx bx-money" />
+        </NavLink>
+      )}
     </div>
   );
 };

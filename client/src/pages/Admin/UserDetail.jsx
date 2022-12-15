@@ -17,7 +17,10 @@ const PAGE_SIZE = 10;
 const UserDetail = () => {
   const [editFields, setEditFields] = useState(false);
   const [user, setUser] = useState(null);
-  const [state, setState] = useState({ isManager: false });
+  const [state, setState] = useState({
+    isManager: false,
+    handleExpense: false,
+  });
   const [loading, setLoading] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
   const [defaultValue, setDefaultValue] = useState(null);
@@ -52,6 +55,7 @@ const UserDetail = () => {
       setState((prev) => {
         return {
           ...prev,
+          handleExpense: res.data.handleExpense,
           isManager: res.data.isManager,
         };
       });
@@ -67,6 +71,13 @@ const UserDetail = () => {
         return {
           ...prev,
           isManager: !state.isManager,
+        };
+      });
+    } else if (name === "handleExpense") {
+      setState((prev) => {
+        return {
+          ...prev,
+          handleExpense: !state.handleExpense,
         };
       });
     } else {
@@ -98,7 +109,7 @@ const UserDetail = () => {
     toast.success(`Password set to: ${newPass}`);
     setLoading(false);
   };
-  console.log("user", user);
+
   return (
     <Row className="mt-2">
       <Col md={1}>
@@ -230,8 +241,7 @@ const UserDetail = () => {
                     </Form.Select>
                   </Form.Group>
 
-
-                    <Form.Group as={Col} md="3" sm="12">
+                  <Form.Group as={Col} md="3" sm="12">
                     <Form.Label>Department</Form.Label>
                     <Form.Select
                       name="department"
@@ -244,7 +254,7 @@ const UserDetail = () => {
                         {user?.department ?? "Select-Department"}
                       </option>
                       <option value="account">Accounts</option>
-                      <option value="department">Department</option>
+                      <option value="department">Graphics</option>
                     </Form.Select>
                   </Form.Group>
 
@@ -267,7 +277,17 @@ const UserDetail = () => {
                       disabled={!editFields}
                       onChange={handleChange}
                     />
+                    <Form.Check
+                      type="checkbox"
+                      name="handleExpense"
+                      checked={state.handleExpense ?? false}
+                      label={`handle Expense`}
+                      disabled={!editFields}
+                      onChange={handleChange}
+                    />
                   </Form.Group>
+                  <Form.Group className="mt-4" as={Col} md="2"></Form.Group>
+
                   <Col className="text-center">
                     <Button
                       className="mt-4"

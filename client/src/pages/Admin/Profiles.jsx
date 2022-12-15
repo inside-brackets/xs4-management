@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Button } from "react-bootstrap";
-
+import { Row, Col, Button, Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
-
 import axios from "axios";
-
 import ActionButton from "../../components/UI/ActionButton";
 import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
@@ -32,7 +29,14 @@ const Profiles = () => {
   const renderBody = (item, index, currPage) => (
     <tr key={index}>
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
-      <td>{item.title}</td>
+      <td>
+        {item.title}
+        {item.isAdmin && (
+          <Badge className="mx-4" bg="primary">
+            Admin Profile
+          </Badge>
+        )}
+      </td>
       <td>{item.platform ?? "N/A"}</td>
       <td>{item.bidder.userName}</td>
       <td>{item.share ? `${item.share}%` : "N/A"}</td>

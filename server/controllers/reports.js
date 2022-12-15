@@ -15,102 +15,6 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
     var filter = {};
     if (user.role === "user") filter = { bidder: user._id };
 
-    let awardedProjects = await ProjectModal.aggregate([
-      {
-        $lookup: {
-          from: "profiles",
-          localField: "profile",
-          foreignField: "_id",
-          as: "profile",
-        },
-      },
-      {
-        $addFields: {
-          year: { $year: "$awardedAt" },
-          month: { $month: "$awardedAt" },
-          profile: { $arrayElemAt: ["$profile", 0] },
-        },
-      },
-      { $match: { year: year } },
-      {
-        $group: {
-          _id: {
-            month: "$month",
-            profile: "$profile.title",
-            status: "$status",
-          },
-          count: {
-            $sum: 1,
-          },
-          totalAmount: {
-            $sum: "$totalAmount",
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          month: "$_id.month",
-          profile: "$_id.profile",
-          status: "$_id.status",
-          count: "$count",
-          totalAmount: "$totalAmount",
-        },
-      },
-      {
-        $group: {
-          _id: {
-            profile: "$profile",
-            month: "$month",
-          },
-          count: {
-            $sum: "$count",
-          },
-          totalAmount: {
-            $sum: "$totalAmount",
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          profile: "$_id.profile",
-          month: "$_id.month",
-          count: "$count",
-          totalAmount: "$totalAmount",
-        },
-      },
-      {
-        $group: {
-          _id: {
-            profile: "$profile",
-          },
-          count: {
-            $sum: "$count",
-          },
-          totalAmount: {
-            $sum: "$totalAmount",
-          },
-          projects: {
-            $push: {
-              month: "$month",
-              count: "$count",
-              projects: "$projects",
-              totalAmount: "$totalAmount",
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          profile: "$_id.profile",
-          total: "$count",
-          projects: "$projects",
-        },
-      },
-    ]);
-
     let closed = await ProjectModal.aggregate([
       {
         $lookup: {
@@ -121,13 +25,24 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "milestones",
+          localField: "_id",
+          foreignField: "project",
+          as: "milestone",
+        },
+      },
+      { $unwind: "$milestone" },
+      { $match: { "milestone.status": "paid" } },
+      {
         $addFields: {
-          year: { $year: "$closedAt" },
-          month: { $month: "$closedAt" },
+          year: { $year: "$milestone.paymentDate" },
+          month: { $month: "$milestone.paymentDate" },
           profile: { $arrayElemAt: ["$profile", 0] },
         },
       },
-      { $match: { year: year, status: "closed" } },
+      { $match: { year: year } },
+
       {
         $group: {
           _id: {
@@ -137,10 +52,10 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
           },
           count: { $sum: 1 },
           amountRecieved: {
-            $sum: "$amountRecieved",
+            $sum: "$milestone.amountRecieved",
           },
           empShare: {
-            $sum: "$empShare",
+            $sum: "$milestone.employeeShare",
           },
         },
       },
@@ -315,9 +230,7 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
       if (tempClosed || tempCancelled || tempPending) return temp;
     });
 
-    const cleanedProfileSumaries = profilesSummary.filter((n) => n);
-
-    res.status(200).json(cleanedProfileSumaries);
+    res.status(200).json(profilesSummary);
   } catch (error) {
     console.log(error);
     throw new Error(error.message);

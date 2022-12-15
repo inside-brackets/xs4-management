@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 
 import ProjectModal from "../modals/project.js";
 import ProfileModal from "../modals/profile.js";
+import { response } from "express";
 
 // Access: Private
 // Method: POST
@@ -37,20 +38,61 @@ export const getProject = asyncHandler(async (req, res) => {
   }
 });
 
+export const getAllProjects = asyncHandler(async (req, res) => {
+  try {
+    let getAllProjects = await ProjectModal.find();
+
+    res.status(200);
+
+    res.json(getAllProjects);
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+});
+
 // Access: Private
 // Method: PUT
 // route: /projects/:id
 export const updateProject = asyncHandler(async (req, res) => {
   try {
-    let updatedProjects = await ProjectModal.findOneAndUpdate(
+    if (req.body.files) {
+      let updatedProjects = await ProjectModal.findOneAndUpdate(
+        { _id: req.params.id },
+        { $push: { files: req.body.files } },
+        { new: true, upsert: true }
+      );
+      res.status(200);
+      res.json(updatedProjects);
+    } else {
+      let updatedProjects = await ProjectModal.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: req.body },
+        { new: true, upsert: true }
+      );
+
+      res.status(200);
+
+      res.json(updatedProjects);
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+});
+
+// Access: Private
+// Method: PUT
+// route: /projects/:id
+export const deleteFile = asyncHandler(async (req, res) => {
+  try {
+    let deleteFile = await ProjectModal.findOneAndUpdate(
       { _id: req.params.id },
       { $set: req.body },
       { new: true, upsert: true }
     );
-
     res.status(200);
-
-    res.json(updatedProjects);
+    res.json(deleteFile);
   } catch (error) {
     console.log(error);
     throw new Error(error.message);

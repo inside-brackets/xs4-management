@@ -65,7 +65,7 @@ const Table = (props) => {
       return temp;
     });
   };
-  console.log("filter", filter);
+
   const getData = () => {
     if (!bodyData[`page${currPage}`]) {
       if (props.api) {
@@ -178,7 +178,6 @@ const Table = (props) => {
 
         {Object.keys(props.filter).map((key, index) => {
           if (key === "date_range") {
-            console.log("smart table key", props.filter[key]);
             return (
               <>
                 <Col md={3}>
@@ -215,7 +214,6 @@ const Table = (props) => {
             );
           }
           if (key.split("_")[1] === "Single") {
-            console.log("smart table key", props.filter[key]);
             return (
               <>
                 <Col md={3} className="mb-2">
@@ -256,7 +254,7 @@ const Table = (props) => {
         })}
 
         {props.exportData && (
-          <Col className="mt-4" md={3}>
+          <Col className="m-4" md={3}>
             <Button onClick={downloadExcel}>Export to Excel</Button>
           </Col>
         )}
@@ -282,7 +280,11 @@ const Table = (props) => {
             {bodyData["page0"]?.length > 0 && (
               <tbody>
                 {bodyData[`page${currPage}`]?.map((item, index) =>
-                  props.renderBody(item, index, currPage)
+                  props.renderBody(
+                    item,
+                    index + currPage * props.limit,
+                    currPage
+                  )
                 )}
               </tbody>
             )}

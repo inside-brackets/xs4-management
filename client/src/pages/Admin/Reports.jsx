@@ -65,8 +65,10 @@ const Reports = () => {
           value={year}
           onChange={(e) => setYear(e.target.value)}
         >
-          {getYears().map((y,i) => (
-            <option key={i} value={y}>{y}</option>
+          {getYears().map((y, i) => (
+            <option key={i} value={y}>
+              {y}
+            </option>
           ))}
         </Form.Select>
       </Form.Group>
@@ -78,8 +80,10 @@ const Reports = () => {
           onChange={(e) => setMonth(e.target.value)}
         >
           <option value="">Year-View</option>
-          {months.map((y,i) => (
-            <option key={i} value={y}>{y}</option>
+          {months.map((y, i) => (
+            <option key={i} value={y}>
+              {y}
+            </option>
           ))}
         </Form.Select>
       </Form.Group>
@@ -95,28 +99,44 @@ const Reports = () => {
                 fontWeight: "bold",
               }}
             >
-              <Col md={2} className="text-center">Profile Title</Col>
-              <Col md={2} className="text-center">Cash Recieved</Col>
-              <Col md={2} className="text-center">Employee Share</Col>
-              <Col md={2} className="text-center">Projects Closed</Col>
-              <Col md={2} className="text-center">Current Pending</Col>
-              <Col md={2} className="text-center">Total Cancelled</Col>
+              <Col md={2} className="text-center">
+                Profile Title
+              </Col>
+              <Col md={2} className="text-center">
+                Cash Recieved
+              </Col>
+              <Col md={2} className="text-center">
+                Employee Share
+              </Col>
+              <Col md={2} className="text-center">
+                Milestone Paid
+              </Col>
+              <Col md={2} className="text-center">
+                Current Pending
+              </Col>
+              <Col md={2} className="text-center">
+                Total Cancelled
+              </Col>
             </Row>
             <hr />
           </>
         )}
-        {reports.map((report,index) => {
-          if (month) {
-            return (
-              <MonthlyReport
-              key={index}
-                report={report}
-                months={months}
-                currMonth={month}
-              />
-            );
+        {reports.map((report, index) => {
+          if (report != null) {
+            if (month) {
+              return (
+                <MonthlyReport
+                  key={index}
+                  report={report}
+                  months={months}
+                  currMonth={month}
+                />
+              );
+            } else {
+              return <Report key={index} report={report} months={months} />;
+            }
           } else {
-            return <Report key={index} report={report} months={months} />;
+            return <></>;
           }
         })}
       </Card>

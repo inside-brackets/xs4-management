@@ -36,7 +36,7 @@ const AddUser = ({ setShowModal }) => {
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/users/byusername/${userName}`
         );
-        console.log(response.data);
+
         setUsernameIsValid(response.data);
       }, 500);
       return () => {
@@ -113,8 +113,6 @@ const AddUser = ({ setShowModal }) => {
           </Form.Control.Feedback>
         </Form.Group>
 
-
-        
         <Form.Group as={Col} md="4">
           <Form.Label>Role</Form.Label>
           <Form.Control
@@ -133,7 +131,7 @@ const AddUser = ({ setShowModal }) => {
           </Form.Control.Feedback>
         </Form.Group>
 
-         <Form.Group as={Col} md="4">
+        <Form.Group as={Col} md="4">
           <Form.Label>Department</Form.Label>
           <Form.Control
             as="select"
@@ -150,7 +148,6 @@ const AddUser = ({ setShowModal }) => {
             Please provide a valid Role.
           </Form.Control.Feedback>
         </Form.Group>
-
 
         <Form.Group className="mt-4" as={Col} md="2">
           <Form.Check

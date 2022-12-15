@@ -30,12 +30,12 @@ const Projects = () => {
           "#",
           "Title",
           "Client",
-          "Profile",
+
           "Assignee",
           "Awarded",
           "Deadline",
-          "Total Amount",
-          "Employee Share",
+          // "Total Amount",
+
           "Status",
           "Actions",
         ]
@@ -56,9 +56,12 @@ const Projects = () => {
           "#",
           "Title",
           "Client",
-          "Profile",
+
+          "Assignee",
           "Awarded",
           "Deadline",
+          // "Total Amount",
+
           "Status",
           "Actions",
         ];
@@ -67,7 +70,7 @@ const Projects = () => {
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
       <td>{item.clientName ?? "N/A"}</td>
-      <td>{`${item.profile.title} (${item.profile.platform})`}</td>
+
       <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
       <td>
         {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
@@ -75,14 +78,11 @@ const Projects = () => {
       <td>
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
-      {(userInfo.role === "admin" || userInfo.isManager) && (
+      {/* {(userInfo.role === "admin" || userInfo.isManager) && (
         <Fragment>
           <td>{formatter(item.currency).format(item.totalAmount)}</td>
-          <td>
-            {item.empShare ? formatter("PKR").format(item.empShare) : "N/A"}
-          </td>
         </Fragment>
-      )}
+      )} */}
       <td>
         <h5>
           <Badge bg={status_map[item.status]}>{item.status}</Badge>

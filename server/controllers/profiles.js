@@ -121,3 +121,19 @@ export const listProfiles = asyncHandler(async (req, res) => {
     throw new Error(error.message);
   }
 });
+
+// Access: Admin
+// Method: GET
+// route: /profiles/fix/all
+export const fixProfiles = asyncHandler(async (req, res) => {
+  try {
+    await ProfileModal.updateMany(
+      { isAdmin: null },
+      { $set: { isAdmin: false } }
+    );
+    res.status(200).send({ message: "Profiles fixed!" });
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+});

@@ -29,7 +29,6 @@ export const Login = (userName, password) => async (dispatch, getState) => {
       JSON.stringify(getState().userLogin.userInfo)
     );
   } catch (error) {
-    console.log(error);
     dispatch({
       type: USER_LOGIN_FAIL,
       payload:

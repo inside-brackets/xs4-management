@@ -4,6 +4,8 @@ import {
   updateProject,
   listProjects,
   getProject,
+  getAllProjects,
+  deleteFile,
 } from "../controllers/projects.js";
 import { Protected, isAdmin } from "../middlewares/authHandler.js";
 
@@ -12,6 +14,8 @@ const router = express.Router();
 router.post("/", createProject);
 router.put("/:id", updateProject);
 router.get("/:id", getProject);
-router.post("/:limit/:offset",Protected, listProjects);
+router.get("/", getAllProjects);
+router.put("/delete/:id", deleteFile);
+router.post("/:limit/:offset", Protected, listProjects);
 
 export default router;
