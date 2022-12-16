@@ -110,7 +110,10 @@ function BalanceSheet() {
           <Overview data={balanceSheet} />
           <hr className="h-line pad-b1" />
           <Revenues data={balanceSheet} />
+          <hr className="h-line pad-b1" />
           <Expenses data={balanceSheet} />
+          <hr className="h-line pad-b1" />
+
           <Projects data={balanceSheet.clearedProjects} />
         </div>
       </Card>

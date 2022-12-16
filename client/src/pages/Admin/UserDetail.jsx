@@ -254,7 +254,7 @@ const UserDetail = () => {
                         {user?.department ?? "Select-Department"}
                       </option>
                       <option value="account">Accounts</option>
-                      <option value="department">Graphics</option>
+                      <option value="graphics">Graphics</option>
                     </Form.Select>
                   </Form.Group>
 

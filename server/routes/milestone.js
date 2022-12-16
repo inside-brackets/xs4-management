@@ -10,10 +10,11 @@ import {
 import { Protected, isAdmin } from "../middlewares/authHandler.js";
 const router = express.Router();
 
+router.get("/migrate", migrateMilestones);
+
 router.post("/", createMilestone);
 router.put("/:id", updateMilestone);
 router.get("/:id", getMilestone);
-router.get("/", migrateMilestones);
 router.post("/:limit/:offset", Protected, listMilestones);
 
 export default router;

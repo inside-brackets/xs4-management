@@ -4,7 +4,6 @@ const expenseSchema = new mongoose.Schema(
   {
     description: {
       type: "string",
-      required: true,
     },
     isLocal: {
       type: "boolean",

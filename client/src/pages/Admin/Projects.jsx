@@ -29,13 +29,11 @@ const Projects = () => {
       ? [
           "#",
           "Title",
+          "Profile",
           "Client",
-
           "Assignee",
           "Awarded",
           "Deadline",
-          // "Total Amount",
-
           "Status",
           "Actions",
         ]
@@ -69,6 +67,9 @@ const Projects = () => {
     <tr key={index}>
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
+      <td>
+        {item.profile.title}({item.profile.platform})
+      </td>
       <td>{item.clientName ?? "N/A"}</td>
 
       <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>

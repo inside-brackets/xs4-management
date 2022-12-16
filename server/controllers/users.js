@@ -185,3 +185,18 @@ export const listUsers = asyncHandler(async (req, res) => {
     throw new Error(error.message);
   }
 });
+
+export const addDepartment = asyncHandler(async (req, res) => {
+  try {
+    let updatedUser = await User.updateMany(
+      {},
+      { department: "accounts" },
+      { new: true, upsert: true }
+    );
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+});

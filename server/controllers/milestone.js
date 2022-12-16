@@ -37,16 +37,17 @@ export const migrateMilestones = asyncHandler(async (req, res) => {
           employeeShare: "$empShare",
           amountRecieved: "$amountRecieved",
           profile: "$profile",
+          paymentDate: "$closedAt",
           netRecieveable: {
             $cond: {
-              if: { status: ["$status" === "closed"] },
+              if: { $eq: ["$status", "closed"] },
               then: { $divide: ["$amountRecieved", "$exchangeRate"] },
               else: 0,
             },
           },
           amountDeducted: {
             $cond: {
-              if: { status: ["$status" === "closed"] },
+              if: { $eq: ["$status", "closed"] },
               then: {
                 $subtract: [
                   "$totalAmount",
@@ -58,7 +59,7 @@ export const migrateMilestones = asyncHandler(async (req, res) => {
           },
           status: {
             $cond: {
-              if: { status: ["$status" === "closed"] },
+              if: { $eq: ["$status", "closed"] },
               then: "paid",
               else: "unpaid",
             },

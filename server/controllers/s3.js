@@ -5,11 +5,9 @@ import { promisify } from "util";
 const randomBytes = promisify(crypto.randomBytes);
 dotenv.config();
 const region = "us-east-1";
-const bucketName = process.env.AWS_BUCKET_NAME || " testing-xs4";
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID || "AKIAZWXGDTEF5DSOSGC7";
-const secretAccessKey =
-  process.env.AWS_SECRET_ACCESS_KEY ||
-  " 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";
+const bucketName = process.env.AWS_BUCKET_NAME;
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const s3 = new aws.S3({
   region,
   accessKeyId,
@@ -44,7 +42,6 @@ export const generateUploadURL = async (folder, fileName, del) => {
 export const deleteUploadedURL = async (folder, fileName) => {
   // export async function generateUploadURL() {
   try {
-    console.log("I m reubn");
     let params1 = { Bucket: `${bucketName}`, Key: `${folder}/${fileName}` };
     await s3.deleteObject(params1, function (err, data) {
       if (err) return err; // error

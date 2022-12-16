@@ -15,7 +15,6 @@ export const createProject = asyncHandler(async (req, res) => {
 
     res.json(createdProject);
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });
@@ -28,12 +27,9 @@ export const getProject = asyncHandler(async (req, res) => {
     let project = await ProjectModal.findById(req.params.id).populate(
       "assignee profile"
     );
-
-    res.status(200);
-
-    res.json(project);
+    console.log(project);
+    res.status(200).json(project);
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });
@@ -46,7 +42,6 @@ export const getAllProjects = asyncHandler(async (req, res) => {
 
     res.json(getAllProjects);
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });
@@ -56,27 +51,24 @@ export const getAllProjects = asyncHandler(async (req, res) => {
 // route: /projects/:id
 export const updateProject = asyncHandler(async (req, res) => {
   try {
-    if (req.body.files) {
-      let updatedProjects = await ProjectModal.findOneAndUpdate(
-        { _id: req.params.id },
-        { $push: { files: req.body.files } },
-        { new: true, upsert: true }
-      );
-      res.status(200);
-      res.json(updatedProjects);
-    } else {
-      let updatedProjects = await ProjectModal.findOneAndUpdate(
-        { _id: req.params.id },
-        { $set: req.body },
-        { new: true, upsert: true }
-      );
+    // if (req.body.files) {
+    //   let updatedProjects = await ProjectModal.findOneAndUpdate(
+    //     { _id: req.params.id },
+    //     { $push: { files: req.body.files } },
+    //     { new: true, upsert: true }
+    //   );
+    //   res.status(200);
+    //   res.json(updatedProjects);
+    // } else {
+    let updatedProjects = await ProjectModal.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: req.body },
+      { new: true, upsert: true }
+    );
 
-      res.status(200);
-
-      res.json(updatedProjects);
-    }
+    res.status(200).json(updatedProjects);
+    // }
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });
@@ -94,7 +86,6 @@ export const deleteFile = asyncHandler(async (req, res) => {
     res.status(200);
     res.json(deleteFile);
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });
@@ -107,7 +98,6 @@ export const deleteProject = asyncHandler(async (req, res) => {
     // delete project
     res.json({ msh: "comming soon" });
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 });
@@ -117,7 +107,6 @@ export const deleteProject = asyncHandler(async (req, res) => {
 // route: /projects/:limit/:offset
 export const listProjects = asyncHandler(async (req, res) => {
   try {
-    console.log("listProjects", req.params.offset);
     const offset = parseInt(req.params.offset);
     const limit = parseInt(req.params.limit);
     const {
@@ -243,7 +232,6 @@ export const listProjects = asyncHandler(async (req, res) => {
     }
 
     if (filter["$and"].length === 0) delete filter["$and"];
-    console.log(filter);
 
     const projects = await ProjectModal.find(filter)
       .populate("assignee profile")
