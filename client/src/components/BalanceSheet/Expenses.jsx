@@ -30,13 +30,15 @@ function Expenses({ data }) {
     if (temp !== 0) {
       temp = temp / 2;
     }
-    setGraphicPartner(temp);
+    setGraphicPartner(Number(temp).toFixed(2));
     setTotalExpense(
-      data.expenses.employeeShare +
-        temp +
-        data.expenses.otherExpenses +
-        graphicSalaries +
-        accountSalaries
+      Number(
+        data.expenses.employeeShare +
+          temp +
+          data.expenses.otherExpenses +
+          graphicSalaries +
+          accountSalaries
+      ).toFixed(2)
     );
   }, [graphicSalaries]);
 

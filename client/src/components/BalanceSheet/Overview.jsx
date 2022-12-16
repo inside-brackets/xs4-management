@@ -37,19 +37,23 @@ function Overview({ data }) {
       temp = temp / 2;
     }
     setTotalRevenue(
-      data.revenues.amountReceived + temp + data.revenues.otherReceived
+      Number(
+        data.revenues.amountReceived + data.revenues.otherReceived
+      ).toFixed(2)
     );
     setTotalExpenses(
-      data.expenses.employeeShare +
-        temp +
-        data.expenses.otherExpenses +
-        graphicSalaries +
-        accountSalaries
+      Number(
+        data.expenses.employeeShare +
+          temp +
+          data.expenses.otherExpenses +
+          graphicSalaries +
+          accountSalaries
+      ).toFixed(2)
     );
   }, [graphicSalaries]);
 
   useEffect(() => {
-    setBalance((totalRevenue - totalExpenses).toFixed(1));
+    setBalance(Number(totalRevenue - totalExpenses).toFixed(2));
   }, [totalRevenue, totalExpenses]);
 
   return (
@@ -75,19 +79,19 @@ function Overview({ data }) {
           />
         </div>
         <div className="flex-col">
-          <span className="h-2">Total Revenue</span>
+          <span className="h-2">Total Graphic Share</span>
           <input
             type="text"
-            value={"PKR " + totalRevenue}
+            value={"PKR " + data.revenues.graphicShare}
             className="input-display max-200"
             readOnly
           />
         </div>
         <div className="flex-col">
-          <span className="h-2">Total Expenses</span>
+          <span className="h-2">Total Employee Share</span>
           <input
             type="text"
-            value={"PKR " + totalExpenses}
+            value={"PKR " + data.expenses.employeeShare}
             className="input-display max-200"
             readOnly
           />
@@ -104,19 +108,19 @@ function Overview({ data }) {
           />
         </div>
         <div className="flex-col">
-          <span className="h-2">Total Graphic Share</span>
+          <span className="h-2">Total Revenue</span>
           <input
             type="text"
-            value={"PKR " + data.revenues.graphicShare}
+            value={"PKR " + totalRevenue}
             className="input-display max-200"
             readOnly
           />
         </div>
         <div className="flex-col">
-          <span className="h-2">Total Employee Share</span>
+          <span className="h-2">Total Expenses</span>
           <input
             type="text"
-            value={"PKR " + data.expenses.employeeShare}
+            value={"PKR " + totalExpenses}
             className="input-display max-200"
             readOnly
           />
