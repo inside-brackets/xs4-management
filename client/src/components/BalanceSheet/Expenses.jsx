@@ -22,7 +22,7 @@ function Expenses({ data }) {
       setAccountSalaries(0);
       setGraphicSalaries(0);
     }
-  }, [data]);
+  }, [adjustments, data]);
 
   useEffect(() => {
     let temp = 0;
@@ -40,7 +40,7 @@ function Expenses({ data }) {
           accountSalaries
       ).toFixed(2)
     );
-  }, [graphicSalaries]);
+  }, [accountSalaries, graphicSalaries, data]);
 
   return (
     <>
