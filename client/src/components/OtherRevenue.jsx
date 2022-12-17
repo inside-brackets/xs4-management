@@ -41,7 +41,7 @@ const OtherRevenue = ({ profile, defaultValue, onSuccess }) => {
           setLoading(false);
         })
         .catch((err) => {
-          toast.error(err.response.data.msg ?? err.response.statusText);
+          toast.error("Please fill out mandatory fields");
           setLoading(false);
         });
     } else {
@@ -116,6 +116,7 @@ const OtherRevenue = ({ profile, defaultValue, onSuccess }) => {
             />
             <Form.Label>Description</Form.Label>
             <Form.Control
+              required
               as="textarea"
               rows={4}
               aria-label="With textarea"
