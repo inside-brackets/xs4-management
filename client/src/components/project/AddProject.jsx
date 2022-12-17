@@ -79,7 +79,6 @@ const AddProject = () => {
   const history = useHistory();
 
   const { id } = useParams();
-  console.log(sumAmount, "totalAmount=====>");
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;
@@ -643,47 +642,45 @@ const AddProject = () => {
                         </Col>
                       </Row>
 
-                  
-                        <Row>
-                          <Col className="mx-4">
-                            <h5 className="misc_file_name">
-                              file name{" "}
-                              <span
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                *
-                              </span>
-                            </h5>
-                          </Col>
-                          <Col className="mx-4">
-                            <h6>
-                              file type{" "}
-                              <span
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                *
-                              </span>
-                            </h6>
-                          </Col>
-                          <Col>
-                            <h6>
-                              Actions
-                              <span
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                *
-                              </span>
-                            </h6>
-                          </Col>
-                        </Row>
-                        <hr />
-                  
+                      <Row>
+                        <Col className="mx-4">
+                          <h5 className="misc_file_name">
+                            file name{" "}
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              *
+                            </span>
+                          </h5>
+                        </Col>
+                        <Col className="mx-4">
+                          <h6>
+                            file type{" "}
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              *
+                            </span>
+                          </h6>
+                        </Col>
+                        <Col>
+                          <h6>
+                            Actions
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              *
+                            </span>
+                          </h6>
+                        </Col>
+                      </Row>
+                      <hr />
 
                       <Row>
                         {carrier.files?.map((file) => {
