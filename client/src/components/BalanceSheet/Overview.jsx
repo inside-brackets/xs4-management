@@ -28,7 +28,7 @@ function Overview({ data }) {
       setAccountSalaries(0);
       setGraphicSalaries(0);
     }
-  }, [data]);
+  }, [adjustments, data]);
 
   useEffect(() => {
     let temp = 0;
@@ -50,7 +50,7 @@ function Overview({ data }) {
           accountSalaries
       ).toFixed(2)
     );
-  }, [graphicSalaries]);
+  }, [accountSalaries, graphicSalaries, data]);
 
   useEffect(() => {
     setBalance(Number(totalRevenue - totalExpenses).toFixed(2));
