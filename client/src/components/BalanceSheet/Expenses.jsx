@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { round } from "../../util/number";
 
 function Expenses({ data }) {
   const [totalExpense, setTotalExpense] = useState(0);
@@ -77,7 +78,7 @@ function Expenses({ data }) {
           <span className="h-2">Employee Share</span>
           <input
             type="text"
-            value={"PKR " + data.expenses.employeeShare}
+            value={"PKR " + round(data.expenses.employeeShare)}
             className="input-display max-200"
             readOnly
           />

@@ -9,6 +9,7 @@ import { formatter } from "../../util/currencyFormatter";
 import MyModal from "../../components/modals/MyModal";
 import UpdateMilestone from "./UpdateMilestone";
 import Milestone from "./AddMilestone";
+import { round } from "../../util/number";
 
 const customerTableHead = [
   "#",
@@ -23,6 +24,7 @@ const customerTableHead = [
 ];
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 const PAGE_SIZE = 50;
+
 const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
   const { userInfo } = useSelector((state) => state.userLogin);
   const [defaultValue, setDefaultValue] = useState(null);
@@ -39,10 +41,14 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
         <td>{item.title}</td>
         {(userInfo.role === "admin" || userInfo.isManager) && (
           <Fragment>
-            <td>{formatter(item.currency).format(item.totalAmount)}</td>
+            <td>{round(item.totalAmount)}</td>
+            <td>{round(item.netRecieveable)}</td>
+            <td>{round(item.amountDeducted)}</td>
+            <td>{round(item.amountRecieved)}</td>
+            {/* <td>{formatter(item.currency).format(item.totalAmount)}</td>
             <td>{formatter(item.currency).format(item.netRecieveable)}</td>
             <td>{formatter(item.currency).format(item.amountDeducted)}</td>
-            <td>{formatter(item.currency).format(item.amountRecieved)}</td>
+            <td>{formatter(item.currency).format(item.amountRecieved)}</td> */}
           </Fragment>
         )}
         <td>

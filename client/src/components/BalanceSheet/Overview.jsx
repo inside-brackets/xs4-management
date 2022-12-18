@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { round } from "../../util/number";
 
 function Overview({ data }) {
   const [balance, setBalance] = useState(0);
@@ -91,7 +92,7 @@ function Overview({ data }) {
           <span className="h-2">Total Employee Share</span>
           <input
             type="text"
-            value={"PKR " + data.expenses.employeeShare}
+            value={"PKR " + round(data.expenses.employeeShare)}
             className="input-display max-200"
             readOnly
           />
@@ -102,7 +103,7 @@ function Overview({ data }) {
           <span className="h-2">Profile Net Total</span>
           <input
             type="text"
-            value={"PKR " + profilesNet}
+            value={"PKR " + round(profilesNet)}
             className="input-display max-200"
             readOnly
           />

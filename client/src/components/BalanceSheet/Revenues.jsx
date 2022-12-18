@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { round } from "../../util/number";
 
 function Revenues({ data }) {
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -19,7 +20,7 @@ function Revenues({ data }) {
           <span className="h-2">Amount Received</span>
           <input
             type="text"
-            value={"PKR " + data.revenues.amountReceived}
+            value={"PKR " + round(data.revenues.amountReceived)}
             className="input-display max-200"
             readOnly
           />
@@ -28,7 +29,7 @@ function Revenues({ data }) {
           <span className="h-2">Other Revenues</span>
           <input
             type="text"
-            value={"PKR " + data.revenues.otherReceived}
+            value={"PKR " + round(data.revenues.otherReceived)}
             className="input-display max-200"
             readOnly
           />
