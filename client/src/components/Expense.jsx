@@ -7,7 +7,7 @@ import moment from "moment";
 const Expenses = ({ profile, defaultValue, onSuccess }) => {
   const [state, setState] = useState({
     profile: profile?._id,
-    isLocal: defaultValue?.isLocal,
+    isLocal: defaultValue?.isLocal ?? true,
   });
 
   const [profiles, setProfiles] = useState([]);
@@ -129,7 +129,7 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
               className="m-4"
               type="checkbox"
               name="isLocal"
-              checked={state.isLocal ? true : false}
+              checked={state.isLocal}
               label={`Is Local`}
               onChange={handleChange}
             />
