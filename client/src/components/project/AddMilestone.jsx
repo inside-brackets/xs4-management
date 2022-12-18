@@ -9,6 +9,12 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
     project: projectID,
     profile: profile,
     status: "unpaid",
+    paymentDate:
+      new Date().getFullYear() +
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate(),
   });
 
   const [validated, setValidated] = useState(false);
@@ -19,15 +25,11 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
     const name = evt.target.name;
 
     if (name === "status") {
-      if (value === "paid") {
-        setState((prev) => ({ ...prev, paymentDate: new Date() }));
-      } else {
-        setState((prev) => {
-          const temp = prev;
-          delete temp.paymentDate;
-          delete temp.employeeShare;
-          return temp;
-        });
+      if (value !== "paid") {
+        setState((prev) => ({
+          ...prev,
+          employeeShare: "",
+        }));
       }
     }
     setState((prev) => ({
@@ -214,7 +216,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                 <Form.Control
                   type="date"
                   placeholder="Payment Date"
-                  value={state ? state.paymentDate : " "}
+                  value={state.paymentDate}
                   name="paymentDate"
                   onChange={handleChange}
                 />

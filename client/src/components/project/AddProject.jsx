@@ -79,7 +79,6 @@ const AddProject = () => {
   const history = useHistory();
 
   const { id } = useParams();
-  console.log(sumAmount, "totalAmount=====>");
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;

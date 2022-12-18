@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { round } from "../../util/number";
 
-const UpdateMilestone = ({ projectID, profile, defaultValue }) => {
+const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
   const [state, setState] = useState({
     project: projectID,
     defaultValue,
@@ -58,6 +58,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue }) => {
 
       setmileValue({ mileValue: res.data });
       if (res.status === 200) {
+        onSuccess();
         setLoading(false);
         toast.success("Project Updated Successfully");
 

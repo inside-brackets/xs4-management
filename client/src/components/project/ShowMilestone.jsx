@@ -28,7 +28,7 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
   const [defaultValue, setDefaultValue] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
-  const [addMilestoneModal, setMilestoneModal] = useState(false);
+  const [addMilestoneModal, setAddMilestoneModal] = useState(false);
   var tA = 0;
   const renderBody = (item, index, currPage) => {
     tA = tA + item.totalAmount;
@@ -80,7 +80,7 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
             <Col md={4}>
               <Button
                 onClick={() => {
-                  setMilestoneModal(true);
+                  setAddMilestoneModal(true);
                 }}
                 style={{ float: "right" }}
               >
@@ -116,7 +116,7 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
                 heading="Add Milestone"
                 onClose={() => {
                   setDefaultValue(null);
-                  setMilestoneModal(false);
+                  setAddMilestoneModal(false);
                 }}
                 style={{ width: "auto" }}
               >
@@ -124,12 +124,12 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
                   projectID={projectID}
                   profile={profile}
                   setShowModal={() => {
-                    setMilestoneModal(false);
+                    setAddMilestoneModal(false);
                   }}
                   onSuccess={() => {
                     setDefaultValue(null);
                     setRerenderTable(Math.random());
-                    setMilestoneModal(false);
+                    setAddMilestoneModal(false);
                   }}
                 />
               </MyModal>
@@ -138,7 +138,7 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
           <MyModal
             size="lg"
             show={showModal}
-            heading={"Edit Milestone"}
+            heading="Edit Milestone"
             onClose={() => {
               setShowModal(false);
             }}
@@ -147,8 +147,10 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
             <UpdateMilestone
               defaultValue={defaultValue}
               profile={profile}
+              setShowModal={() => {
+                setShowModal(false);
+              }}
               onSuccess={() => {
-                setDefaultValue(null);
                 setRerenderTable(Math.random());
                 setShowModal(false);
               }}
