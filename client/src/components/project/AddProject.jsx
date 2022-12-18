@@ -643,50 +643,49 @@ const AddProject = () => {
                         </Col>
                       </Row>
 
-                  
-                        <Row>
-                          <Col className="mx-4">
-                            <h5 className="misc_file_name">
-                              file name{" "}
-                              <span
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                *
-                              </span>
-                            </h5>
-                          </Col>
-                          <Col className="mx-4">
-                            <h6>
-                              file type{" "}
-                              <span
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                *
-                              </span>
-                            </h6>
-                          </Col>
-                          <Col>
-                            <h6>
-                              Actions
-                              <span
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                *
-                              </span>
-                            </h6>
-                          </Col>
-                        </Row>
-                        <hr />
-                  
+                      <Row>
+                        <Col className="mx-4">
+                          <h5 className="misc_file_name">
+                            file name{" "}
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              *
+                            </span>
+                          </h5>
+                        </Col>
+                        <Col className="mx-4">
+                          <h6>
+                            file type{" "}
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              *
+                            </span>
+                          </h6>
+                        </Col>
+                        <Col>
+                          <h6>
+                            Actions
+                            <span
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              *
+                            </span>
+                          </h6>
+                        </Col>
+                      </Row>
+                      <hr />
 
                       <Row>
                         {carrier.files?.map((file) => {
+                          console.log(file);
                           return (
                             <div key={file.file} className="miscWrapper">
                               <Row className="mx-5">
@@ -725,9 +724,9 @@ const AddProject = () => {
                                     </div>
 
                                     <div data-tip data-for={file.name}>
-                                      {file.files.map((file) => {
+                                      {file.files.map((data) => {
                                         return (
-                                          <a href={file.files}>
+                                          <a href={data}>
                                             <i className="bx bx-show-alt action-button"></i>
                                           </a>
                                         );
