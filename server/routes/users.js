@@ -20,7 +20,6 @@ router.post("/", createUser);
 router.put("/:id", updateUser);
 router.put("/password/:id", updateUserPassword);
 
-router.get("/adddepartment", addDepartment);
 router.get("/:id", getUser);
 router.get("/byusername/:username", getUserByUsername);
 

@@ -4,7 +4,6 @@ import {
   updateProfile,
   listProfiles,
   getProfile,
-  fixProfiles,
 } from "../controllers/profiles.js";
 import { Protected, isAdmin } from "../middlewares/authHandler.js";
 
@@ -14,6 +13,5 @@ router.post("/", createProfile);
 router.put("/:id", updateProfile);
 router.get("/:id", Protected, getProfile);
 router.post("/:limit/:offset", listProfiles);
-router.get("/fix/all", fixProfiles);
 
 export default router;
