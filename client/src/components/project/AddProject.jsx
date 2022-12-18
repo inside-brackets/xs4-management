@@ -482,7 +482,7 @@ const AddProject = () => {
                         <Form.Check
                           type="checkbox"
                           name="hasRecruiter"
-                          checked={state.hasRecruiter ?? false}
+                          checked={state?.hasRecruiter}
                           label={`Has Recruiter`}
                           disabled={selectedProfile?.platform !== "freelancer"}
                           onChange={(value) => {
