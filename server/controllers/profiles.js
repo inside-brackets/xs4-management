@@ -128,8 +128,10 @@ export const listProfiles = asyncHandler(async (req, res) => {
 export const fixProfiles = asyncHandler(async (req, res) => {
   try {
     await ProfileModal.updateMany(
-      { isAdmin: null },
-      { $set: { isAdmin: false } }
+      // { isAdmin: null },
+      {},
+      // { $set: { isAdmin: false }
+      [{ $set: { isAdmin: { $eq: ["$share", 0] } } }]
     );
     res.status(200).send({ message: "Profiles fixed!" });
   } catch (error) {

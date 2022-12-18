@@ -117,12 +117,22 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "milestones",
+          localField: "_id",
+          foreignField: "project",
+          as: "milestone",
+        },
+      },
+      { $unwind: "$milestone" },
+      { $match: { "milestone.status": "unpaid" } },
+      {
         $addFields: {
-          year: { $year: "$createdAt" },
+          year: { $year: "$milestone.paymentDate" },
           profile: { $arrayElemAt: ["$profile", 0] },
         },
       },
-      { $match: { year: year, status: { $nin: ["closed", "cancelled"] } } },
+      { $match: { year: year } },
       {
         $group: {
           _id: {
@@ -154,12 +164,22 @@ export const getProfilesSummary = asyncHandler(async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "milestones",
+          localField: "_id",
+          foreignField: "project",
+          as: "milestone",
+        },
+      },
+      { $unwind: "$milestone" },
+      { $match: { "milestone.status": "cancelled" } },
+      {
         $addFields: {
-          year: { $year: "$createdAt" },
+          year: { $year: "$milestone.paymentDate" },
           profile: { $arrayElemAt: ["$profile", 0] },
         },
       },
-      { $match: { year: year, status: "cancelled" } },
+      { $match: { year: year } },
       {
         $group: {
           _id: {

@@ -243,7 +243,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                   step="any"
                   value={state ? state.exchangeRate : ""}
                   name="exchangeRate"
-                  disabled={state.status === "unpaid"}
+                  disabled={state.status !== "paid"}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -271,8 +271,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                     <Form.Control
                       type="number"
                       placeholder="-"
-                      disabled={state.status === "unpaid"}
-                      readOnly
+                      disabled
                       value={state ? state.employeeShare : ""}
                     />
                   </Form.Group>
@@ -284,8 +283,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                       placeholder="-"
                       name="amtRec"
                       value={state ? state.amountRecieved : ""}
-                      disabled={state.status === "unpaid"}
-                      readOnly
+                      disabled
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="3">
@@ -295,7 +293,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                       name="amtDect"
                       placeholder="-"
                       value={state ? state.amountDeducted : ""}
-                      readOnly
+                      disabled
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="3">
@@ -305,7 +303,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                       name="netRec"
                       placeholder="-"
                       value={state ? state.netRecieveable : ""}
-                      readOnly
+                      disabled
                     />
                   </Form.Group>
                 </>

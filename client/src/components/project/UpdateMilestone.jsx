@@ -284,7 +284,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                   step="any"
                   value={mileValue.exchangeRate}
                   name="exchangeRate"
-                  disabled={mileValue.status === "unpaid"}
+                  disabled={mileValue.status !== "paid"}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -312,9 +312,8 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                     </Form.Label>
                     <Form.Control
                       type="number"
-                      readOnly
                       value={mileValue.employeeShare}
-                      disabled={mileValue.status === "unpaid"}
+                      disabled
                     />
                   </Form.Group>
 
@@ -324,8 +323,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                       type="number"
                       name="amtRec"
                       value={mileValue.amountRecieved}
-                      disabled={mileValue.status === "unpaid"}
-                      readOnly
+                      disabled
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="3">
@@ -334,7 +332,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                       type="number"
                       name="amtDect"
                       value={mileValue.amountDeducted}
-                      readOnly
+                      disabled
                     />
                   </Form.Group>
                   <Form.Group as={Col} md="3">
@@ -351,7 +349,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                           : ""
                       }
                       value={mileValue.netRecieveable}
-                      readOnly
+                      disabled
                     />
                   </Form.Group>
                 </>
