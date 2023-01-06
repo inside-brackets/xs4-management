@@ -132,12 +132,12 @@ export const getUserByUsername = asyncHandler(async (req, res) => {
     let user = await User.findOne({
       userName: { $regex: `^${req.params.username}$`, $options: "i" },
     });
+    var isUser = false
     if (!user) {
-      res.status(200);
-      res.json(true);
+      isUser = true
     }
     res.status(200);
-    res.json(false);
+    res.json(isUser);
   } catch (error) {
     throw new Error(error.message);
   }

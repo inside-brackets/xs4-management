@@ -47,7 +47,7 @@ function BalanceSheet() {
       await axios
         .request({
           method: "GET",
-          url: `http://localhost:5000/balance/${y}/${m}`,
+          url: `${process.env.REACT_APP_BACKEND_URL}/balance/${y}/${m}`,
         })
         .then(({ data }) => {
           setBalanceSheet(data);
