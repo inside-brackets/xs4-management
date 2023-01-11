@@ -5,18 +5,18 @@ import { toast } from "react-toastify";
 import { round } from "../../util/number";
 
 const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
-  const [state, setState] = useState({
-    project: projectID,
-    defaultValue,
-  });
-
-  const [mileValue, setmileValue] = useState(defaultValue);
-  console.log(mileValue.totalAmount, "mileValue.totalAmount");
-  console.log(defaultValue, "defaultValue");
-  console.log(defaultValue.totalAmount, "defaultValue.totalAmount");
-
+  const [state, setState] = useState(defaultValue);
+  const [paymentDate, setPaymentDate] = useState("");
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [edited, setEdited] = useState(true);
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    setPaymentDate(
+      new Date(defaultValue.paymentDate).toISOString().split("T")[0]
+    );
+  }, [defaultValue]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -24,160 +24,157 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       setValidated(true);
-
       return;
     }
     setLoading(true);
-    if (!defaultValue) {
-      axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/milestone`, state)
+    if (defaultValue) {
+      await axios
+        .put(
+          `${process.env.REACT_APP_BACKEND_URL}/milestone/${defaultValue._id}`,
+          {
+            title: state.title,
+            status: state.status,
+            totalAmount: state.totalAmount,
+            exchangeRate: state.exchangeRate,
+            employeeShare: state.employeeShare,
+            grahicShare: state.grahicShare,
+            amountRecieved: state.amountRecieved,
+            netRecieveable: state.netRecieveable,
+            amountDeducted: state.amountDeducted,
+            paymentDate: state.paymentDate,
+          }
+        )
         .then((res) => {
-          toast.success("Milestone Created Sucessfully");
-          setLoading(false);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.msg ?? err.response.statusText);
-          setLoading(false);
+          if (res.status === 200) {
+            onSuccess();
+            setLoading(false);
+            toast.success("Project Updated Successfully");
+          } else {
+            onSuccess();
+            setLoading(false);
+            toast.error("Sorry, couldn't update the project");
+          }
         });
-    } else {
-      const res = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/milestone/${defaultValue._id}`,
-        {
-          title: mileValue.title,
-          status: mileValue.status,
-          totalAmount: mileValue.totalAmount,
-          exchangeRate: mileValue.exchangeRate,
-          employeeShare: mileValue.employeeShare,
-          grahicShare: mileValue.grahicShare,
-          amountRecieved: mileValue.amountRecieved,
-          netRecieveable: mileValue.netRecieveable,
-          amountDeducted: mileValue.amountDeducted,
-          paymentDate: mileValue.paymentDate,
-        }
-      );
-
-      setmileValue({ mileValue: res.data });
-      if (res.status === 200) {
-        onSuccess();
-        setLoading(false);
-        toast.success("Project Updated Successfully");
-
-        setmileValue({ mileValue: res.data });
-        // console.log(res.data);
-      } else {
-        toast.error("Sorry, couldn't update the project");
-      }
     }
   };
 
   useEffect(() => {
-    let amtDec = 0;
-    let netRec = 0;
-    let platformFee;
-    console.log(profile?.platform, "profile.platform===><");
-    if (profile?.platform === "freelancer") {
-      platformFee = 0.1;
-      var recruiterFee = 0.05;
-      if (mileValue.hasRecruiter) {
-        if (mileValue.status === "paid") {
+    if (dirty) {
+      let amtDec = 0;
+      let netRec = 0;
+      let platformFee;
+      if (profile?.platform === "freelancer") {
+        platformFee = 0.1;
+        var recruiterFee = 0.05;
+        if (state.hasRecruiter) {
+          if (state.status === "paid") {
+            if (
+              state.totalAmount < 50 &&
+              state.totalAmount > 0 &&
+              !state.hasRecruiter
+            ) {
+              amtDec = 5;
+            } else {
+              amtDec = (platformFee + recruiterFee) * state.totalAmount;
+            }
+          } else {
+            amtDec = 0;
+          }
+        } else {
           if (
-            mileValue.totalAmount < 50 &&
-            mileValue.totalAmount > 0 &&
-            !mileValue.hasRecruiter
+            state.totalAmount < 50 &&
+            state.totalAmount > 0 &&
+            !state.hasRecruiter
           ) {
             amtDec = 5;
           } else {
-            amtDec = (platformFee + recruiterFee) * mileValue.totalAmount;
+            amtDec = platformFee * state.totalAmount;
+          }
+        }
+      } else if (profile?.platform === "fiver") {
+        platformFee = 0.2;
+        if (state.status === "paid") {
+          amtDec = platformFee * state.totalAmount;
+        } else {
+          amtDec = 0;
+        }
+      } else if (profile?.platform === "upwork") {
+        if (state.status === "paid") {
+          if (state.totalAmount <= 500) {
+            platformFee = 0.2;
+            amtDec = platformFee * state.totalAmount;
+          } else {
+            platformFee = 0.1;
+            let moreThanFive = state.totalAmount - 500;
+            amtDec = moreThanFive * platformFee + 100;
           }
         } else {
           amtDec = 0;
         }
-      } else {
-        amtDec = platformFee * mileValue.totalAmount;
       }
-    } else if (profile?.platform === "fiver") {
-      platformFee = 0.2;
-      if (mileValue.status === "paid") {
-        amtDec = platformFee * mileValue.totalAmount;
-      } else {
-        amtDec = 0;
-      }
-    } else if (profile?.platform === "upwork") {
-      if (mileValue.status === "paid") {
-        if (mileValue.totalAmount <= 500) {
-          platformFee = 0.2;
-          amtDec = platformFee * mileValue.totalAmount;
-        } else {
-          platformFee = 0.1;
-          let moreThanFive = mileValue.totalAmount - 500;
-          amtDec = moreThanFive * platformFee + 100;
-        }
-      } else {
-        amtDec = 0;
-      }
-    }
 
-    netRec = mileValue.totalAmount - amtDec;
+      if (edited) {
+        netRec = state.totalAmount - state.amountDeducted;
+      } else {
+        netRec = state.totalAmount - amtDec;
+      }
 
-    if (mileValue.status === "paid") {
-      setmileValue((prev) => {
-        let amountRecievedInPKR = netRec * prev.exchangeRate + Number(0);
+      if (state.status === "paid") {
+        setState((prev) => {
+          let amountRecievedInPKR = netRec * prev.exchangeRate + Number(0);
+          let amountDeductedInPKR = (amtDec * 100) / 100;
+          let netRecieveableInPKR = netRec;
+          let shareInPKR = profile
+            ? profile.share * (amountRecievedInPKR / 100)
+            : 0;
+          return {
+            ...prev,
+            employeeShare: round(shareInPKR, 2),
+            amountRecieved: round(amountRecievedInPKR, 2),
+            amountDeducted: edited
+              ? state.amountDeducted
+              : round(amountDeductedInPKR, 2),
+            netRecieveable: round(netRecieveableInPKR, 2),
+          };
+        });
+      }
+
+      setState((prev) => {
         let amountDeductedInPKR = (amtDec * 100) / 100;
         let netRecieveableInPKR = netRec;
-        let shareInPKR = profile
-          ? profile.share * (amountRecievedInPKR / 100)
-          : 0;
+
         return {
           ...prev,
-          employeeShare: round(shareInPKR, 2),
-          amountRecieved: round(amountRecievedInPKR, 2),
-          amountDeducted: round(amountDeductedInPKR, 2),
+          amountDeducted: edited
+            ? state.amountDeducted
+            : round(amountDeductedInPKR, 2),
           netRecieveable: round(netRecieveableInPKR, 2),
         };
       });
     }
-    setmileValue((prev) => {
-      let amountDeductedInPKR = (amtDec * 100) / 100;
-      let netRecieveableInPKR = netRec;
-      return {
-        ...prev,
-        amountDeducted: round(amountDeductedInPKR, 2),
-        netRecieveable: round(netRecieveableInPKR, 2),
-      };
-    });
-    setmileValue((prev) => {
-      let amountDeductedInPKR = (amtDec * 100) / 100;
-      let netRecieveableInPKR = netRec;
-      console.log(amountDeductedInPKR, "amountDeductedInPKR setmileValue");
-      return {
-        ...prev,
-        defaultValue: {
-          amountDeducted: round(amountDeductedInPKR, 2),
-          netRecieveable: round(netRecieveableInPKR, 2),
-        },
-      };
-    });
   }, [
-    mileValue.status,
-    mileValue.totalAmount,
-    mileValue.profile,
-    mileValue.employeeShare,
-    mileValue.hasRecruiter,
-    mileValue.exchangeRate,
-    mileValue.amountRecieved,
-    mileValue.amountDeducted,
-    mileValue.netRecieveable,
+    state.status,
+    state.totalAmount,
+    state.profile,
+    state.employeeShare,
+    state.hasRecruiter,
+    state.exchangeRate,
+    state.amountRecieved,
+    state.amountDeducted,
+    profile,
+    dirty,
   ]);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
     const name = evt.target.name;
+    setDirty(true);
 
     if (name === "status") {
       if (value === "paid") {
-        setmileValue((prev) => ({ ...prev, paymentDate: new Date() }));
+        setState((prev) => ({ ...prev, paymentDate: new Date() }));
       } else {
-        setmileValue((prev) => {
+        setState((prev) => {
           const temp = prev;
           delete temp.paymentDate;
           delete temp.employeeShare;
@@ -186,8 +183,17 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
         });
       }
     }
+    if (name === "amountDeducted") {
+      setEdited(true);
+    }
+    if (name === "totalAmount") {
+      setEdited(false);
+    }
+    if (name === "paymentDate") {
+      setPaymentDate(value);
+    }
 
-    setmileValue((prev) => ({
+    setState((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -214,13 +220,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                   name="title"
                   onChange={handleChange}
                   type="text"
-                  defaultValue={
-                    defaultValue
-                      ? defaultValue.title
-                      : state
-                      ? state.title
-                      : "unpaid"
-                  }
+                  value={state ? state.title : ""}
                   placeholder="Enter title"
                   required
                 />
@@ -243,7 +243,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                   onChange={(value) => {
                     handleChange(value);
                   }}
-                  value={mileValue.status}
+                  value={state ? state.status : ""}
                   required
                 >
                   <option value="unpaid">Unpaid</option>
@@ -256,7 +256,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                 <Form.Control
                   type="date"
                   placeholder="Payment Date"
-                  value={mileValue.paymentDate}
+                  value={paymentDate ? paymentDate : ""}
                   name="paymentDate"
                   onChange={handleChange}
                 />
@@ -270,90 +270,79 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                   type="number"
                   placeholder="Total Amount"
                   name="totalAmount"
-                  defaultValue={mileValue.totalAmount}
-                  value={mileValue.totalAmount}
+                  value={state ? state.totalAmount : ""}
                   onChange={handleChange}
                   required
                 />
               </Form.Group>
               <Form.Group as={Col} md="4">
+                <Form.Label>Amount Deducted</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="amountDeducted"
+                  placeholder="-"
+                  value={state ? state.amountDeducted : ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="4">
+                <Form.Label>Net Receivable</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="netRec"
+                  placeholder="-"
+                  value={state ? state.netRecieveable : ""}
+                  disabled
+                />
+              </Form.Group>
+            </Row>
+            <Row className="my-2">
+              <Form.Group as={Col} md="3">
                 <Form.Label>Exchange Rate</Form.Label>
                 <Form.Control
                   type="number"
                   min={0}
                   step="any"
-                  value={mileValue.exchangeRate}
+                  value={state ? state.exchangeRate : ""}
                   name="exchangeRate"
-                  disabled={mileValue.status !== "paid"}
+                  disabled={state.status !== "paid"}
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group as={Col} md="4">
+              <Form.Group as={Col} md="3">
+                <Form.Label>Amount Received</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="-"
+                  name="amtRec"
+                  value={state ? state.amountRecieved : ""}
+                  disabled
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="3">
+                <Form.Label>
+                  EmpShare{" "}
+                  <span style={{ color: "red" }}>{` ${
+                    profile ? profile.share : ""
+                  }%`}</span>
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="-"
+                  disabled
+                  value={state ? state.employeeShare : ""}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="3">
                 <Form.Label>Graphic Share</Form.Label>
                 <Form.Control
                   type="number"
                   placeholder="Graphic Share"
                   name="grahicShare"
-                  value={mileValue.grahicShare}
+                  value={state ? state.grahicShare : ""}
                   onChange={handleChange}
-                  required
                 />
               </Form.Group>
-            </Row>
-            <Row className="my-2">
-              {
-                <>
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>
-                      EmpShare{" "}
-                      <span style={{ color: "red" }}>{` ${
-                        profile ? profile.share : ""
-                      }%`}</span>
-                    </Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={mileValue.employeeShare}
-                      disabled
-                    />
-                  </Form.Group>
-
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>Amnt Received</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="amtRec"
-                      value={mileValue.amountRecieved}
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>Amnt Deduct</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="amtDect"
-                      value={mileValue.amountDeducted}
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>Net Recieve</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="netRec"
-                      placeholder="-"
-                      defaultValue={
-                        state.defaultValue
-                          ? defaultValue.netRecieveable
-                          : state
-                          ? state.netRecieveable
-                          : ""
-                      }
-                      value={mileValue.netRecieveable}
-                      disabled
-                    />
-                  </Form.Group>
-                </>
-              }
             </Row>
           </Row>
         </Row>
