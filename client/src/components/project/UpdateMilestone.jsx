@@ -41,6 +41,8 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
             amountRecieved: state.amountRecieved,
             netRecieveable: state.netRecieveable,
             amountDeducted: state.amountDeducted,
+            adjustment: state.adjustment,
+            remarks: state.remarks,
             paymentDate: state.paymentDate,
           }
         )
@@ -119,6 +121,8 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
         netRec = state.totalAmount - amtDec;
       }
 
+      netRec = netRec + Number(state.adjustment ? state.adjustment : 0);
+
       if (state.status === "paid") {
         setState((prev) => {
           let amountRecievedInPKR = netRec * prev.exchangeRate + Number(0);
@@ -152,6 +156,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
         };
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     state.status,
     state.totalAmount,
@@ -161,6 +166,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
     state.exchangeRate,
     state.amountRecieved,
     state.amountDeducted,
+    state.adjustment,
     profile,
     dirty,
   ]);
@@ -181,6 +187,11 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
           delete temp.netRecieveable;
           return temp;
         });
+        setState((prev) => ({
+          ...prev,
+          adjustment: 0,
+          remarks: "",
+        }));
       }
     }
     if (name === "amountDeducted") {
@@ -293,6 +304,30 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
                   placeholder="-"
                   value={state ? state.netRecieveable : ""}
                   disabled
+                />
+              </Form.Group>
+            </Row>
+            <Row className="my-2">
+              <Form.Group as={Col} md="8">
+                <Form.Label>Adjustment Remarks</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter remarks"
+                  value={state ? state.remarks : ""}
+                  name="remarks"
+                  disabled={state.status !== "paid"}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="4">
+                <Form.Label>Amount</Form.Label>
+                <Form.Control
+                  type="number"
+                  defaultValue={0}
+                  value={state ? state.adjustment : 0}
+                  name="adjustment"
+                  disabled={state.status !== "paid"}
+                  onChange={handleChange}
                 />
               </Form.Group>
             </Row>

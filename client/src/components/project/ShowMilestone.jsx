@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import status_map from "../../assets/JsonData/milestone_status_map.json";
 import ActionButton from "../UI/ActionButton";
-import { formatter } from "../../util/currencyFormatter";
+// import { formatter } from "../../util/currencyFormatter";
 import MyModal from "../../components/modals/MyModal";
 import UpdateMilestone from "./UpdateMilestone";
 import Milestone from "./AddMilestone";

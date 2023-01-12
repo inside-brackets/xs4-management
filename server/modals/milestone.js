@@ -10,6 +10,8 @@ const milestoneSchema = new mongoose.Schema(
     amountRecieved: { type: Number, default: 0 },
     netRecieveable: { type: Number, default: 0 },
     amountDeducted: { type: Number, default: 0 },
+    adjustment: { type: Number, default: 0 },
+    remarks: { type: String, default: "" },
     paymentDate: { type: Date },
     profile: { type: mongoose.Schema.Types.ObjectId, ref: "Profile" },
     status: {
