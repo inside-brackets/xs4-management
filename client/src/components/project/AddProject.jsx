@@ -779,6 +779,7 @@ const AddProject = () => {
             sumAmount={sumAmount}
             projectID={id}
             profile={selectedProfile}
+            hasRecruiter={state.hasRecruiter}
           />
         </Row>
       )}

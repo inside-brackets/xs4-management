@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { round } from "../../util/number";
 
-const AddMilestone = ({ projectID, profile, onSuccess }) => {
+const AddMilestone = ({ projectID, profile, onSuccess, hasRecruiter }) => {
   const [state, setState] = useState({
     project: projectID,
     profile: profile,
@@ -79,7 +79,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
     if (profile?.platform === "freelancer") {
       platformFee = 0.1;
       var recruiterFee = 0.05;
-      if (state.hasRecruiter) {
+      if (hasRecruiter) {
         if (state.status === "paid") {
           if (
             state.totalAmount < 50 &&
