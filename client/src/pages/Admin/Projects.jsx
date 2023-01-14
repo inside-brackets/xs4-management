@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 
 import axios from "axios";
 
-import ActionButton from "../../components/UI/ActionButton";
 import Table from "../../components/table/SmartTable";
 
 import status_map from "../../assets/JsonData/project_status_map.json";
@@ -171,6 +170,10 @@ const Projects = () => {
       assignee: users,
       profile: profiles,
       date_range: "closedAt",
+      sort: [
+        { label: "Awarded At", value: "awardedAt" },
+        { label: "Deadline", value: "deadline" },
+      ],
     };
   } else if (userInfo.isManager) {
     filter = {
@@ -186,6 +189,10 @@ const Projects = () => {
         { label: "My projects", value: "myprojects" },
         { label: "Assiged to me", value: "assignedtome" },
       ],
+      sort: [
+        { label: "Awarded At", value: "awardedAt" },
+        { label: "Deadline", value: "deadline" },
+      ],
     };
   } else {
     filter = {
@@ -195,6 +202,10 @@ const Projects = () => {
         { label: "Under Review", value: "underreview" },
         { label: "Closed", value: "closed" },
         { label: "Cancelled", value: "cancelled" },
+      ],
+      sort: [
+        { label: "Awarded At", value: "awardedAt" },
+        { label: "Deadline", value: "deadline" },
       ],
     };
   }
