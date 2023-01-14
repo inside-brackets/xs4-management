@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Col, Row, Form, Button, Spinner } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import moment from "moment";
+
+import revenue_categories from "../assets/JsonData/revenue_categories.json";
 
 const OtherRevenue = ({ profile, defaultValue, onSuccess }) => {
   const [state, setState] = useState({});
@@ -84,8 +86,11 @@ const OtherRevenue = ({ profile, defaultValue, onSuccess }) => {
               onChange={handleChange}
             >
               <option value="">Select-Category</option>
-              <option value="office">Office</option>
-              <option value="profileMembership">Profile MemberShip</option>
+              {revenue_categories.map((item, index) => (
+                <option key={index} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
             </Form.Select>
 
             <Form.Label>Amount</Form.Label>

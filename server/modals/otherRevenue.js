@@ -11,7 +11,15 @@ const otherRevenueSchema = new mongoose.Schema(
     date: { type: Date, default: new Date() },
     category: {
       type: String,
-      enum: ["office", "profileMembership"],
+      enum: [
+        "corporate_registration",
+        "fbr_registrations",
+        "income_tax_return",
+        "ipo_trademark",
+        "sales_tax_return",
+        "accounts_preparation",
+        "audit_accounts",
+      ],
       default: "office",
       required: true,
     },
