@@ -37,7 +37,7 @@ const Routes = () => {
       <Route path="/profiles" component={Profiles} />
       <Route path="/salaries" component={Salaries} />
       <Route path="/salary/:year/:month/:id" component={Salary} />
-      <Route path="/balance-sheet" component={BalanceSheet} />
+      <Route path="/statement" component={BalanceSheet} />
       <Route path="*">
         <h1>Not found</h1>
       </Route>
