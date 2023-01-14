@@ -1,3 +1,7 @@
+.w-unset {
+  width: unset !important;
+  min-width: unset !important;
+}
 .w-80 {
   width: 120px !important;
   min-width: 120px !important;

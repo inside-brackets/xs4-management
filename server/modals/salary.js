@@ -7,8 +7,12 @@ const salarySchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    year: {
+      type: String,
+      required: true,
+    },
     month: {
-      type: Date,
+      type: String,
       required: true,
     },
     adjustment: [

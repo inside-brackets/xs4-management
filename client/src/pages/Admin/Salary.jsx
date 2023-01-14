@@ -1,34 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 
 import SalaryCard from "../../components/SalaryCard/SalaryCard";
 
 function Salary() {
   const [user, setUser] = useState(null);
-  const [readOnly, setReadOnly] = useState(false);
-  const { id } = useParams();
+  const [paid, setPaid] = useState(false);
+  const [salary, setSalary] = useState(null);
+
+  const { year, month, id } = useParams();
+  const history = useHistory();
 
   useEffect(() => {
+    const today = new Date();
+    const date = new Date(year, month, today.getDate(), 23, 59, 59);
+
+    if (date > today) {
+      history.replace(
+        `/salary/${today.getFullYear()}/${today.getMonth() - 1}/${id}`
+      );
+    }
+
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/users/` + id)
       .then(({ data }) => {
         setUser(data);
       });
-    axios({
-      method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/salary/last`,
-      headers: { "Content-Type": "application/json" },
-      data: {
-        user: id,
-      },
-    }).then(({ data }) => {
-      if (data) {
-        setReadOnly(true);
-      }
-    });
-  }, [id]);
+
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_URL}/salary/check/${year}/${month}/${id}`
+      )
+      .then(({ data }) => {
+        setPaid(data.paid);
+        setSalary(data.salary[0]);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, year, month]);
 
   return (
     <Row>
@@ -36,8 +46,11 @@ function Salary() {
         {user && (
           <SalaryCard
             user={user}
-            readOnly={readOnly}
-            setReadOnly={setReadOnly}
+            readOnly={paid}
+            setReadOnly={setPaid}
+            salary={salary}
+            year={year}
+            month={month}
           />
         )}
       </Col>

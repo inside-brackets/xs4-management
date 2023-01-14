@@ -10,12 +10,16 @@ import Adjustments from "./Adjustments";
 import Incentive from "./Incentive";
 import Milestones from "./Milestones";
 
-function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
+function SalaryDetailsCard({
+  user,
+  readOnly,
+  setReadOnly,
+  salary,
+  year,
+  month,
+}) {
   const history = useHistory();
 
-  const [prevMonth, setPrevMonth] = useState(
-    new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1)
-  );
   const [error, setError] = useState(false);
   const [base, setBase] = useState(0);
   const [adjustments, setAdjustments] = useState([]);
@@ -30,19 +34,15 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
     if (user.isManager) {
       getProjects(user._id);
     }
-    if (readOnly) {
-      axios({
-        method: "POST",
-        url: `${process.env.REACT_APP_BACKEND_URL}/salary/last`,
-        headers: { "Content-Type": "application/json" },
-        data: {
-          user: user._id,
-        },
-      }).then(({ data }) => {
-        setAdjustments(data.adjustment);
-      });
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  useEffect(() => {
+    if (salary) {
+      setBase(salary.base);
+      setAdjustments(salary.adjustment);
+    }
+  }, [salary]);
 
   useEffect(() => {
     let total = 0;
@@ -65,6 +65,7 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
     } else {
       setTable(<Milestones flag={false} />);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestones]);
 
   const getProjects = async (id) => {
@@ -74,6 +75,8 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
       headers: { "Content-Type": "application/json" },
       data: {
         user: id,
+        year: year,
+        month: month,
       },
     });
     setMilestones(projects.data.milestones);
@@ -85,8 +88,8 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
     let check = true;
     if (adjustments.length > 0) {
       if (
-        adjustments[adjustments.length - 1].desc == "" ||
-        adjustments[adjustments.length - 1].amount == ""
+        adjustments[adjustments.length - 1].desc === "" ||
+        adjustments[adjustments.length - 1].amount === ""
       ) {
         check = false;
       }
@@ -111,7 +114,8 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
       headers: { "Content-Type": "application/json" },
       data: {
         user: user._id,
-        month: prevMonth,
+        year: year,
+        month: month,
         adjustment: adjustments,
         incentive: incentive,
         base: base,
@@ -127,7 +131,9 @@ function SalaryDetailsCard({ user, readOnly, setReadOnly }) {
         {user && (
           <UserCard
             user={user}
-            month={prevMonth.toLocaleString("default", { month: "long" })}
+            month={new Date(year, month, 1).toLocaleString("default", {
+              month: "long",
+            })}
             readOnly={readOnly}
           />
         )}

@@ -5,7 +5,7 @@ import Milestone from "../modals/milestone.js";
 
 export const createSalary = async (req, res) => {
   try {
-    const { user, month, adjustment, incentive, base } = req.body;
+    const { user, year, month, adjustment, incentive, base } = req.body;
     let total = 0;
     adjustment.forEach((x, i) => {
       total += Number(x.amount);
@@ -14,6 +14,7 @@ export const createSalary = async (req, res) => {
     total += Number(base);
     const createdSalary = await Salary.create({
       user: user,
+      year: year,
       month: month,
       adjustment: adjustment,
       incentive: incentive,
@@ -31,6 +32,8 @@ export const getSalaries = async (req, res) => {
   const search = req.body.search ? req.body.search : "";
   const limit = parseInt(req.params.limit);
   const offset = parseInt(req.params.offset);
+  const year = req.params.year;
+  const month = req.params.month;
   let filter = {
     role: {
       $nin: ["admin"],
@@ -47,7 +50,41 @@ export const getSalaries = async (req, res) => {
   const users = await User.find(filter).sort({ createdAt: 1 });
   try {
     const userSalaries = users.map(async (user) => {
-      const prevSalary = await Salary.find({ user: user._id }).sort({
+      let employeeShare = 0;
+      if (user.isManager) {
+        const prevMonth = new Date(year, month, 1);
+        const thisMonth = new Date(year, Number(month) + 1, 0);
+
+        const profiles = await Profile.find({
+          bidder: user._id,
+        });
+        const milestones = profiles.map(async (profile) => {
+          const milestone = await Milestone.find({
+            profile: profile._id,
+          });
+          return milestone;
+        });
+        const result = await Promise.all(milestones);
+        result.map((project) => {
+          if (project.length > 0) {
+            project.map((milestone) => {
+              const milestoneDate = new Date(milestone.paymentDate);
+              if (
+                milestone.status === "paid" &&
+                milestoneDate >= prevMonth &&
+                milestoneDate <= thisMonth
+              ) {
+                employeeShare += milestone.employeeShare;
+              }
+            });
+          }
+        });
+      }
+      const prevSalary = await Salary.find({
+        user: user._id,
+        year: year,
+        month: month,
+      }).sort({
         createdAt: -1,
       });
       if (prevSalary.length === 0) {
@@ -55,28 +92,24 @@ export const getSalaries = async (req, res) => {
           _id: user._id,
           userName: user.userName,
           fullName: user.firstName + " " + user.lastName,
-          contact: user.contact,
-          email: user.email,
           department: user.department,
           isManager: user.isManager,
           role: user.role,
           salary: user.salary,
-          lastSalary: null,
-          lastPaid: false,
+          incentive: employeeShare,
+          paid: false,
         };
       } else {
         return {
           _id: user._id,
           userName: user.userName,
           fullName: user.firstName + " " + user.lastName,
-          contact: user.contact,
-          email: user.email,
           department: user.department,
           isManager: user.isManager,
           role: user.role,
           salary: user.salary,
-          lastSalary: prevSalary[0].month,
-          lastPaid: true,
+          incentive: employeeShare,
+          paid: true,
         };
       }
     });
@@ -87,11 +120,11 @@ export const getSalaries = async (req, res) => {
     } else {
       fResult = result;
     }
-    fResult.sort(function compare(a, b) {
-      var dateA = new Date(a.lastSalary);
-      var dateB = new Date(b.lastSalary);
-      return dateA - dateB;
-    });
+    // fResult.sort(function compare(a, b) {
+    //   var dateA = new Date(a.lastSalary);
+    //   var dateB = new Date(b.lastSalary);
+    //   return dateA - dateB;
+    // });
     res.json({ data: fResult, length: result.length });
   } catch (error) {
     console.log(error);
@@ -101,9 +134,8 @@ export const getSalaries = async (req, res) => {
 
 export const getProjects = async (req, res) => {
   try {
-    const today = new Date();
-    const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-    const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const prevMonth = new Date(req.body.year, req.body.month, 1);
+    const thisMonth = new Date(req.body.year, Number(req.body.month) + 1, 0);
 
     const profiles = await Profile.find({
       bidder: req.body.user,
@@ -125,7 +157,7 @@ export const getProjects = async (req, res) => {
           if (
             milestone.status === "paid" &&
             milestoneDate >= prevMonth &&
-            milestoneDate < thisMonth
+            milestoneDate <= thisMonth
           ) {
             companyGross += milestone.amountRecieved;
             employeeShare += milestone.employeeShare;
@@ -145,15 +177,27 @@ export const getProjects = async (req, res) => {
   }
 };
 
-export const getLastSalary = async (req, res) => {
+export const getSalary = async (req, res) => {
+  let userSalary = {};
+  let paid = false;
+  const year = req.params.year;
+  const month = req.params.month;
   try {
-    const lastSalary = await Salary.find({
-      user: req.body.user,
-    }).sort({
-      createdAt: -1,
+    await Salary.find({ user: req.params.id, year: year, month: month }).then(
+      (salary) => {
+        if (salary.length > 0) {
+          userSalary = salary;
+          paid = true;
+        }
+      }
+    );
+    res.status(200).send({
+      year: year,
+      month: month,
+      user: req.params.id,
+      salary: userSalary,
+      paid: paid,
     });
-    res.status(200);
-    res.json(lastSalary[0]);
   } catch (error) {
     console.log(error);
     res.json(error);
