@@ -40,6 +40,7 @@ const projectSchema = new mongoose.Schema(
       enum: ["new", "open", "underreview", "cancelled", "closed"],
       required: true,
     }, // $in
+    projectValue: { type: Number, default: 0 },
     totalAmount: { type: Number, default: 0 }, // range
     amountRecieved: { type: Number }, // range
     exchangeRate: { type: Number }, // range\

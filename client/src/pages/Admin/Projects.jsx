@@ -31,6 +31,7 @@ const Projects = () => {
           "Profile",
           "Client",
           "Assignee",
+          "Value",
           "Awarded",
           "Deadline",
           "Status",
@@ -72,6 +73,11 @@ const Projects = () => {
       <td>{item.clientName ?? "N/A"}</td>
 
       <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
+      {(userInfo.role === "admin" || userInfo.isManager) && (
+        <Fragment>
+          <td>{formatter(item.currency).format(item.projectValue)}</td>
+        </Fragment>
+      )}
       <td>
         {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
       </td>
