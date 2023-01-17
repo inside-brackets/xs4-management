@@ -211,7 +211,7 @@ const Projects = () => {
       ],
       sort: [
         { label: "Awarded At", value: "awardedAt" },
-        { label: "Deadline", value: "deadline" },
+        { label: "Deadline", value: "deadlineAt" },
       ],
     };
   }

@@ -189,6 +189,7 @@ const Table = (props) => {
               className="form-control mb-2"
               icon="bx bx-search"
               onKeyDown={searchData}
+              disabled={loading}
             />
           </Col>
         )}
@@ -208,12 +209,13 @@ const Table = (props) => {
                     }
                     type="date"
                     className="form-control"
+                    disabled={loading}
                   />
                 </Col>
                 <Col md={3}>
                   <label>To</label>
                   <input
-                    disabled={!startDate}
+                    disabled={!startDate || loading}
                     onChange={(e) => {
                       setEndDate({
                         label: `${props.filter[key]}__lte`,
@@ -247,6 +249,7 @@ const Table = (props) => {
                       setCurrPage(0);
                     }}
                     options={props.filter[key]}
+                    isDisabled={loading}
                   />
                 </Col>
               </>
@@ -265,6 +268,7 @@ const Table = (props) => {
                   setCurrPage(0);
                 }}
                 options={props.filter[key]}
+                isDisabled={loading}
               />
             </Col>
           );
@@ -272,7 +276,9 @@ const Table = (props) => {
 
         {props.exportData && (
           <Col className="m-4" md={3}>
-            <Button onClick={downloadExcel}>Export to Excel</Button>
+            <Button onClick={downloadExcel} disabled={loading}>
+              Export to Excel
+            </Button>
           </Col>
         )}
       </Row>
