@@ -178,7 +178,7 @@ const Projects = () => {
       date_range: "closedAt",
       sort: [
         { label: "Awarded At", value: "awardedAt" },
-        { label: "Deadline", value: "deadline" },
+        { label: "Deadline", value: "deadlineAt" },
       ],
     };
   } else if (userInfo.isManager) {
@@ -197,7 +197,7 @@ const Projects = () => {
       ],
       sort: [
         { label: "Awarded At", value: "awardedAt" },
-        { label: "Deadline", value: "deadline" },
+        { label: "Deadline", value: "deadlineAt" },
       ],
     };
   } else {
