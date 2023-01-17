@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Col, Row, Form, Button, Spinner } from "react-bootstrap";
+import CreatableSelect from "react-select/creatable";
 import axios from "axios";
 import { toast } from "react-toastify";
 import moment from "moment";
+
+import expense_categories from "../assets/JsonData/expense_categories.json";
 
 const Expenses = ({ profile, defaultValue, onSuccess }) => {
   const [state, setState] = useState({
@@ -13,6 +16,8 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
   const [profiles, setProfiles] = useState([]);
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState(expense_categories);
+  const [category, setCategory] = useState(null);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -31,6 +36,27 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
       });
     }
   };
+
+  const createCategory = (label) => ({
+    label,
+    value: label.toLowerCase().replace(/ /g, "_"),
+  });
+
+  const handleNewCategory = (category) => {
+    const newCategory = createCategory(category);
+    setCategories((prev) => [...prev, newCategory]);
+    setCategory(newCategory);
+  };
+
+  useEffect(() => {
+    if (category) {
+      setState({
+        ...state,
+        category: category.value,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
 
   useEffect(() => {
     axios
@@ -88,7 +114,15 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
         <Row>
           <Form.Group as={Col} md="6">
             <Form.Label>Category</Form.Label>
-            <Form.Select
+            <CreatableSelect
+              required
+              name="category"
+              options={categories}
+              value={category}
+              onChange={(value) => setCategory(value)}
+              onCreateOption={handleNewCategory}
+            />
+            {/* <Form.Select
               required
               name="category"
               defaultValue={defaultValue ? defaultValue.category : ""}
@@ -97,7 +131,7 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
               <option value="">Select-Category</option>
               <option value="office">Office</option>
               <option value="profileMembership">Profile MemberShip</option>
-            </Form.Select>
+            </Form.Select> */}
 
             <Form.Label>Amount</Form.Label>
             <Form.Control
