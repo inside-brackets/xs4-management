@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 
 import axios from "axios";
 
-import ActionButton from "../../components/UI/ActionButton";
 import Table from "../../components/table/SmartTable";
 
 import status_map from "../../assets/JsonData/project_status_map.json";
@@ -32,6 +31,7 @@ const Projects = () => {
           "Profile",
           "Client",
           "Assignee",
+          "Value",
           "Awarded",
           "Deadline",
           "Status",
@@ -73,6 +73,11 @@ const Projects = () => {
       <td>{item.clientName ?? "N/A"}</td>
 
       <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
+      {(userInfo.role === "admin" || userInfo.isManager) && (
+        <Fragment>
+          <td>{formatter(item.currency).format(item.projectValue)}</td>
+        </Fragment>
+      )}
       <td>
         {item.awardedAt ? moment(item.awardedAt).format("DD MMM") : "N/A"}
       </td>
@@ -171,6 +176,10 @@ const Projects = () => {
       assignee: users,
       profile: profiles,
       date_range: "closedAt",
+      sort: [
+        { label: "Awarded At", value: "awardedAt" },
+        { label: "Deadline", value: "deadline" },
+      ],
     };
   } else if (userInfo.isManager) {
     filter = {
@@ -186,6 +195,10 @@ const Projects = () => {
         { label: "My projects", value: "myprojects" },
         { label: "Assiged to me", value: "assignedtome" },
       ],
+      sort: [
+        { label: "Awarded At", value: "awardedAt" },
+        { label: "Deadline", value: "deadline" },
+      ],
     };
   } else {
     filter = {
@@ -195,6 +208,10 @@ const Projects = () => {
         { label: "Under Review", value: "underreview" },
         { label: "Closed", value: "closed" },
         { label: "Cancelled", value: "cancelled" },
+      ],
+      sort: [
+        { label: "Awarded At", value: "awardedAt" },
+        { label: "Deadline", value: "deadline" },
       ],
     };
   }

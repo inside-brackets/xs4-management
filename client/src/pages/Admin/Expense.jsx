@@ -36,7 +36,13 @@ const Expense = () => {
         {item.date ? moment(item.date).format("DD MMM YYYY") : Date.now()}
       </td>
       <td>{item.amount ?? 0}</td>
-      <td>{item.category}</td>
+      <td>
+        {item.category
+          .replace(/_/g, " ")
+          .replace(/(?: |\b)(\w)/g, function (key) {
+            return key.toUpperCase();
+          })}
+      </td>
       <td>{item.profile?.title ?? "N/A"}</td>
       <td>
         <ActionButton

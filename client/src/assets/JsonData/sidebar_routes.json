@@ -41,8 +41,8 @@
       "icon": "bx bxs-wallet-alt"
     },
     {
-      "display_name": "Balance Sheet",
-      "route": "/balance-sheet",
+      "display_name": "Cash Flow Statement",
+      "route": "/statement",
       "icon": "bx bx-line-chart-down"
     }
   ],

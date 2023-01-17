@@ -400,6 +400,8 @@ const AddProject = () => {
                           ))}
                         </Form.Control>
                       </Form.Group>
+                    </Row>
+                    <Row className="my-2">
                       <Form.Group as={Col} md="4">
                         <Form.Label>
                           Currency
@@ -461,7 +463,22 @@ const AddProject = () => {
                           <option value="closed">Closed</option>
                         </Form.Control>
                       </Form.Group>
-                      <Form.Group as={Col} md="4">
+                      <Form.Group as={Col} md={4}>
+                        <Form.Label>Project Value</Form.Label>
+                        <Form.Control
+                          required
+                          type="number"
+                          name="projectValue"
+                          placeholder="Project Value"
+                          readOnly={!editAble}
+                          onChange={handleChange}
+                          value={state.projectValue ?? ""}
+                        />
+                      </Form.Group>
+                    </Row>
+
+                    <Row className="my-2">
+                      <Form.Group as={Col} md={12}>
                         <Form.Label>Description</Form.Label>
                         <Form.Control
                           as="textarea"
@@ -477,12 +494,12 @@ const AddProject = () => {
                     </Row>
 
                     <Row className="mt-3 ml-3 align-items-center">
-                      <Form.Group className="mt-4" as={Col} md="2">
+                      <Form.Group className="mt-4" as={Col} md={4}>
                         <Form.Check
                           type="checkbox"
                           name="hasRecruiter"
                           checked={state?.hasRecruiter}
-                          label={`Has Recruiter`}
+                          label={`has Recruiter?`}
                           disabled={selectedProfile?.platform !== "freelancer"}
                           onChange={(value) => {
                             if (editAble && !isClosed) handleChange(value);
@@ -779,6 +796,7 @@ const AddProject = () => {
             sumAmount={sumAmount}
             projectID={id}
             profile={selectedProfile}
+            hasRecruiter={state.hasRecruiter}
           />
         </Row>
       )}

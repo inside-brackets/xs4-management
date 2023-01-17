@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import status_map from "../../assets/JsonData/milestone_status_map.json";
 import ActionButton from "../UI/ActionButton";
-import { formatter } from "../../util/currencyFormatter";
+// import { formatter } from "../../util/currencyFormatter";
 import MyModal from "../../components/modals/MyModal";
 import UpdateMilestone from "./UpdateMilestone";
 import Milestone from "./AddMilestone";
@@ -25,7 +25,13 @@ const customerTableHead = [
 const renderHead = (item, index) => <th key={index}>{item}</th>;
 const PAGE_SIZE = 50;
 
-const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
+const ShowMilestone = ({
+  projectID,
+  profile,
+  setSumAmount,
+  sumAmount,
+  hasRecruiter,
+}) => {
   const { userInfo } = useSelector((state) => state.userLogin);
   const [defaultValue, setDefaultValue] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -129,6 +135,7 @@ const ShowMilestone = ({ projectID, profile, setSumAmount, sumAmount }) => {
                 <Milestone
                   projectID={projectID}
                   profile={profile}
+                  hasRecruiter={hasRecruiter}
                   setShowModal={() => {
                     setAddMilestoneModal(false);
                   }}

@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Row, Col, Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import ActionButton from "../../components/UI/ActionButton";
 import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
 import RevenueEdit from "../../components/OtherRevenue";
 import moment from "moment";
+
+import revenue_categories from "../../assets/JsonData/revenue_categories.json";
 
 const customerTableHead = [
   "#",
@@ -64,10 +65,7 @@ const OtherRevenue = () => {
 
   if (userInfo.role === "admin" || userInfo.handleExpense) {
     filter = {
-      category: [
-        { label: "Office ", value: "office" },
-        { label: "Profile Membership", value: "profileMembership" },
-      ],
+      category: revenue_categories,
       date_range: "date",
     };
   }

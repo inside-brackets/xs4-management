@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { round } from "../../util/number";
 
-const AddMilestone = ({ projectID, profile, onSuccess }) => {
+const AddMilestone = ({ projectID, profile, onSuccess, hasRecruiter }) => {
   const [state, setState] = useState({
     project: projectID,
     profile: profile,
@@ -19,6 +19,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
 
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [edited, setEdited] = useState(false);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -29,8 +30,16 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
         setState((prev) => ({
           ...prev,
           employeeShare: "",
+          adjustment: 0,
+          remarks: "",
         }));
       }
+    }
+    if (name === "amountDeducted") {
+      setEdited(true);
+    }
+    if (name === "totalAmount") {
+      setEdited(false);
     }
     setState((prev) => ({
       ...prev,
@@ -70,7 +79,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
     if (profile?.platform === "freelancer") {
       platformFee = 0.1;
       var recruiterFee = 0.05;
-      if (state.hasRecruiter) {
+      if (hasRecruiter) {
         if (state.status === "paid") {
           if (
             state.totalAmount < 50 &&
@@ -94,7 +103,6 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
         } else {
           amtDec = platformFee * state.totalAmount;
         }
-        // amtDec = platformFee * state.totalAmount;
       }
     } else if (profile?.platform === "fiver") {
       platformFee = 0.2;
@@ -118,7 +126,13 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
       }
     }
 
-    netRec = state.totalAmount - amtDec;
+    if (edited) {
+      netRec = state.totalAmount - state.amountDeducted;
+    } else {
+      netRec = state.totalAmount - amtDec;
+    }
+
+    netRec = netRec + Number(state.adjustment ? state.adjustment : 0);
 
     if (state.status === "paid") {
       setState((prev) => {
@@ -132,7 +146,9 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
           ...prev,
           employeeShare: round(shareInPKR, 2),
           amountRecieved: round(amountRecievedInPKR, 2),
-          amountDeducted: round(amountDeductedInPKR, 2),
+          amountDeducted: edited
+            ? state.amountDeducted
+            : round(amountDeductedInPKR, 2),
           netRecieveable: round(netRecieveableInPKR, 2),
         };
       });
@@ -144,10 +160,13 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
 
       return {
         ...prev,
-        amountDeducted: round(amountDeductedInPKR, 2),
+        amountDeducted: edited
+          ? state.amountDeducted
+          : round(amountDeductedInPKR, 2),
         netRecieveable: round(netRecieveableInPKR, 2),
       };
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     state.status,
     state.totalAmount,
@@ -157,6 +176,8 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
     state.exchangeRate,
     state.amountRecieved,
     state.amountDeducted,
+    state.adjustment,
+    profile,
   ]);
 
   return (
@@ -180,7 +201,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                   name="title"
                   onChange={handleChange}
                   type="text"
-                  value={state ? state.title : "unpaid"}
+                  value={state ? state.title : ""}
                   placeholder="Enter title"
                   required
                 />
@@ -203,7 +224,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                   onChange={(value) => {
                     handleChange(value);
                   }}
-                  value={state ? state.status : " "}
+                  value={state ? state.status : ""}
                   required
                 >
                   <option value="unpaid">Unpaid</option>
@@ -216,7 +237,7 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                 <Form.Control
                   type="date"
                   placeholder="Payment Date"
-                  value={state.paymentDate}
+                  value={state ? state.paymentDate : ""}
                   name="paymentDate"
                   onChange={handleChange}
                 />
@@ -236,6 +257,52 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                 />
               </Form.Group>
               <Form.Group as={Col} md="4">
+                <Form.Label>Amount Deducted</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="amountDeducted"
+                  placeholder="-"
+                  value={state ? state.amountDeducted : ""}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="4">
+                <Form.Label>Net Receivable</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="netRec"
+                  placeholder="-"
+                  value={state ? state.netRecieveable : ""}
+                  disabled
+                />
+              </Form.Group>
+            </Row>
+            <Row className="my-2">
+              <Form.Group as={Col} md="8">
+                <Form.Label>Adjustment Remarks</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter remarks"
+                  value={state ? state.remarks : ""}
+                  name="remarks"
+                  disabled={state.status !== "paid"}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="4">
+                <Form.Label>Amount</Form.Label>
+                <Form.Control
+                  type="number"
+                  defaultValue={0}
+                  value={state ? state.adjustment : 0}
+                  name="adjustment"
+                  disabled={state.status !== "paid"}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+            </Row>
+            <Row className="my-2">
+              <Form.Group as={Col} md="3">
                 <Form.Label>Exchange Rate</Form.Label>
                 <Form.Control
                   type="number"
@@ -247,7 +314,31 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                   onChange={handleChange}
                 />
               </Form.Group>
-              <Form.Group as={Col} md="4">
+              <Form.Group as={Col} md="3">
+                <Form.Label>Amount Received</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="-"
+                  name="amtRec"
+                  value={state ? state.amountRecieved : ""}
+                  disabled
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="3">
+                <Form.Label>
+                  EmpShare{" "}
+                  <span style={{ color: "red" }}>{` ${
+                    profile ? profile.share : ""
+                  }%`}</span>
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="-"
+                  disabled
+                  value={state ? state.employeeShare : ""}
+                />
+              </Form.Group>
+              <Form.Group as={Col} md="3">
                 <Form.Label>Graphic Share</Form.Label>
                 <Form.Control
                   type="number"
@@ -257,57 +348,6 @@ const AddMilestone = ({ projectID, profile, onSuccess }) => {
                   onChange={handleChange}
                 />
               </Form.Group>
-            </Row>
-            <Row className="my-2">
-              {
-                <>
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>
-                      EmpShare{" "}
-                      <span style={{ color: "red" }}>{` ${
-                        profile ? profile.share : ""
-                      }%`}</span>
-                    </Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder="-"
-                      disabled
-                      value={state ? state.employeeShare : ""}
-                    />
-                  </Form.Group>
-
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>Amnt Received</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder="-"
-                      name="amtRec"
-                      value={state ? state.amountRecieved : ""}
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>Amnt Deduct</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="amtDect"
-                      placeholder="-"
-                      value={state ? state.amountDeducted : ""}
-                      disabled
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} md="3">
-                    <Form.Label>Net Recieve</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="netRec"
-                      placeholder="-"
-                      value={state ? state.netRecieveable : ""}
-                      disabled
-                    />
-                  </Form.Group>
-                </>
-              }
             </Row>
           </Row>
         </Row>

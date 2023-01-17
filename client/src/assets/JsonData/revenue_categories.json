@@ -1,0 +1,30 @@
+[
+  {
+    "label": "Accounts Preparation",
+    "value": "accounts_preparation"
+  },
+  {
+    "label": "Audit Accounts",
+    "value": "audit_accounts"
+  },
+  {
+    "label": "Corporate Registration",
+    "value": "corporate_registration"
+  },
+  {
+    "label": "FBR Registrations",
+    "value": "fbr_registrations"
+  },
+  {
+    "label": "IPO Trademark",
+    "value": "ipo_trademark"
+  },
+  {
+    "label": "Income Tax Return",
+    "value": "income_tax_return"
+  },
+  {
+    "label": "Sales Tax Return",
+    "value": "sales_tax_return"
+  }
+]

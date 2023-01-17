@@ -124,6 +124,7 @@ export const listProjects = asyncHandler(async (req, res) => {
       platform,
       bidder,
       custom,
+      sort,
     } = req.body;
     let filter = custom ?? {};
     filter["$and"] = filter["$and"] ?? [];
@@ -209,6 +210,17 @@ export const listProjects = asyncHandler(async (req, res) => {
       ];
     }
 
+    let sortResult = {};
+    if (sort.length > 0) {
+      sort.forEach((value, index) => {
+        sortResult[value] = -1;
+      });
+    } else {
+      sortResult = {
+        updatedAt: -1,
+      };
+    }
+
     const user = req.user;
     if (user.role === "user") {
       profiles = await ProfileModal.find({
@@ -235,7 +247,7 @@ export const listProjects = asyncHandler(async (req, res) => {
 
     const projects = await ProjectModal.find(filter)
       .populate("assignee profile")
-      .sort({ updatedAt: -1 })
+      .sort(sortResult)
       .limit(limit)
       .skip(offset);
 
