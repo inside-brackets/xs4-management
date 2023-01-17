@@ -195,6 +195,7 @@ const Projects = () => {
         { label: "My projects", value: "myprojects" },
         { label: "Assiged to me", value: "assignedtome" },
       ],
+      date_range: "closedAt",
       sort: [
         { label: "Awarded At", value: "awardedAt" },
         { label: "Deadline", value: "deadlineAt" },
