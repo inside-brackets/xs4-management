@@ -13,7 +13,7 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    if(defaultValue){
+    if(defaultValue.paymentDate){
       setPaymentDate(
         new Date(defaultValue.paymentDate).toISOString().split("T")[0]
       );
