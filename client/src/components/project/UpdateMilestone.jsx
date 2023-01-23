@@ -13,9 +13,12 @@ const UpdateMilestone = ({ projectID, profile, defaultValue, onSuccess }) => {
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    setPaymentDate(
-      new Date(defaultValue.paymentDate).toISOString().split("T")[0]
-    );
+    if(defaultValue){
+      setPaymentDate(
+        new Date(defaultValue.paymentDate).toISOString().split("T")[0]
+      );
+    }
+    
   }, [defaultValue]);
 
   const handleSubmit = async (event) => {
