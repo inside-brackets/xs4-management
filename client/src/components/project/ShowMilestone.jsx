@@ -40,7 +40,7 @@ const ShowMilestone = ({
   var tA = 0;
   const renderBody = (item, index, currPage) => {
     tA = tA + item.totalAmount;
-    setSumAmount(tA);
+    setSumAmount(tA / 2);
     return (
       <tr key={index}>
         <td>{index + 1 + currPage * PAGE_SIZE}</td>

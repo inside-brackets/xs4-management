@@ -8,7 +8,7 @@ import MyModal from "../../components/modals/MyModal";
 import ExpenseEdit from "../../components/Expense";
 import moment from "moment";
 import { capitalizeFirstLetter } from "../../util/string";
-
+import { formatter } from "../../util/currencyFormatter";
 const customerTableHead = [
   "#",
   "Description",
@@ -36,7 +36,7 @@ const Expense = () => {
       <td>
         {item.date ? moment(item.date).format("DD MMM YYYY") : Date.now()}
       </td>
-      <td>{item.amount ?? 0}</td>
+      <td>{item.amount ? formatter("PKR").format(item.amount) : 0}</td>
       <td>
         {item.category
           .replace(/_/g, " ")
@@ -58,9 +58,13 @@ const Expense = () => {
   );
   const renderExportData = (item) => {
     return {
-      profile: item.profile?.title ? capitalizeFirstLetter(item.profile?.title): "N/A",
+      profile: item.profile?.title
+        ? capitalizeFirstLetter(item.profile?.title)
+        : "N/A",
       date: item.data ? moment(item.date).format("DD MMM") : "N/A",
-      category: item.category ? capitalizeFirstLetter(item.category.replace("_", " ")): null,
+      category: item.category
+        ? capitalizeFirstLetter(item.category.replace("_", " "))
+        : null,
       description: capitalizeFirstLetter(item.description),
       amount: formatter("PKR").format(item.amount),
     };

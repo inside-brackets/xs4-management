@@ -104,19 +104,21 @@ const Projects = () => {
   const renderExportData = (item, index, currPage) => {
     return {
       Title: item.title,
-      Client_Name: item.clientName ?? "N/A",
+      "Client Name": item.clientName ?? "N/A",
       Profile: item.profile.title,
       Platform: item.profile.platform,
-      status: item.status,
-      AwardedAt: item.awardedAt
+      Status: item.status,
+      "Awarded At": item.awardedAt
         ? moment(item.awardedAt).format("DD MMM")
         : "N/A",
-      DeadlineAt: item.awardedAt
+      "Deadline At": item.awardedAt
         ? moment(item.deadlineAt).format("DD MMM")
         : "N/A",
-      totalAmount:
+      Currency: item.currency,
+      "Total Amount":
         userInfo.role === "admin" &&
         formatter(item.currency).format(item.projectValue),
+      Recruiter: item.hasRecruiter,
     };
   };
 

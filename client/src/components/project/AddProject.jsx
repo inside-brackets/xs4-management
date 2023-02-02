@@ -179,7 +179,10 @@ const AddProject = () => {
 
     setMilestoneModal(false);
 
-    if (state.status === "close" && state.projectValue === 0) {
+    if (
+      state.status === "closed" &&
+      (!state.projectValue || state.projectValue === 0)
+    ) {
       return toast.error("Project cannot close without project value.");
     }
 
@@ -468,11 +471,19 @@ const AddProject = () => {
                           required
                           type="number"
                           name="projectValue"
-                          placeholder="Project Value"
+                          placeholder={sumAmount ?? "Project Value"}
                           readOnly={!editAble}
                           onChange={handleChange}
-                          value={state.projectValue ?? sumAmount}
+                          isInvalid={
+                            state.status === "closed" &&
+                            !state.projectValue &&
+                            editAble
+                          }
+                          value={state.projectValue}
                         />
+                        <Form.Control.Feedback type="invalid">
+                          Project Value is required.
+                        </Form.Control.Feedback>
                       </Form.Group>
                     </Row>
 

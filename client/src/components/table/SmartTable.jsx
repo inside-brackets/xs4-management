@@ -124,9 +124,10 @@ const Table = (props) => {
         makeFilter({ ...filter, search, ...props.api.body, startDate, endDate })
       )
       .then(({ data }) => {
-        const sortedData = data.data.map((item) =>
-          props.renderExportData(item)
-        );
+        const sortedData = data.data.map((item, index) => {
+          var json_data = { "Sr.": index + 1, ...props.renderExportData(item) };
+          return json_data;
+        });
         const worksheet = XLSX.utils.json_to_sheet(sortedData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
