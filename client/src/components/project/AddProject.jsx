@@ -179,19 +179,18 @@ const AddProject = () => {
 
     setMilestoneModal(false);
 
-    if (state.exchangeRate === 0) {
-      return toast.error("Please Enter Valid Exchange rate");
+    if (state.status === "close" && state.projectValue === 0) {
+      return toast.error("Project cannot close without project value.");
     }
 
     state.assignee = assignee.map((item) => item.value);
-    state.totalAmount = sumAmount;
     if (id) {
       const res = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/projects/${id}`,
         state
       );
       if (res.status === 200) {
-        // toast.success("Project Updated Successfully");
+        toast.success("Project Updated Successfully");
         setEditAble(false);
       } else {
         toast.error("Sorry, couldn't update the project");
@@ -472,7 +471,7 @@ const AddProject = () => {
                           placeholder="Project Value"
                           readOnly={!editAble}
                           onChange={handleChange}
-                          value={state.projectValue ?? ""}
+                          value={state.projectValue ?? sumAmount}
                         />
                       </Form.Group>
                     </Row>

@@ -116,7 +116,7 @@ const Projects = () => {
         : "N/A",
       totalAmount:
         userInfo.role === "admin" &&
-        formatter(item.currency).format(item.totalAmount),
+        formatter(item.currency).format(item.projectValue),
     };
   };
 

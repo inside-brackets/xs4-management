@@ -7,6 +7,7 @@ import Table from "../../components/table/SmartTable";
 import MyModal from "../../components/modals/MyModal";
 import ExpenseEdit from "../../components/Expense";
 import moment from "moment";
+import { capitalizeFirstLetter } from "../../util/string";
 
 const customerTableHead = [
   "#",
@@ -57,10 +58,11 @@ const Expense = () => {
   );
   const renderExportData = (item) => {
     return {
-      profile: item.profile?.title ?? "N/A",
-      category: item.category ?? null,
+      profile: item.profile?.title ? capitalizeFirstLetter(item.profile?.title): "N/A",
       date: item.data ? moment(item.date).format("DD MMM") : "N/A",
-      amount: item.amount,
+      category: item.category ? capitalizeFirstLetter(item.category.replace("_", " ")): null,
+      description: capitalizeFirstLetter(item.description),
+      amount: formatter("PKR").format(item.amount),
     };
   };
   useEffect(() => {
