@@ -6,18 +6,13 @@ export const createLog = async (req, res) => {
     let log = await Log.create({
       user,
       project,
-      description,
-    }).populate({
-      path: "project",
-      select: { title: 1, profile: 1 },
+      description
     });
-    log = await log
-      .populate({
-        path: "project.profile",
-        select: { title: 1, platform: 1 },
-      })
-      .execPopulate();
 
+    log = await Log.findById(log._id).populate({
+      path: "project",
+      select: { title: 1, profile: 1 }
+    });
     res.status(200).json(log);
   } catch (error) {
     console.log(error);
@@ -32,14 +27,8 @@ export const getLogs = async (req, res) => {
     today.setHours(0, 0, 0, 0);
     let logs = await Log.find({ user, createdAt: { $gte: today } }).populate({
       path: "project",
-      select: { title: 1, profile: 1 },
+      select: { title: 1, profile: 1 }
     });
-    logs = await logs
-      .populate({
-        path: "project.profile",
-        select: { title: 1, platform: 1 },
-      })
-      .execPopulate();
 
     res.status(200).json(logs);
   } catch (error) {
@@ -54,12 +43,12 @@ export const getAllLogs = async (req, res) => {
     today.setHours(0, 0, 0, 0);
     let logs = await Log.find({ createdAt: { $gte: today } }).populate({
       path: "project",
-      select: { title: 1, profile: 1 },
+      select: { title: 1, profile: 1 }
     });
     logs = await logs
       .populate({
         path: "project.profile",
-        select: { title: 1, platform: 1 },
+        select: { title: 1, platform: 1 }
       })
       .execPopulate();
 
@@ -73,19 +62,19 @@ export const getAllLogs = async (req, res) => {
 export const updateLog = async (req, res) => {
   try {
     const { id, project, description } = req.body;
-    let log = await Log.findByIdAndUpdate(id, {
-      project,
-      description,
-    }).populate({
+    let log = await Log.findByIdAndUpdate(
+      id,
+      {
+        project,
+        description
+      },
+      {
+        new: true
+      }
+    ).populate({
       path: "project",
-      select: { title: 1, profile: 1 },
+      select: { title: 1, profile: 1 }
     });
-    log = await log
-      .populate({
-        path: "project.profile",
-        select: { title: 1, platform: 1 },
-      })
-      .execPopulate();
 
     res.status(200).json(log);
   } catch (error) {
