@@ -1,7 +1,7 @@
 import React from "react";
 import ActionButton from "../UI/ActionButton";
 
-function Log({ title, description, log, setSelectedLog }) {
+function Log({ title, description, log, setSelectedLog, admin }) {
   const colors = ["#1DBF73", "#14A800", "#F20091"];
   return (
     <div className="log-row">
@@ -13,7 +13,11 @@ function Log({ title, description, log, setSelectedLog }) {
       <div className="log-divider" />
       <div className="log-description-div d-flex">
         <p className="log-description">{description}</p>
-        <ActionButton onClick={() => setSelectedLog(log)} type="edit" />
+        {admin ? (
+          <>{log?.user?.userName}</>
+        ) : (
+          <ActionButton onClick={() => setSelectedLog(log)} type="edit" />
+        )}
       </div>
     </div>
   );

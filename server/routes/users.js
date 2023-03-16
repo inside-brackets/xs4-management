@@ -7,7 +7,7 @@ import {
   getUser,
   updateUserPassword,
   getUserByUsername,
-  addDepartment,
+  addDepartment
 } from "../controllers/users.js";
 import { Protected, isAdmin } from "../middlewares/authHandler.js";
 

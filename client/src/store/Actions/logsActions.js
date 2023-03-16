@@ -10,10 +10,8 @@ import {
 } from "../constant";
 import { toast } from "react-toastify";
 
-export const getLogs = () => async (dispatch, getState) => {
+export const getLogs = body => async (dispatch, getState) => {
   try {
-    const userId = getState()?.userLogin?.userInfo?._id;
-
     let config = {
       Headers: {
         "Content-Type": "application/json"
@@ -22,7 +20,7 @@ export const getLogs = () => async (dispatch, getState) => {
 
     let { data } = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/log/`,
-      { user: userId },
+      body,
       config
     );
 
@@ -35,6 +33,36 @@ export const getLogs = () => async (dispatch, getState) => {
     //           ? error.response.data.message
     //           : error.message
     //     });
+    console.log(error);
+  }
+};
+
+export const getAdminLogs = body => async (dispatch, getState) => {
+  try {
+    dispatch({ type: "GET_LOGS_REQUEST" });
+    let config = {
+      Headers: {
+        "Content-Type": "application/json"
+      }
+    };
+
+    let { data } = await axios({
+      method: "GET",
+      url: `${process.env.REACT_APP_BACKEND_URL}/log/all`,
+      data: "",
+      params: body,
+      config
+    });
+    console.log(data);
+    dispatch({ type: GET_LOGS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: "GET_LOGS_FAIL",
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+    });
     console.log(error);
   }
 };

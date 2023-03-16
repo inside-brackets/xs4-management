@@ -13,15 +13,16 @@ function ProjectLogs() {
   const [show, setShow] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
   const dispatch = useDispatch();
-  const { projects } = useSelector(state => state?.project);
+  const { projects, loading } = useSelector(state => state?.project);
   const { logs } = useSelector(state => state?.logs);
+  const { _id } = useSelector(state => state?.userLogin?.userInfo);
 
   useEffect(() => {
-    if (!logs) dispatch(getLogs());
-    if (!projects) {
-      dispatch(getProjects());
+    if (!logs) dispatch(getLogs({ user: _id }));
+    if (!projects && !loading) {
+      dispatch(getProjects({ assignee: [_id], status: { $ne: "closed" } }));
     }
-  }, [dispatch, logs, projects]);
+  }, [dispatch, logs, projects, _id, loading]);
 
   const today = new Date();
 

@@ -38,7 +38,7 @@ export const addProject = project => async dispatch => {
   }
 };
 
-export const getProjects = () => async dispatch => {
+export const getProjects = params => async dispatch => {
   try {
     dispatch({ type: GET_PROJECTS_REQUEST });
 
@@ -48,10 +48,13 @@ export const getProjects = () => async dispatch => {
       }
     };
 
-    let { data } = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/projects/`,
+    const { data } = await axios({
+      method: "GET",
+      url: `${process.env.REACT_APP_BACKEND_URL}/projects/`,
+      data: "",
+      params,
       config
-    );
+    });
 
     dispatch({ type: GET_PROJECTS_SUCCESS, payload: data });
   } catch (error) {

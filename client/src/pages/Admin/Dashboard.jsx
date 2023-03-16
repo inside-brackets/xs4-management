@@ -1,8 +1,8 @@
 import React from "react";
-import { Card } from "react-bootstrap";
+import AdminLogs from "../../components/ProjectLogs/AdminLogs";
 
 const Dashboard = () => {
-  return <Card>Welcome, Home</Card>;
+  return <AdminLogs />;
 };
 
 export default Dashboard;

@@ -11,8 +11,11 @@ import {
 export const logsReducer = (state = { logs: null }, action) => {
   switch (action.type) {
     case GET_LOGS:
-      return { logs: action.payload };
-
+      return { loading: false, logs: action.payload };
+    case "GET_LOGS_REQUEST":
+      return { loading: true };
+    case "GET_LOGS_FAIL":
+      return { loading: false, error: action.payload };
     case ADD_LOG_SUCCESS:
       return {
         ...state,

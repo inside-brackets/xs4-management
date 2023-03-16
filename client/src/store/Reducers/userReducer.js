@@ -9,7 +9,10 @@ import {
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAIL,
-} from '../constant';
+  GET_USERS_REQUEST,
+  GET_USERS_SUCCESS,
+  GET_USERS_FAIL
+} from "../constant";
 
 export const userLoginReducer = (state = {}, action) => {
   switch (action.type) {
@@ -49,6 +52,22 @@ export const userUpdateProfileReducer = (state = {}, action) => {
       return { loading: false, success: true };
     case USER_UPDATE_PROFILE_FAIL:
       return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const userGetAll = (state = {}, action) => {
+  switch (action.type) {
+    case GET_USERS_REQUEST:
+      return { loading: true };
+    case GET_USERS_SUCCESS:
+      return { loading: false, users: action.payload };
+    case GET_USERS_FAIL:
+      return { loading: false, error: action.payload };
+    case USER_LOGOUT:
+      return {};
+
     default:
       return state;
   }
