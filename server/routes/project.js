@@ -5,7 +5,7 @@ import {
   listProjects,
   getProject,
   getAllProjects,
-  deleteFile,
+  deleteFile
 } from "../controllers/projects.js";
 import { Protected, isAdmin } from "../middlewares/authHandler.js";
 

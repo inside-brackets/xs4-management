@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import ProjectModal from "../modals/project.js";
 import ProfileModal from "../modals/profile.js";
 import { response } from "express";
+import mongoose from "mongoose";
 
 // Access: Private
 // Method: POST
@@ -36,8 +37,12 @@ export const getProject = asyncHandler(async (req, res) => {
 
 export const getAllProjects = asyncHandler(async (req, res) => {
   try {
-    let getAllProjects = await ProjectModal.find();
-
+    if (req.query.assignee)
+      req.query.assignee = {
+        $in: req?.query?.assignee?.map(item => mongoose.Types.ObjectId(item))
+      };
+    if (req.query.status) req.query.status = JSON.parse(req.query?.status);
+    let getAllProjects = await ProjectModal.find(req.query);
     res.status(200);
 
     res.json(getAllProjects);
@@ -124,7 +129,7 @@ export const listProjects = asyncHandler(async (req, res) => {
       platform,
       bidder,
       custom,
-      sort,
+      sort
     } = req.body;
     let filter = custom ?? {};
     filter["$and"] = filter["$and"] ?? [];
@@ -136,9 +141,9 @@ export const listProjects = asyncHandler(async (req, res) => {
         {
           $or: [
             { title: { $regex: search, $options: "i" } },
-            { clientName: { $regex: search, $options: "i" } },
-          ],
-        },
+            { clientName: { $regex: search, $options: "i" } }
+          ]
+        }
       ];
     }
 
@@ -151,7 +156,7 @@ export const listProjects = asyncHandler(async (req, res) => {
 
     if (platform && platform.length !== 0) {
       profiles = await ProfileModal.find({
-        platform: { $in: platform },
+        platform: { $in: platform }
       });
       filter.profile = { $in: profiles };
     }
@@ -159,11 +164,11 @@ export const listProjects = asyncHandler(async (req, res) => {
       if (profiles.length !== 0) {
         profiles = await ProfileModal.find({
           _id: { $in: profiles },
-          bidder: { $in: bidder },
+          bidder: { $in: bidder }
         });
       } else {
         profiles = await ProfileModal.find({
-          bidder: { $in: bidder },
+          bidder: { $in: bidder }
         });
       }
 
@@ -195,18 +200,18 @@ export const listProjects = asyncHandler(async (req, res) => {
             {
               awardedAt: {
                 $gte: new Date(closedAt__gte),
-                $lte: new Date(closedAt__lte),
-              },
+                $lte: new Date(closedAt__lte)
+              }
             },
             {
               closedAt: {
                 $exists: true,
                 $gte: new Date(closedAt__gte),
-                $lte: new Date(closedAt__lte),
-              },
-            },
-          ],
-        },
+                $lte: new Date(closedAt__lte)
+              }
+            }
+          ]
+        }
       ];
     }
 
@@ -217,28 +222,28 @@ export const listProjects = asyncHandler(async (req, res) => {
       });
     } else {
       sortResult = {
-        updatedAt: -1,
+        updatedAt: -1
       };
     }
 
     const user = req.user;
     if (user.role === "user") {
       profiles = await ProfileModal.find({
-        bidder: user._id,
+        bidder: user._id
       });
       if (assignment === "assignedtome" || !user.isManager) {
         filter["$and"] = [...filter["$and"], { assignee: user._id }];
       } else if (assignment === "myprojects") {
         filter["$and"] = [
           ...filter["$and"],
-          { profile: { $in: [...profiles] } },
+          { profile: { $in: [...profiles] } }
         ];
       } else {
         filter["$and"] = [
           ...filter["$and"],
           {
-            $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }],
-          },
+            $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }]
+          }
         ];
       }
     }
@@ -256,7 +261,7 @@ export const listProjects = asyncHandler(async (req, res) => {
     res.status(200).json({
       data: projects,
       length: totalProjects.length,
-      batchSize: projects.length,
+      batchSize: projects.length
     });
   } catch (error) {
     throw new Error(error.message);

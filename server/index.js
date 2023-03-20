@@ -13,6 +13,7 @@ import OtherRevenue from "./routes/otherRevenue.js";
 import salaryRoutes from "./routes/salary.js";
 import balancesheetRoutes from "./routes/balancesheet.js";
 import DBRoutes from "./routes/db.js";
+import logRoutes from "./routes/logs.js";
 
 import cors from "cors";
 dotenv.config();
@@ -39,6 +40,7 @@ app.use("/other_revenue", OtherRevenue);
 app.use("/salary", salaryRoutes);
 app.use("/balance", balancesheetRoutes);
 app.use("/db", DBRoutes);
+app.use("/log", logRoutes);
 
 app.get("/", (req, res) => {
   console.log("hello");
