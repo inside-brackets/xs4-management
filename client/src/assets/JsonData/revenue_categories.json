@@ -26,5 +26,13 @@
   {
     "label": "Sales Tax Return",
     "value": "sales_tax_return"
+  },
+  {
+    "label": "SECP Statuary Returns",
+    "value": "secp_statuary_returns"
+  },
+  {
+    "label": "Other Income",
+    "value": "other_income"
   }
 ]

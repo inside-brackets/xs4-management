@@ -74,7 +74,7 @@ const Expense = () => {
       .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/1000/0`)
       .then((res) => {
         const profileOptions = res.data.data.map((profile) => ({
-          label: profile.title,
+          label: `${profile.title} (${profile.platform})`,
           value: profile._id,
         }));
 
