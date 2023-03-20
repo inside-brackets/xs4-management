@@ -127,6 +127,12 @@ export const getUserDontHaveLogs = async (req, res) => {
       },
       // Filter to only include users without project logs created today
       {
+        $match:{
+          role: "user"
+        }
+      }
+      ,
+      {
         $match: {
           logsToday: { $size: 0 }
         }

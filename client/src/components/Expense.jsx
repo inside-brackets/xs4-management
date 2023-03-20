@@ -62,7 +62,12 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/profiles/100/0`)
       .then((res) => {
-        setProfiles(res.data.data);
+        const profileOptions = res.data.data.map((profile) => ({
+          label: `${profile.title} (${profile.platform})`,
+          value: profile._id,
+        }));
+
+        setProfiles(profileOptions);
       });
   }, []);
 
@@ -179,7 +184,7 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
               {" "}
               <option>{defaultValue?.profile?.title ?? null}</option>
               {profiles.map((profile) => (
-                <option value={profile._id}>{profile.title}</option>
+                <option value={profile.value}>{profile.label}</option>
               ))}{" "}
             </Form.Select>
           </Form.Group>

@@ -111,9 +111,7 @@ function AdminLogs() {
               isDisabled={loading}
             />
 
-            <span className="mt-2">
-              {moment(today).format("dddd, MMMM D, YYYY")}
-            </span>
+
           </div>
         </div>
         <div className="logs-divider" />
@@ -137,17 +135,19 @@ function AdminLogs() {
             ))
           )}
         </div>
-        <div>
-          {" "}
+        <div class="d-flex justify-content-between">
           <OverlayTrigger
             placement="right"
             delay={{ show: 250, hide: 400 }}
             overlay={renderTooltip}
           >
             <Button variant="success">
-              Hover to See Person who are fill today
+              See who's forgetful
             </Button>
           </OverlayTrigger>
+          <span className="mt-2">
+              {moment(today).format("dddd, MMMM D, YYYY")}
+            </span>
         </div>
       </div>
     </>
