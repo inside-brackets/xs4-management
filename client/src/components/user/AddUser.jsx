@@ -32,7 +32,10 @@ const AddUser = ({ setShowModal }) => {
   useEffect(() => {
     if (state.userName) {
       const indentifier = setTimeout(async () => {
-        let userName = state.userName.replaceAll(/\s+/g, " ").trim().toLowerCase();
+        let userName = state.userName
+          .replaceAll(/\s+/g, " ")
+          .trim()
+          .toLowerCase();
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/users/byusername/${userName}`
         );
@@ -155,15 +158,6 @@ const AddUser = ({ setShowModal }) => {
             name="isManager"
             checked={state.isManager ?? false}
             label={`Is Manager`}
-            onChange={handleChange}
-          />
-        </Form.Group>
-        <Form.Group className="mt-4" as={Col} md="2">
-          <Form.Check
-            type="checkbox"
-            name="showReports"
-            checked={state.showReports ?? false}
-            label={`Show Reports`}
             onChange={handleChange}
           />
         </Form.Group>
