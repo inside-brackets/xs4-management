@@ -39,8 +39,8 @@ const Expense = () => {
       <td>{item.amount ? formatter("PKR").format(item.amount) : 0}</td>
       <td>
         {item.category
-          .replace(/_/g, " ")
-          .replace(/(?: |\b)(\w)/g, function (key) {
+          .replaceAll(/_/g, " ")
+          .replaceAll(/(?: |\b)(\w)/g, function (key) {
             return key.toUpperCase();
           })}
       </td>
@@ -57,13 +57,14 @@ const Expense = () => {
     </tr>
   );
   const renderExportData = (item) => {
+    console.log(item);
     return {
       profile: item.profile?.title
         ? capitalizeFirstLetter(item.profile?.title)
         : "N/A",
-      date: item.data ? moment(item.date).format("DD MMM") : "N/A",
+      date: item.date ? moment(item.date).format("DD MMM") : "N/A",
       category: item.category
-        ? capitalizeFirstLetter(item.category.replace("_", " "))
+        ? capitalizeFirstLetter(item.category.replaceAll("_", " "))
         : null,
       description: capitalizeFirstLetter(item.description),
       amount: formatter("PKR").format(item.amount),
@@ -87,10 +88,10 @@ const Expense = () => {
 
   if (userInfo.role === "admin" || userInfo.handleExpense) {
     filter = {
-      category: [
-        { label: "Office ", value: "office" },
-        { label: "Profile Membership", value: "profileMembership" },
-      ],
+      // category: [
+      //   { label: "Office ", value: "office" },
+      //   { label: "Profile Membership", value: "profileMembership" },
+      // ],
       date_range: "date",
 
       profile: profile,

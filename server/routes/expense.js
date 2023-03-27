@@ -8,8 +8,16 @@ import {
   deleteExpense,
 } from "../controllers/expense.js";
 
+import {
+  createExpenseCategory,
+  listExpenseCategory,
+} from "../controllers/expenseCategory.js";
+
 import { Protected, isAdmin } from "../middlewares/authHandler.js";
 const router = express.Router();
+
+router.post("/category", Protected, createExpenseCategory);
+router.get("/category", Protected, listExpenseCategory);
 
 router.post("/", createExpense);
 router.put("/:id", updateExpense);

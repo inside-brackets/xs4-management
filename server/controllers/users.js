@@ -30,6 +30,7 @@ export const getToken = asyncHandler(async (req, res) => {
       department: user.department,
       isManager: user.isManager,
       handleExpense: user.handleExpense,
+      showReports: user.showReports,
       token: user.generateToken(),
     });
   } catch (error) {

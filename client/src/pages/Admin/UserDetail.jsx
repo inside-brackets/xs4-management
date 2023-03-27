@@ -20,6 +20,7 @@ const UserDetail = () => {
   const [state, setState] = useState({
     isManager: false,
     handleExpense: false,
+    showReports: false,
   });
   const [loading, setLoading] = useState(false);
   const [rerenderTable, setRerenderTable] = useState(null);
@@ -57,6 +58,7 @@ const UserDetail = () => {
           ...prev,
           handleExpense: res.data.handleExpense,
           isManager: res.data.isManager,
+          showReports: res.data.showReports,
         };
       });
     };
@@ -78,6 +80,13 @@ const UserDetail = () => {
         return {
           ...prev,
           handleExpense: !state.handleExpense,
+        };
+      });
+    } else if (name === "showReports") {
+      setState((prev) => {
+        return {
+          ...prev,
+          showReports: !state.showReports,
         };
       });
     } else {
@@ -277,6 +286,16 @@ const UserDetail = () => {
                       disabled={!editFields}
                       onChange={handleChange}
                     />
+                    {state.isManager && (
+                      <Form.Check
+                        type="checkbox"
+                        name="showReports"
+                        checked={state.showReports ?? false}
+                        label={`Show Reports`}
+                        disabled={!editFields}
+                        onChange={handleChange}
+                      />
+                    )}
                     <Form.Check
                       type="checkbox"
                       name="handleExpense"

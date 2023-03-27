@@ -17,9 +17,10 @@ const SidebarItem = (props) => {
     </div>
   );
 };
-
 const Sidebar = (props) => {
   const userInfo = useSelector((state) => state.userLogin.userInfo);
+  console.log(userInfo);
+
   return (
     <div className="sidebar">
       <center>
@@ -30,11 +31,13 @@ const Sidebar = (props) => {
           <SidebarItem title={item.display_name} icon={item.icon} />
         </NavLink>
       ))}
-      {userInfo.role === "user" && userInfo.isManager && (
-        <NavLink activeClassName="active__sidebar" to="/reports">
-          <SidebarItem title="Reports" icon="bx bxs-bar-chart-alt-2" />
-        </NavLink>
-      )}
+      {userInfo.role === "user" &&
+        userInfo.isManager &&
+        userInfo.showReports && (
+          <NavLink activeClassName="active__sidebar" to="/reports">
+            <SidebarItem title="Reports" icon="bx bxs-bar-chart-alt-2" />
+          </NavLink>
+        )}
       {userInfo.role === "user" && userInfo.handleExpense && (
         <NavLink activeClassName="active__sidebar" to="/expenses">
           <SidebarItem title="Expenses" icon="bx bx-money" />

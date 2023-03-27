@@ -53,7 +53,7 @@ const Routes = () => {
         <Route path="/projects/project" exact component={Project} />
         <Route path="/projects/project/:id" exact component={Project} />
         <Route path="/profile" component={Profile} />
-        {userInfo.isManager && (
+        {userInfo.isManager && userInfo.showReports && (
           <Route path="/reports" exact component={Reports} />
         )}
         {userInfo.handleExpense && (

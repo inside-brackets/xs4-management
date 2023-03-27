@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    showReports: {
+      type: Boolean,
+      default: false,
+    },
     handleExpense: {
       type: Boolean,
       default: false,

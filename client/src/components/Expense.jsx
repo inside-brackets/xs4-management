@@ -5,8 +5,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import moment from "moment";
 
-import expense_categories from "../assets/JsonData/expense_categories.json";
-
 const Expenses = ({ profile, defaultValue, onSuccess }) => {
   const [state, setState] = useState({
     profile: profile?._id,
@@ -16,8 +14,16 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
   const [profiles, setProfiles] = useState([]);
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState(expense_categories);
+  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/expense/category`)
+      .then((data) => {
+        setCategories(data.data);
+      });
+  }, []);
 
   const handleChange = (evt) => {
     const value = evt.target.value;
@@ -39,13 +45,22 @@ const Expenses = ({ profile, defaultValue, onSuccess }) => {
 
   const createCategory = (label) => ({
     label,
-    value: label.toLowerCase().replace(/ /g, "_"),
+    value: label.toLowerCase().replaceAll(/ /g, "_"),
   });
 
   const handleNewCategory = (category) => {
     const newCategory = createCategory(category);
     setCategories((prev) => [...prev, newCategory]);
     setCategory(newCategory);
+
+    axios
+      .post(
+        `${process.env.REACT_APP_BACKEND_URL}/expense/category`,
+        newCategory
+      )
+      .then((data) => {
+        console.log(data);
+      });
   };
 
   useEffect(() => {
