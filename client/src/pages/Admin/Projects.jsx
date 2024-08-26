@@ -28,38 +28,23 @@ const Projects = () => {
       ? [
           "#",
           "Title",
-          "Profile",
           "Client",
+          "Profile",
           "Assignee",
           "Value",
+          "Amt. Received",
+          "Emp. Share",
           "Awarded",
           "Deadline",
           "Status",
           "Actions",
         ]
-      : // : userInfo.isManager
-        // ? [
-        //     "#",
-        //     "Title",
-        //     "Client",
-        //     "Profile",
-        //     "Awarded",
-        //     "Deadline",
-        //     "Total Amount",
-        //     "Employee Share",
-        //     "Status",
-        //     "Actions",
-        //   ]
-        [
+      : [
           "#",
           "Title",
           "Client",
-
-          "Assignee",
           "Awarded",
           "Deadline",
-          // "Total Amount",
-
           "Status",
           "Actions",
         ];
@@ -67,15 +52,16 @@ const Projects = () => {
     <tr key={index}>
       <td>{index + 1 + currPage * PAGE_SIZE}</td>
       <td>{item.title}</td>
-      <td>
-        {item.profile.title}({item.profile.platform})
-      </td>
       <td>{item.clientName ?? "N/A"}</td>
-
-      <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
       {(userInfo.role === "admin" || userInfo.isManager) && (
         <Fragment>
+          <td>
+          {item.profile.title}({item.profile.platform})
+          </td>
+          <td>{item.assignee.length === 0 ? "N/A" : item.assignee[0].userName}</td>
           <td>{formatter(item.currency).format(item.projectValue)}</td>
+          <td>{formatter(item.currency).format(item.amountRecieved??0)}</td>
+          <td>{formatter(item.currency).format(item.empShare??0)}</td>
         </Fragment>
       )}
       <td>
@@ -84,11 +70,6 @@ const Projects = () => {
       <td>
         {item.awardedAt ? moment(item.deadlineAt).format("DD MMM") : "N/A"}
       </td>
-      {/* {(userInfo.role === "admin" || userInfo.isManager) && (
-        <Fragment>
-          <td>{formatter(item.currency).format(item.totalAmount)}</td>
-        </Fragment>
-      )} */}
       <td>
         <h5>
           <Badge bg={status_map[item.status]}>{item.status}</Badge>
@@ -104,9 +85,12 @@ const Projects = () => {
   const renderExportData = (item, index, currPage) => {
     return {
       Title: item.title,
-      "Client Name": item.clientName ?? "N/A",
       Profile: item.profile.title,
       Platform: item.profile.platform,
+      Assignee: item.assignee.length === 0 ? "N/A" : item.assignee.map(item => item.userName).join(', '),
+      "Client Name": item.clientName ?? "N/A",
+      "Client Country":  item.clientCountry ?? "N/A",
+      "Project Type": item.projectType ?? "N/A",
       Status: item.status,
       "Awarded At": item.awardedAt
         ? moment(item.awardedAt).format("DD MMM")
@@ -114,11 +98,15 @@ const Projects = () => {
       "Deadline At": item.awardedAt
         ? moment(item.deadlineAt).format("DD MMM")
         : "N/A",
+      "Closed At": item.closedAt ? moment(item.closedAt).format("DD MMM") : "N/A",
       Currency: item.currency,
-      "Total Amount":
-        userInfo.role === "admin" &&
+      Value:
+        (userInfo.role === "admin" || userInfo.isManager) &&
         formatter(item.currency).format(item.projectValue),
+      "Amt Received": formatter(item.currency).format(item.amountRecieved??0),
+      "Emp Share": formatter(item.currency).format(item.empShare??0),
       Recruiter: item.hasRecruiter,
+      Description: item.description,
     };
   };
 
