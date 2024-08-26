@@ -165,7 +165,8 @@ const Projects = () => {
       bidder: bidder,
       assignee: users,
       profile: profiles,
-      date_range: "closedAt",
+      Deadline_checkbox: false,
+      date_range: "date_range",
       sort: [
         { label: "Awarded At", value: "awardedAt" },
         { label: "Deadline", value: "deadlineAt" },
@@ -185,7 +186,8 @@ const Projects = () => {
         { label: "My projects", value: "myprojects" },
         { label: "Assiged to me", value: "assignedtome" },
       ],
-      date_range: "closedAt",
+      Deadline_checkbox: false,
+      date_range: "date_range",
       sort: [
         { label: "Awarded At", value: "awardedAt" },
         { label: "Deadline", value: "deadlineAt" },

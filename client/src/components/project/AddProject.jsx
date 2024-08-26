@@ -147,7 +147,6 @@ const AddProject = () => {
           `${process.env.REACT_APP_BACKEND_URL}/projects/${id}`
         );
 
-        // console.log(projectRes.data, "projectRes.data======>");
         setCarrier(projectRes.data);
         const tempProject = projectRes.data;
 
@@ -711,7 +710,6 @@ const AddProject = () => {
 
                       <Row>
                         {carrier.files?.map((file) => {
-                          console.log(file);
                           return (
                             <div key={file.file} className="miscWrapper">
                               <Row className="mx-5">

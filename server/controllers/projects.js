@@ -1,9 +1,9 @@
-import asyncHandler from "express-async-handler";
+import asyncHandler from 'express-async-handler';
 
-import ProjectModal from "../modals/project.js";
-import ProfileModal from "../modals/profile.js";
-import { response } from "express";
-import mongoose from "mongoose";
+import ProjectModal from '../modals/project.js';
+import ProfileModal from '../modals/profile.js';
+import { response } from 'express';
+import mongoose from 'mongoose';
 
 // Access: Private
 // Method: POST
@@ -25,9 +25,7 @@ export const createProject = asyncHandler(async (req, res) => {
 // route: /projects/:id
 export const getProject = asyncHandler(async (req, res) => {
   try {
-    let project = await ProjectModal.findById(req.params.id).populate(
-      "assignee profile"
-    );
+    let project = await ProjectModal.findById(req.params.id).populate('assignee profile');
     console.log(project);
     res.status(200).json(project);
   } catch (error) {
@@ -39,7 +37,7 @@ export const getAllProjects = asyncHandler(async (req, res) => {
   try {
     if (req.query.assignee)
       req.query.assignee = {
-        $in: req?.query?.assignee?.map(item => mongoose.Types.ObjectId(item))
+        $in: req?.query?.assignee?.map((item) => mongoose.Types.ObjectId(item)),
       };
     if (req.query.status) req.query.status = JSON.parse(req.query?.status);
     let getAllProjects = await ProjectModal.find(req.query);
@@ -101,7 +99,7 @@ export const deleteFile = asyncHandler(async (req, res) => {
 export const deleteProject = asyncHandler(async (req, res) => {
   try {
     // delete project
-    res.json({ msh: "comming soon" });
+    res.json({ msh: 'comming soon' });
   } catch (error) {
     throw new Error(error.message);
   }
@@ -124,26 +122,24 @@ export const listProjects = asyncHandler(async (req, res) => {
       status,
       totalAmount__gte,
       totalAmount__lte,
-      closedAt__gte,
-      closedAt__lte,
+      deadline_checkbox,
+      date_range__gte,
+      date_range__lte,
       platform,
       bidder,
       custom,
-      sort
+      sort,
     } = req.body;
     let filter = custom ?? {};
-    filter["$and"] = filter["$and"] ?? [];
+    filter['$and'] = filter['$and'] ?? [];
     let profiles = [];
 
     if (search) {
-      filter["$and"] = [
-        ...filter["$and"],
+      filter['$and'] = [
+        ...filter['$and'],
         {
-          $or: [
-            { title: { $regex: search, $options: "i" } },
-            { clientName: { $regex: search, $options: "i" } }
-          ]
-        }
+          $or: [{ title: { $regex: search, $options: 'i' } }, { clientName: { $regex: search, $options: 'i' } }],
+        },
       ];
     }
 
@@ -156,7 +152,7 @@ export const listProjects = asyncHandler(async (req, res) => {
 
     if (platform && platform.length !== 0) {
       profiles = await ProfileModal.find({
-        platform: { $in: platform }
+        platform: { $in: platform },
       });
       filter.profile = { $in: profiles };
     }
@@ -164,11 +160,11 @@ export const listProjects = asyncHandler(async (req, res) => {
       if (profiles.length !== 0) {
         profiles = await ProfileModal.find({
           _id: { $in: profiles },
-          bidder: { $in: bidder }
+          bidder: { $in: bidder },
         });
       } else {
         profiles = await ProfileModal.find({
-          bidder: { $in: bidder }
+          bidder: { $in: bidder },
         });
       }
 
@@ -187,32 +183,34 @@ export const listProjects = asyncHandler(async (req, res) => {
       filter.totalAmount = { $gte: totalAmount__gte, $lte: totalAmount__lt };
     }
 
-    if (closedAt__gte && closedAt__lte) {
-      // filter.closedAt = {
-      //   $exists: true,
-      //   $gte: new Date(closedAt__gte),
-      //   $lte: new Date(closedAt__lte),
-      // };
-      filter["$and"] = [
-        ...filter["$and"],
-        {
-          $or: [
-            {
-              awardedAt: {
-                $gte: new Date(closedAt__gte),
-                $lte: new Date(closedAt__lte)
-              }
-            },
-            {
-              closedAt: {
-                $exists: true,
-                $gte: new Date(closedAt__gte),
-                $lte: new Date(closedAt__lte)
-              }
-            }
-          ]
-        }
-      ];
+    if (date_range__gte && date_range__lte) {
+      if (deadline_checkbox) {
+        filter.deadlineAt = {
+          $gte: new Date(date_range__gte),
+          $lte: new Date(date_range__lte),
+        };
+      } else {
+        filter['$and'] = [
+          ...filter['$and'],
+          {
+            $or: [
+              {
+                awardedAt: {
+                  $gte: new Date(date_range__gte),
+                  $lte: new Date(date_range__lte),
+                },
+              },
+              {
+                closedAt: {
+                  $exists: true,
+                  $gte: new Date(date_range__gte),
+                  $lte: new Date(date_range__lte),
+                },
+              },
+            ],
+          },
+        ];
+      }
     }
 
     let sortResult = {};
@@ -222,36 +220,32 @@ export const listProjects = asyncHandler(async (req, res) => {
       });
     } else {
       sortResult = {
-        updatedAt: -1
+        updatedAt: -1,
       };
     }
 
     const user = req.user;
-    if (user.role === "user") {
+    if (user.role === 'user') {
       profiles = await ProfileModal.find({
-        bidder: user._id
+        bidder: user._id,
       });
-      if (assignment === "assignedtome" || !user.isManager) {
-        filter["$and"] = [...filter["$and"], { assignee: user._id }];
-      } else if (assignment === "myprojects") {
-        filter["$and"] = [
-          ...filter["$and"],
-          { profile: { $in: [...profiles] } }
-        ];
+      if (assignment === 'assignedtome' || !user.isManager) {
+        filter['$and'] = [...filter['$and'], { assignee: user._id }];
+      } else if (assignment === 'myprojects') {
+        filter['$and'] = [...filter['$and'], { profile: { $in: [...profiles] } }];
       } else {
-        filter["$and"] = [
-          ...filter["$and"],
+        filter['$and'] = [
+          ...filter['$and'],
           {
-            $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }]
-          }
+            $or: [{ assignee: user._id }, { profile: { $in: [...profiles] } }],
+          },
         ];
       }
     }
 
-    if (filter["$and"].length === 0) delete filter["$and"];
-
+    if (filter['$and'].length === 0) delete filter['$and'];
     const projects = await ProjectModal.find(filter)
-      .populate("assignee profile")
+      .populate('assignee profile')
       .sort(sortResult)
       .limit(limit)
       .skip(offset);
@@ -261,7 +255,7 @@ export const listProjects = asyncHandler(async (req, res) => {
     res.status(200).json({
       data: projects,
       length: totalProjects.length,
-      batchSize: projects.length
+      batchSize: projects.length,
     });
   } catch (error) {
     throw new Error(error.message);

@@ -44,7 +44,6 @@ function FileUploading({ projectID, onSuccess }) {
         updateFiles: true,
       }
     );
-    console.log("tada", updatedProject);
     setFile(updatedProject.data);
     setLoading(false);
     onSuccess();

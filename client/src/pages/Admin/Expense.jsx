@@ -57,7 +57,6 @@ const Expense = () => {
     </tr>
   );
   const renderExportData = (item) => {
-    console.log(item);
     return {
       profile: item.profile?.title
         ? capitalizeFirstLetter(item.profile?.title)

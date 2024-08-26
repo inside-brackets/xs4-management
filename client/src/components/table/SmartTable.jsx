@@ -14,7 +14,7 @@ const makeFilter = (filter) => {
     if (value instanceof Array) {
       value = value.map((item) => item.value ?? item);
     }
-    temp[key] = value;
+    temp[key.toLowerCase()] = value;
   }
   return temp;
 };
@@ -196,6 +196,28 @@ const Table = (props) => {
         )}
 
         {Object.keys(props.filter).map((key, index) => {
+          if (key.includes('_checkbox')){
+            return(
+              <>
+              <Col md={2}>
+                <label className="pb-2">{`${key.replace('_checkbox','')}:`}</label>
+                <input
+                  type="checkbox"
+                  checked={filter[key]}
+                  onChange={(e) => {
+                    filterData(e.target.checked, key)
+                    setBodyData([]);
+                    setCurrPage(0);
+                  }
+                  }
+                  // className="ml-1"
+                  style={{"margin-left":"10px"}}
+                  disabled={loading}
+                />
+              </Col>
+              </>
+            )
+          }
           if (key === "date_range") {
             return (
               <>

@@ -8,7 +8,6 @@ const Profiles = ({ user, defaultValue, onSuccess }) => {
     bidder: user?._id,
     isAdmin: defaultValue?.isAdmin,
   });
-  // console.log("default value", state.isAdmin);
   const [users, setUsers] = useState([]);
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);

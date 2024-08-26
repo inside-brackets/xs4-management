@@ -15,17 +15,6 @@ function DropZone({ projectID }) {
     <li key={file.path}>{file.path}</li>
   ));
 
-  // const drop = (e) => {
-  //   console.log("funct working");
-  //   if (!e.target.files || e.target.files.length === 0) {
-  //     setFile(undefined);
-  //     return;
-  //   }
-
-  //   setFile(e.target.files[0]);
-  //   console.log(file);
-  // };
-
   const handleUpload = async (e) => {
     e.preventDefault();
     const { data: url } = await axios(

@@ -1,5 +1,4 @@
 export const formatter = (currency) => {
-  console.log(currency);
   try {
     var formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
