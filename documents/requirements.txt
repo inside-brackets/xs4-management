@@ -1,0 +1,45 @@
+=> add relevent security to server end points.(backend)
+=> default value for role dropdown in userdetail
+=> remove bidder drop down from add profile in userdetail
+50> 10 % ,50< 5$ non-rexc + frelaancer
+
+- ADMIN
+    - projects (faraz)
+        - view
+            all
+        - create
+            on different page not modal
+            - fields
+                *title (text input)
+                *profile (single select dropdown)
+                assignee (multislect select dropdown)
+                clientName (text input)
+                *projectType (single select dropdown)
+                *hasRecruiter (check box)
+                 recruiterName (text input, if hasRecruiter is checked)
+                *status (single select dropdown, default "new", if has assignee default is "open" and new cannot be selected)
+                *totalAmount (number)                                                           
+                amountDeductable(readOnly,(empShare + recruiter_cut=> 0.10)*totalAmount)
+                netRecieveable(readOnly, totalAmount-amountDeductable)
+                amountRecieved(number,default value netRecieveable, show if status is "closed")
+                empShare(readOnly, value= profile.Share)
+                awardedAt (date)
+                closedAt (date)
+                deadlineAt (date)
+
+        - detail
+            edit all fields
+    - reports
+        - view
+            all
+    - users
+        - view
+            all
+
+- USER
+    - projects
+        - view
+            assigned_to_me + created_by_me
+    - reports
+        - view
+            of projects i can view

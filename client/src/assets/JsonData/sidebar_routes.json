@@ -1,0 +1,61 @@
+{
+  "admin": [
+    {
+      "display_name": "Dashboard",
+      "route": "/dashboard",
+      "icon": "bx bxs-dashboard"
+    },
+    {
+      "display_name": "Users",
+      "route": "/users",
+      "icon": "bx bxs-user-rectangle"
+    },
+    {
+      "display_name": "Projects",
+      "route": "/projects",
+      "icon": "bx bxs-file"
+    },
+    {
+      "display_name": "Profiles",
+      "route": "/profiles",
+      "icon": "bx bxs-id-card"
+    },
+    {
+      "display_name": "Expenses",
+      "route": "/expenses",
+      "icon": "bx bx-money"
+    },
+    {
+      "display_name": "Other Revenue",
+      "route": "/other-revenue",
+      "icon": "bx bxs-wallet-alt"
+    },
+    {
+      "display_name": "Reports",
+      "route": "/reports",
+      "icon": "bx bxs-bar-chart-alt-2"
+    },
+    {
+      "display_name": "Salary",
+      "route": "/salaries",
+      "icon": "bx bxs-wallet-alt"
+    },
+    {
+      "display_name": "Cash Flow Statement",
+      "route": "/statement",
+      "icon": "bx bx-line-chart-down"
+    }
+  ],
+  "user": [
+    {
+      "display_name": "Dashboard",
+      "route": "/dashboard",
+      "icon": "bx bx-category-alt"
+    },
+    {
+      "display_name": "Projects",
+      "route": "/projects",
+      "icon": "bx bx-file"
+    }
+  ]
+}

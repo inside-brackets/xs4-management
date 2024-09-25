@@ -1,0 +1,11 @@
+.table__row__edit {
+  margin-top: -10px;
+  text-align: center;
+  font-size: 25px;
+  color: var(--txt-color);
+}
+.table__row__edit:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+  color: var(--txt-white);
+}

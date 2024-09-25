@@ -1,0 +1,62 @@
+[
+  {
+    "label": "Entertainment",
+    "value": "entertainment"
+  },
+  {
+    "label": "Commission",
+    "value": "commission"
+  },
+  {
+    "label": "Computer & IT Expenses",
+    "value": "computer_&_it_expenses"
+  },
+  {
+    "label": "Janitorial Expense",
+    "value": "janitorial_expense"
+  },
+  {
+    "label": "Petty Cash",
+    "value": "petty_cash"
+  },
+  {
+    "label": "Khurram Sattar-Drawings",
+    "value": "khurram_sattar-drawings"
+  },
+  {
+    "label": "Syed Omair Ali-Drawings",
+    "value": "syed_omair_ali-drawings"
+  },
+  {
+    "label": "Service Charges",
+    "value": "service_charges"
+  },
+  {
+    "label": "Utility Bills",
+    "value": "utility_bills"
+  },
+  {
+    "label": "Office Expense",
+    "value": "office_expense"
+  },
+  {
+    "label": "Vehicle Running & Maintenance",
+    "value": "vehicle_running_&_maintenance"
+  },
+  {
+    "label": "Mobile Expense",
+    "value": "mobile_expense"
+  },
+  {
+    "label": "Charity & Donation",
+    "value": "charity_&_donation"
+  },
+  {
+    "label": "Postage & Courier",
+    "value": "postage_&_courier"
+  },
+  {
+    "label": "Printing & Stationery",
+    "value": "printing_&_stationery"
+  }
+]

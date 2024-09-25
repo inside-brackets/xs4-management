@@ -1,0 +1,41 @@
+.dropzone {
+    text-align: center;
+    padding: 20px;
+    border: 3px rgb(218, 216, 216) dashed;
+    width: 90%;
+    margin: auto;
+
+}
+
+.butn {
+    border: none;
+    text-align: center;
+    background-color: rgb(218, 216, 216);
+    height: 40px;
+    border-radius: 12px;
+    color: black;
+    padding: 6px;
+    transition-duration: 0.6s;
+}
+
+.butn:hover {
+    background-color: rgb(177, 177, 177);
+    color: rgb(218, 216, 216);
+}
+
+.miscWrapper {
+    padding-bottom: 3px;
+}
+
+
+.actions_button_misc_wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 13px;
+}
+
+.action_button {
+    padding: 0;
+    background-color: transparent;
+    border: none
+}

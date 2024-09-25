@@ -1,0 +1,7 @@
+{
+  "open": "info",
+  "closed": "success",
+  "cancelled": "danger",
+  "underreview": "warning",
+  "new": "primary"
+}
