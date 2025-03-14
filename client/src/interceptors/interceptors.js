@@ -8,6 +8,7 @@ const HttpIntercept = (props) => {
         : null;
       if (request.url.includes(process.env.REACT_APP_BACKEND_URL))
         request.headers.common["Authorization"] = `Bearer ${userInfo?.token}`;
+      request.headers["ngrok-skip-browser-warning"] = true;
       return request;
     },
     (error) => {
