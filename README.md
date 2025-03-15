@@ -22,6 +22,16 @@ This project is a comprehensive **ERP system** built using the **MERN stack** (M
 - Generates comprehensive yearly balance sheets summarizing income, expenses, employee shares, and overall profits.
 - Supports export to PDF/CSV for external review or auditing.
 
+## Demo
+A live demo of the project is available here:
+
+🔗 **[Project Demo](https://xs4-management-o2dt.vercel.app/)**
+
+Feel free to explore using the following testing credentials:
+
+- **Username:** `admin`
+- **Password:** `12345`
+
 ## Tech Stack
 - **Frontend**: React.js
 - **Backend**: Node.js, Express.js
